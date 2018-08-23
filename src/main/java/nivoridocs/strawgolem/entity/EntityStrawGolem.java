@@ -14,12 +14,14 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class EntityStrawGolem extends EntityGolem {
 
 	public EntityStrawGolem(World worldIn) {
 		super(worldIn);
+		this.height /= 2.0f;
 	}
 	
 	@Override

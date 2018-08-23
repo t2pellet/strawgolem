@@ -12,10 +12,10 @@ import nivoridocs.strawgolem.Strawgolem;
 
 public class RenderStrawGolem extends RenderLiving<EntityStrawGolem> {
 	
-	private ResourceLocation texture = new ResourceLocation("textures/entity/villager/farmer.png");
+	private ResourceLocation texture = new ResourceLocation(Strawgolem.MODID, "textures/entity/straw_golem.png");
 
 	public RenderStrawGolem(RenderManager rendermanagerIn) {
-		super(rendermanagerIn, new ModelVillager(1.0f), 0.5f);
+		super(rendermanagerIn, new ModelStrawGolem(), 0.5f);
 	}
 
 	@Override
