@@ -38,7 +38,7 @@ public class StrawGolemCreationEventHandler {
 			worldIn.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
 			worldIn.setBlockState(hay, Blocks.AIR.getDefaultState());
 			EntityStrawGolem strawGolem = new EntityStrawGolem(worldIn);
-			strawGolem.setPosition(getCoord(pos.getX()), getCoord(pos.getY()), pos.getZ());
+			strawGolem.setPosition(getCoord(pos.getX()), pos.getY(), getCoord(pos.getZ()));
 			worldIn.spawnEntity(strawGolem);
 		}
 	}
