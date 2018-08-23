@@ -1,6 +1,5 @@
 package nivoridocs.strawgolem.proxy;
 
-import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import nivoridocs.strawgolem.entity.EntityStrawGolem;

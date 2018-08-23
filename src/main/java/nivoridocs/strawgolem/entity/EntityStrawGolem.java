@@ -2,7 +2,6 @@ package nivoridocs.strawgolem.entity;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAILookIdle;
@@ -10,15 +9,13 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class EntityStrawGolem extends EntityGolem {
-
+	
 	public EntityStrawGolem(World worldIn) {
 		super(worldIn);
 		this.height /= 2.0f;
@@ -31,7 +28,7 @@ public class EntityStrawGolem extends EntityGolem {
 		this.tasks.addTask(i++, new EntityAIAvoidEntity(this, EntityMob.class, 8.0F, 0.6D, 0.6D));
 		this.tasks.addTask(i++, new EntityAIHarvest(this, 0.6D));
 		this.tasks.addTask(i++, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
-        this.tasks.addTask(i++, new EntityAILookIdle(this));
+        this.tasks.addTask(i, new EntityAILookIdle(this));
 	}
 	
 	@Override

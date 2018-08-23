@@ -13,9 +13,9 @@ import nivoridocs.strawgolem.entity.EntityStrawGolem;
 public class CommonProxy {
 
 	public void preInit(FMLPreInitializationEvent event) {
-		ResourceLocation registryName = new ResourceLocation("");
+		ResourceLocation registryName = new ResourceLocation(Strawgolem.MODID, "strawgolem");
 		EntityRegistry.registerModEntity(registryName, EntityStrawGolem.class,
-				"StrawGolem", 1, Strawgolem.instance, 64, 3, false, 0x996600, 0x00ff00);
+				"strawgolem", 1, Strawgolem.instance, 64, 3, false, 0xccb211, 0xa05a0b);
 	}
 
 	public void init(FMLInitializationEvent event) {

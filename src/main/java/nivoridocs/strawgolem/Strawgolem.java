@@ -1,6 +1,5 @@
 package nivoridocs.strawgolem;
 
-import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.Mod.EventHandler;
