@@ -26,11 +26,8 @@ public class Strawgolem {
     @Mod.Instance
     public static Strawgolem instance;
     
-    private static Logger logger;
-
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        logger = event.getModLog();
         proxy.preInit(event);
     }
 

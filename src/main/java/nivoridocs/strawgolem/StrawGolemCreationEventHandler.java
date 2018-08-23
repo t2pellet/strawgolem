@@ -48,4 +48,8 @@ public class StrawGolemCreationEventHandler {
 				&& worldIn.getBlockState(pumpkin).getBlock() == Blocks.PUMPKIN;
 	}
 	
+	private StrawGolemCreationEventHandler() {
+		//
+	}
+	
 }

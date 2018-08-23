@@ -23,5 +23,9 @@ public class StrawgolemConfig {
 		if (event.getModID().equals(Strawgolem.MODID))
 			ConfigManager.sync(Strawgolem.MODID, Config.Type.INSTANCE);
 	}
+	
+	private StrawgolemConfig() {
+		//
+	}
 
 }

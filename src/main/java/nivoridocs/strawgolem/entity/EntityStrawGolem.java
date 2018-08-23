@@ -38,11 +38,6 @@ public class EntityStrawGolem extends EntityGolem {
 		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
 	}
 
-	@Override
-	public void fall(float distance, float damageMultiplier) {
-
-	}
-
 	@Override @Nullable
 	protected SoundEvent getAmbientSound() {
 		return null; // TODO
