@@ -48,16 +48,12 @@ public class EntityAIHarvest extends EntityAIMoveToBlock {
 
 	@Override
 	protected boolean shouldMoveTo(World worldIn, BlockPos pos) {
-		IBlockState block = worldIn.getBlockState(pos);
-		if (block.getBlock() == Blocks.FARMLAND) {
-			IBlockState up = worldIn.getBlockState(pos.up());
-			return up.getBlock() instanceof BlockCrops
-					&& ((BlockCrops) up.getBlock()).isMaxAge(up);
-		} else if (block.getBlock() == Blocks.NETHERRACK) {
-			IBlockState up = worldIn.getBlockState(pos.up());
-			return up.getBlock() == Blocks.NETHER_WART
-					&& up.getValue(BlockNetherWart.AGE) == 3;
-		} else return false;
+		IBlockState block = worldIn.getBlockState(pos.up());
+		if (block.getBlock() instanceof BlockCrops)
+			return ((BlockCrops) block.getBlock()).isMaxAge(block);
+		else if (block.getBlock() == Blocks.NETHER_WART)
+			return block.getValue(BlockNetherWart.AGE) == 3;
+		else return false;
 	}
 
 }
