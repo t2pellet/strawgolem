@@ -10,13 +10,10 @@ import nivoridocs.strawgolem.proxy.CommonProxy;
 
 import org.apache.logging.log4j.Logger;
 
-@Mod(
-		modid = Strawgolem.MODID, name = Strawgolem.NAME,
-		version = Strawgolem.VERSION, useMetadata = true)
+@Mod(modid = Strawgolem.MODID, name = Strawgolem.NAME, useMetadata = true)
 public class Strawgolem {
     public static final String MODID = "strawgolem";
     public static final String NAME = "Straw Golem";
-    public static final String VERSION = "1.1";
 
     @SidedProxy(
     		serverSide = "nivoridocs.strawgolem.proxy.ServerProxy",
