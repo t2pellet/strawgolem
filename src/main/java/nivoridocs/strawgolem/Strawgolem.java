@@ -8,8 +8,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import nivoridocs.strawgolem.proxy.CommonProxy;
 
-import org.apache.logging.log4j.Logger;
-
 @Mod(modid = Strawgolem.MODID, name = Strawgolem.NAME, useMetadata = true)
 public class Strawgolem {
     public static final String MODID = "strawgolem";
