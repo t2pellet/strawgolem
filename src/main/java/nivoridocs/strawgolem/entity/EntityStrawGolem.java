@@ -13,12 +13,29 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
+import nivoridocs.strawgolem.entity.capability.lifespan.ILifespan;
+import nivoridocs.strawgolem.entity.capability.lifespan.LifespanProvider;
 
 public class EntityStrawGolem extends EntityGolem {
+	
+	private ILifespan lifespan;
 	
 	public EntityStrawGolem(World worldIn) {
 		super(worldIn);
 		this.height /= 2.0f;
+	}
+	
+	@Override
+	public void onEntityUpdate() {
+		super.onEntityUpdate();
+		
+		if (lifespan == null)
+			lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null);
+		
+		lifespan.update();
+		
+		if (lifespan.isOver())
+			setDead();
 	}
 	
 	@Override
