@@ -6,6 +6,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntityMob;
@@ -27,6 +28,7 @@ public class EntityStrawGolem extends EntityGolem {
 		this.tasks.addTask(i++, new EntityAISwimming(this));
 		this.tasks.addTask(i++, new EntityAIAvoidEntity<>(this, EntityMob.class, 8.0F, 0.6D, 0.6D));
 		this.tasks.addTask(i++, new EntityAIHarvest(this, 0.6D));
+		this.tasks.addTask(i++, new EntityAIWanderAvoidWater(this, 0.6D));
 		this.tasks.addTask(i++, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.tasks.addTask(i, new EntityAILookIdle(this));
 	}
