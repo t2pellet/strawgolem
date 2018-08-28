@@ -18,12 +18,12 @@ public class StrawgolemConfig {
 	@Config.RangeInt(min = -1, max = Integer.MAX_VALUE)
 	public static int lifespan = 168000;
 	
-	public static int getLifespan() {
-		return lifespan;
-	}
-	
 	public static boolean isReplantEnabled() {
 		return replantEnabled;
+	}
+	
+	public static int getLifespan() {
+		return lifespan;
 	}
 	
 	@SubscribeEvent
@@ -32,8 +32,6 @@ public class StrawgolemConfig {
 			ConfigManager.sync(Strawgolem.MODID, Config.Type.INSTANCE);
 	}
 	
-	private StrawgolemConfig() {
-		//
-	}
+	private StrawgolemConfig() {}
 
 }
