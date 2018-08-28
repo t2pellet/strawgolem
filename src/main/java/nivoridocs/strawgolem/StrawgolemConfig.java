@@ -14,6 +14,14 @@ public class StrawgolemConfig {
 	@Config.Comment("Allow the straw golems to replant a crop when they haverst it.")
 	public static boolean replantEnabled = false;
 	
+	@Config.Comment("Set the lifespan, in tick, of new created straw golems.")
+	@Config.RangeInt(min = -1, max = Integer.MAX_VALUE)
+	public static int lifespan = 168000;
+	
+	public static int getLifespan() {
+		return lifespan;
+	}
+	
 	public static boolean isReplantEnabled() {
 		return replantEnabled;
 	}
