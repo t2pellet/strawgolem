@@ -36,7 +36,7 @@ public class EntityStrawGolem extends EntityGolem {
 		lifespan.update();
 		
 		if (lifespan.isOver())
-			setDead();
+			attackEntityFrom(DamageSource.MAGIC, getMaxHealth()*100);
 	}
 	
 	@Override
