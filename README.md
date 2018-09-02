@@ -1,4 +1,5 @@
 # Straw Golem
-A minecraft forge that adds a staw golem, it's a farmer.
+This mod adds a spawnable straw golem. It's a very weak golem and flees whenever hostile mobs come nearby, but it can harvest full grown crops (however it can't pick up drop).
 
-This mod is in its alpha stage. The developed (and, of course, tested) features are in the wiki, so check it out and stay tuned for future update!
+## Downloads
++ <a href="https://minecraft.curseforge.com/projects/strawgolem">Curseforge</a>
