@@ -3,11 +3,11 @@
   "modid": "strawgolem",
   "name": "Straw Golem",
   "description": "A mod that add a straw golem, it's a farmer.",
-  "version": "1.2",
+  "version": "1.3",
   "mcversion": "1.12.2",
   "url": "https://github.com/nivoridocs/strawgolem",
   "authorList": ["NivOridocs"],
-  "credits": "The Forge and FML guys, for making this example",
+  "credits": "The Forge and FML guys, for making mods possible.",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
