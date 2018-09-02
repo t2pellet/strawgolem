@@ -12,12 +12,16 @@ import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
+import nivoridocs.strawgolem.Strawgolem;
 import nivoridocs.strawgolem.entity.capability.lifespan.ILifespan;
 import nivoridocs.strawgolem.entity.capability.lifespan.LifespanProvider;
 
 public class EntityStrawGolem extends EntityGolem {
+	
+	public static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
 	
 	private ILifespan lifespan;
 	
@@ -81,5 +85,10 @@ public class EntityStrawGolem extends EntityGolem {
 	protected boolean canDespawn() {
 		return false;
 	}
-
+	
+	@Override
+	protected ResourceLocation getLootTable() {
+		return LOOT;
+	}
+	
 }

@@ -1,6 +1,7 @@
 package nivoridocs.strawgolem.proxy;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -22,6 +23,8 @@ public class CommonProxy {
 				"strawgolem", 1, Strawgolem.instance, 64, 3, false, 0xccb211, 0xa05a0b);
 		
 		CapabilityManager.INSTANCE.register(ILifespan.class, new LifespanStorage(), Lifespan::new);
+		
+		LootTableList.register(EntityStrawGolem.LOOT);
 	}
 
 	public void init(FMLInitializationEvent event) {
