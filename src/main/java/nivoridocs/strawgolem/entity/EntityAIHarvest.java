@@ -49,9 +49,9 @@ public class EntityAIHarvest extends EntityAIMoveToBlock {
 	@Override
 	protected boolean shouldMoveTo(World worldIn, BlockPos pos) {
 		IBlockState block = worldIn.getBlockState(pos.up());
-		if (block.getBlock() instanceof BlockCrops)
+		if (block.getBlock() instanceof BlockCrops && StrawgolemConfig.blockHarvestAllowed(block.getBlock()))
 			return ((BlockCrops) block.getBlock()).isMaxAge(block);
-		else if (block.getBlock() == Blocks.NETHER_WART)
+		else if (block.getBlock() == Blocks.NETHER_WART && StrawgolemConfig.blockHarvestAllowed(block.getBlock()))
 			return block.getValue(BlockNetherWart.AGE) == 3;
 		else return false;
 	}
