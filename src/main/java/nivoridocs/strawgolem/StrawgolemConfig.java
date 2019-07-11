@@ -84,16 +84,13 @@ public class StrawgolemConfig {
 		for (String s : filter) {
 			String[] elements = s.split(":");
 
-			if (elements.length == 0)
-				continue;
-
 			if (elements.length == 1 && block.getRegistryName().getResourceDomain().equals(elements[0]))
 			{
 				bestMatch = FilterMatch.Mod;
 				continue;
 			}
 
-			if (elements.length >= 2 && block.getRegistryName().getResourcePath().equals(elements[1]))
+			if (elements.length >= 2 && block.getRegistryName().getResourceDomain().equals(elements[0]) && block.getRegistryName().getResourcePath().equals(elements[1]))
 			{
 				bestMatch = FilterMatch.Exact;
 				break;
