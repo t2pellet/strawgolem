@@ -1,15 +1,17 @@
-package nivoridocs.strawgolem.config;
+package com.commodorethrawn.strawgolem.config;
 
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 
-@Mod.EventBusSubscriber(modid = nivoridocs.strawgolem.Strawgolem.MODID)
 public class ConfigHandler {
-    @SubscribeEvent
-    public static void configEvent(final ModConfig.ModConfigEvent event) {
+
+    public void configEvent(final ModConfig.ModConfigEvent event) {
         if (event.getConfig().getSpec() == ConfigHolder.COMMON_SPEC) {
-            bakeConfig();
+            System.out.println("baking the config");
+            StrawgolemConfig.replantEnabled = ConfigHolder.COMMON_CONFIG.replantEnabled.get();
+            StrawgolemConfig.lifespan = ConfigHolder.COMMON_CONFIG.lifespan.get();
+            StrawgolemConfig.filterMode = ConfigHolder.COMMON_CONFIG.filterMode.get();
+            StrawgolemConfig.whitelist = ConfigHolder.COMMON_CONFIG.whitelist.get();
+            StrawgolemConfig.blacklist = ConfigHolder.COMMON_CONFIG.blacklist.get();
         }
     }
 

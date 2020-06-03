@@ -1,4 +1,4 @@
-package nivoridocs.strawgolem.entity;
+package com.commodorethrawn.strawgolem.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;

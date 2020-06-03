@@ -1,11 +1,11 @@
-package nivoridocs.strawgolem.entity;
+package com.commodorethrawn.strawgolem.entity;
 
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import net.minecraft.block.*;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import nivoridocs.strawgolem.config.StrawgolemConfig;
 
 public class HarvestGoal extends MoveToBlockGoal {
 	private EntityStrawGolem strawgolem;

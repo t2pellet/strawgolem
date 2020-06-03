@@ -1,4 +1,4 @@
-package nivoridocs.strawgolem.config;
+package com.commodorethrawn.strawgolem.config;
 
 import net.minecraft.block.Block;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -48,6 +48,7 @@ public class StrawgolemConfig {
 	}
 	
 	public static int getLifespan() {
+        System.out.println("lifespan: " + lifespan);
 		return lifespan;
 	}
 

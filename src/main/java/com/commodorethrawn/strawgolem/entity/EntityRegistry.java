@@ -1,11 +1,11 @@
-package nivoridocs.strawgolem.entity;
+package com.commodorethrawn.strawgolem.entity;
 
+import com.commodorethrawn.strawgolem.Strawgolem;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import nivoridocs.strawgolem.Strawgolem;
 
 @Mod.EventBusSubscriber(modid = Strawgolem.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EntityRegistry {
