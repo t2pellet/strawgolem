@@ -14,6 +14,10 @@ public class RenderStrawGolem extends LivingRenderer {
 		super(rendermanagerIn, new ModelStrawGolem(), 0.5f);
 	}
 
+	@Override
+	protected boolean canRenderName(Entity entity) {
+		return entity.hasCustomName();
+	}
 
 	@Override
 	public ResourceLocation getEntityTexture(Entity entity) {

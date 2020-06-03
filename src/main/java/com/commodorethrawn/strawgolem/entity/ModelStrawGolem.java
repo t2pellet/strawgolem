@@ -50,37 +50,32 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> {
 	@Override
 	public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
 		matrixStackIn.push();
-		this.leftarm.translateRotate(matrixStackIn);
+        matrixStackIn.translate(-0.23F, -0.9F, 0.0F);
 		matrixStackIn.scale(1.0F, 1.0F, 0.5F);
-		this.leftarm.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+        this.leftarm.translateRotate(matrixStackIn);
+        this.leftarm.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 		matrixStackIn.pop();
 		matrixStackIn.push();
-		this.leftleg.translateRotate(matrixStackIn);
+        matrixStackIn.translate(0.01F, -1.255F, 0.0F);
 		matrixStackIn.scale(0.5F, 1.0F, 0.5F);
+        this.leftleg.translateRotate(matrixStackIn);
 		this.leftleg.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 		matrixStackIn.pop();
 		this.body.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 		matrixStackIn.push();
-		this.rightleg.translateRotate(matrixStackIn);
+        matrixStackIn.translate(-0.01F, -1.255F, 0.0F);
 		matrixStackIn.scale(0.5F, 1.0F, 0.5F);
+        this.rightleg.translateRotate(matrixStackIn);
 		this.rightleg.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 		matrixStackIn.pop();
 		matrixStackIn.push();
-		this.rightarm.translateRotate(matrixStackIn);
-		matrixStackIn.scale(1.0F, 1.0F, 0.5F);
-		this.rightarm.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+        matrixStackIn.translate(0.23F, -0.9F, 0.0F);
+        matrixStackIn.scale(1.0F, 1.0F, 0.5F);
+        this.rightarm.translateRotate(matrixStackIn);
+        this.rightarm.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 		matrixStackIn.pop();
 		this.hip.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 		this.head.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-	}
-
-	/**
-	 * This is a helper function from Tabula to set the rotation of model parts
-	 */
-	public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-		modelRenderer.rotateAngleX = x;
-		modelRenderer.rotateAngleY = y;
-		modelRenderer.rotateAngleZ = z;
 	}
 
 	@Override
@@ -91,15 +86,13 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> {
 		this.body.rotateAngleY = 0.0F;
 		
 		float auxLimbSwing = limbSwing * 5.0F * 0.6662F;
-		float armLimbSwingAmount = 2.0F * limbSwingAmount;
-		float legLimbSwingAmount = 2.8F * limbSwingAmount;
-		
-		this.rightarm.rotateAngleX = MathHelper.cos(auxLimbSwing + (float) Math.PI) * armLimbSwingAmount;
-		this.leftarm.rotateAngleX = MathHelper.cos(auxLimbSwing) * armLimbSwingAmount;
+
+        this.rightarm.rotateAngleX = MathHelper.cos(auxLimbSwing + (float) Math.PI) * 0.8F * limbSwingAmount;
+        this.leftarm.rotateAngleX = MathHelper.cos(auxLimbSwing) * 0.8F * limbSwingAmount;
 		this.rightarm.rotateAngleZ = 0.0F;
 		this.leftarm.rotateAngleZ = 0.0F;
-		this.rightleg.rotateAngleX = MathHelper.cos(auxLimbSwing) * legLimbSwingAmount;
-		this.leftleg.rotateAngleX = MathHelper.cos(auxLimbSwing + (float) Math.PI) * legLimbSwingAmount;
+        this.rightleg.rotateAngleX = MathHelper.cos(auxLimbSwing) * limbSwingAmount;
+        this.leftleg.rotateAngleX = MathHelper.cos(auxLimbSwing + (float) Math.PI) * limbSwingAmount;
 		this.rightleg.rotateAngleY = 0.0F;
 		this.leftleg.rotateAngleY = 0.0F;
 		this.rightleg.rotateAngleZ = 0.0F;
@@ -115,10 +108,10 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> {
 		this.body.rotateAngleX = 0.0F;
 		
 		// Arms idle movement
-		this.rightarm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
-		this.leftarm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
-		this.rightarm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
-		this.leftarm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+        this.rightarm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.015F + 0.04F;
+        this.leftarm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.015F + 0.04F;
+        this.rightarm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.015F;
+        this.leftarm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.015F;
 
 	}
 }

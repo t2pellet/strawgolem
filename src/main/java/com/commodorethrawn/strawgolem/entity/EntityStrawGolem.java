@@ -4,9 +4,9 @@ import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanProvider;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
@@ -41,16 +41,13 @@ public class EntityStrawGolem extends GolemEntity {
 
 	@Override
 	protected void registerGoals() {
-		int i = 0;
-		this.goalSelector.addGoal(i, new SwimGoal(this));
-		this.goalSelector.addGoal(++i, new AvoidEntityGoal<>(this, MobEntity.class, 8.0F, 0.6D, 0.6D));
-		this.goalSelector.addGoal(++i, new HarvestGoal(this, 0.6D));
-		this.goalSelector.addGoal(++i, new WaterAvoidingRandomWalkingGoal(this, 0.6D));
-		this.goalSelector.addGoal(++i, new LookAtGoal(this, PlayerEntity.class, 6.0F));
-        this.goalSelector.addGoal(++i, new LookRandomlyGoal(this));
+		this.goalSelector.addGoal(0, new SwimGoal(this));
+		this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, MonsterEntity.class, 8.0F, 0.6D, 0.8D));
+		this.goalSelector.addGoal(2, new HarvestGoal(this, 0.6D));
+		this.goalSelector.addGoal(3, new LookAtGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.addGoal(3, new WaterAvoidingRandomWalkingGoal(this, 0.6D));
+		this.goalSelector.addGoal(4, new LookRandomlyGoal(this));
 	}
-
-
 
 	@Override
 	protected void registerAttributes() {
