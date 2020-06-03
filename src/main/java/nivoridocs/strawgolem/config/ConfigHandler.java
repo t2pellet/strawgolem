@@ -1,4 +1,4 @@
-package nivoridocs.strawgolem;
+package nivoridocs.strawgolem.config;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

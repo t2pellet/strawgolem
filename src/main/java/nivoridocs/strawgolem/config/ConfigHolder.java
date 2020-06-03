@@ -1,7 +1,6 @@
-package nivoridocs.strawgolem;
+package nivoridocs.strawgolem.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import nivoridocs.strawgolem.StrawgolemConfig;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ConfigHolder {

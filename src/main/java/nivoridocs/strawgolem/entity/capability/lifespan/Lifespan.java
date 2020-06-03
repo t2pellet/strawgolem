@@ -1,6 +1,6 @@
 package nivoridocs.strawgolem.entity.capability.lifespan;
 
-import nivoridocs.strawgolem.StrawgolemConfig;
+import nivoridocs.strawgolem.config.StrawgolemConfig;
 
 public class Lifespan implements ILifespan {
 	private int tickLeft;

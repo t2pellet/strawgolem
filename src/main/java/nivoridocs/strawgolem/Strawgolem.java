@@ -19,6 +19,7 @@ public class Strawgolem {
     public static Strawgolem instance;
 
     public Strawgolem() {
+        instance = this;
         FMLJavaModLoadingContext.get().getModEventBus().addListener(instance::commonSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(instance::clientSetup);
     }

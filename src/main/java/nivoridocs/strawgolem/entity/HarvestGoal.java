@@ -5,7 +5,7 @@ import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import nivoridocs.strawgolem.StrawgolemConfig;
+import nivoridocs.strawgolem.config.StrawgolemConfig;
 
 public class HarvestGoal extends MoveToBlockGoal {
 	private EntityStrawGolem strawgolem;
