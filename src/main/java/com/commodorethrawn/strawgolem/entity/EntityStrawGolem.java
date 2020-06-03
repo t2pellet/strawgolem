@@ -42,11 +42,11 @@ public class EntityStrawGolem extends GolemEntity {
 	@Override
 	protected void registerGoals() {
 		this.goalSelector.addGoal(0, new SwimGoal(this));
-		this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, MonsterEntity.class, 8.0F, 0.6D, 0.8D));
+		this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, MonsterEntity.class, 10.0F, 0.6D, 0.7D));
 		this.goalSelector.addGoal(2, new HarvestGoal(this, 0.6D));
-		this.goalSelector.addGoal(3, new LookAtGoal(this, PlayerEntity.class, 6.0F));
-		this.goalSelector.addGoal(3, new WaterAvoidingRandomWalkingGoal(this, 0.6D));
-		this.goalSelector.addGoal(4, new LookRandomlyGoal(this));
+		this.goalSelector.addGoal(4, new LookAtGoal(this, PlayerEntity.class, 5.0F));
+		this.goalSelector.addGoal(4, new WaterAvoidingRandomWalkingGoal(this, 0.4D));
+		this.goalSelector.addGoal(5, new LookRandomlyGoal(this));
 	}
 
 	@Override

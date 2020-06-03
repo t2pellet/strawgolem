@@ -15,7 +15,7 @@ public class EntityRegistry {
     @SubscribeEvent
     public static void registerEntity(final RegistryEvent.Register<EntityType<?>> event) {
         event.getRegistry().register(STRAW_GOLEM_TYPE = EntityType.Builder.create(EntityStrawGolem::new, EntityClassification.CREATURE)
-                                                            .setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(3).size(0.6F, 0.9F)
+                .setShouldReceiveVelocityUpdates(true).setTrackingRange(64).setUpdateInterval(2).size(0.6F, 0.9F)
                                                              .build("strawgolem").setRegistryName(Strawgolem.MODID, "strawgolem"));
     }
 

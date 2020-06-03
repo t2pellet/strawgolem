@@ -48,7 +48,6 @@ public class StrawgolemConfig {
 	}
 	
 	public static int getLifespan() {
-        System.out.println("lifespan: " + lifespan);
 		return lifespan;
 	}
 
