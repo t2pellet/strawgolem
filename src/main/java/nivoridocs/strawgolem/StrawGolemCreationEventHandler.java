@@ -1,20 +1,21 @@
 package nivoridocs.strawgolem;
 
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import nivoridocs.strawgolem.entity.EntityRegistry;
 import nivoridocs.strawgolem.entity.EntityStrawGolem;
 
 @EventBusSubscriber
 public class StrawGolemCreationEventHandler {
 	
 	@SubscribeEvent
-	public static void onBlockPlaceEvent(BlockEvent.PlaceEvent event) {
-		World worldIn = event.getWorld();
+	public static void onBlockPlaceEvent(BlockEvent.EntityPlaceEvent event) {
+		World worldIn = (World)event.getWorld();
 		BlockPos pos = event.getPos();
 		Block block = event.getState().getBlock();
 		
@@ -33,9 +34,9 @@ public class StrawGolemCreationEventHandler {
 			pos = hay;
 			worldIn.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
 			worldIn.setBlockState(hay, Blocks.AIR.getDefaultState());
-			EntityStrawGolem strawGolem = new EntityStrawGolem(worldIn);
+			EntityStrawGolem strawGolem = new EntityStrawGolem(EntityRegistry.STRAW_GOLEM_TYPE, worldIn);
 			strawGolem.setPosition(getCoord(pos.getX()), pos.getY(), getCoord(pos.getZ()));
-			worldIn.spawnEntity(strawGolem);
+			worldIn.addEntity(strawGolem);
 		}
 	}
 	

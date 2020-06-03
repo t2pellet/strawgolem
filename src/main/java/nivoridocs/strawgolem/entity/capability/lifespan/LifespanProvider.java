@@ -1,36 +1,34 @@
 package nivoridocs.strawgolem.entity.capability.lifespan;
 
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.INBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
 
-public class LifespanProvider implements ICapabilitySerializable<NBTBase> {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class LifespanProvider implements ICapabilitySerializable<INBT> {
 	
 	@CapabilityInject(ILifespan.class)
 	public static final Capability<ILifespan> LIFESPAN_CAP = null;
-	
-	private ILifespan instance = LIFESPAN_CAP.getDefaultInstance();
+	private LazyOptional<ILifespan> instance = LazyOptional.of(LIFESPAN_CAP::getDefaultInstance);
 
+	@Nonnull
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-		return capability == LIFESPAN_CAP;
+	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+		return cap == LIFESPAN_CAP ? instance.cast() : LazyOptional.empty();
 	}
 
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		return hasCapability(capability, facing) ? LIFESPAN_CAP.<T>cast(instance) : null;
+	public INBT serializeNBT() {
+		return LIFESPAN_CAP.getStorage().writeNBT(LIFESPAN_CAP, instance.orElseThrow(() -> new IllegalArgumentException("cant be empty")), null);
 	}
 
 	@Override
-	public NBTBase serializeNBT() {
-		return LIFESPAN_CAP.getStorage().writeNBT(LIFESPAN_CAP, instance, null);
+	public void deserializeNBT(INBT nbt) {
+        LIFESPAN_CAP.getStorage().readNBT(LIFESPAN_CAP, instance.orElseThrow(() -> new IllegalArgumentException("cant be empty")), null, nbt);
 	}
-
-	@Override
-	public void deserializeNBT(NBTBase nbt) {
-		LIFESPAN_CAP.getStorage().readNBT(LIFESPAN_CAP, instance, null, nbt);
-	}
-
 }

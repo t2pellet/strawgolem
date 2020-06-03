@@ -1,16 +1,16 @@
 package nivoridocs.strawgolem.entity;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.client.renderer.entity.model.EntityModel;
+import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.client.renderer.GlStateManager;
 
 /**
  * StrawGolem - NivOridocs
  * Created using Tabula 7.0.0
  */
-public class ModelStrawGolem extends ModelBase {
+public class ModelStrawGolem extends EntityModel<EntityStrawGolem> {
 	public ModelRenderer leftleg;
 	public ModelRenderer rightleg;
 	public ModelRenderer hip;
@@ -48,42 +48,30 @@ public class ModelStrawGolem extends ModelBase {
 	}
 
 	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(this.leftarm.offsetX, this.leftarm.offsetY, this.leftarm.offsetZ);
-		GlStateManager.translate(this.leftarm.rotationPointX * f5, this.leftarm.rotationPointY * f5, this.leftarm.rotationPointZ * f5);
-		GlStateManager.scale(1.0D, 1.0D, 0.5D);
-		GlStateManager.translate(-this.leftarm.offsetX, -this.leftarm.offsetY, -this.leftarm.offsetZ);
-		GlStateManager.translate(-this.leftarm.rotationPointX * f5, -this.leftarm.rotationPointY * f5, -this.leftarm.rotationPointZ * f5);
-		this.leftarm.render(f5);
-		GlStateManager.popMatrix();
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(this.leftleg.offsetX, this.leftleg.offsetY, this.leftleg.offsetZ);
-		GlStateManager.translate(this.leftleg.rotationPointX * f5, this.leftleg.rotationPointY * f5, this.leftleg.rotationPointZ * f5);
-		GlStateManager.scale(0.5D, 1.0D, 0.5D);
-		GlStateManager.translate(-this.leftleg.offsetX, -this.leftleg.offsetY, -this.leftleg.offsetZ);
-		GlStateManager.translate(-this.leftleg.rotationPointX * f5, -this.leftleg.rotationPointY * f5, -this.leftleg.rotationPointZ * f5);
-		this.leftleg.render(f5);
-		GlStateManager.popMatrix();
-		this.body.render(f5);
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(this.rightleg.offsetX, this.rightleg.offsetY, this.rightleg.offsetZ);
-		GlStateManager.translate(this.rightleg.rotationPointX * f5, this.rightleg.rotationPointY * f5, this.rightleg.rotationPointZ * f5);
-		GlStateManager.scale(0.5D, 1.0D, 0.5D);
-		GlStateManager.translate(-this.rightleg.offsetX, -this.rightleg.offsetY, -this.rightleg.offsetZ);
-		GlStateManager.translate(-this.rightleg.rotationPointX * f5, -this.rightleg.rotationPointY * f5, -this.rightleg.rotationPointZ * f5);
-		this.rightleg.render(f5);
-		GlStateManager.popMatrix();
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(this.rightarm.offsetX, this.rightarm.offsetY, this.rightarm.offsetZ);
-		GlStateManager.translate(this.rightarm.rotationPointX * f5, this.rightarm.rotationPointY * f5, this.rightarm.rotationPointZ * f5);
-		GlStateManager.scale(1.0D, 1.0D, 0.5D);
-		GlStateManager.translate(-this.rightarm.offsetX, -this.rightarm.offsetY, -this.rightarm.offsetZ);
-		GlStateManager.translate(-this.rightarm.rotationPointX * f5, -this.rightarm.rotationPointY * f5, -this.rightarm.rotationPointZ * f5);
-		this.rightarm.render(f5);
-		GlStateManager.popMatrix();
-		this.hip.render(f5);
-		this.head.render(f5);
+	public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+		matrixStackIn.push();
+		this.leftarm.translateRotate(matrixStackIn);
+		matrixStackIn.scale(1.0F, 1.0F, 0.5F);
+		this.leftarm.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+		matrixStackIn.pop();
+		matrixStackIn.push();
+		this.leftleg.translateRotate(matrixStackIn);
+		matrixStackIn.scale(0.5F, 1.0F, 0.5F);
+		this.leftleg.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+		matrixStackIn.pop();
+		this.body.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+		matrixStackIn.push();
+		this.rightleg.translateRotate(matrixStackIn);
+		matrixStackIn.scale(0.5F, 1.0F, 0.5F);
+		this.rightleg.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+		matrixStackIn.pop();
+		matrixStackIn.push();
+		this.rightarm.translateRotate(matrixStackIn);
+		matrixStackIn.scale(1.0F, 1.0F, 0.5F);
+		this.rightarm.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+		matrixStackIn.pop();
+		this.hip.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+		this.head.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 	}
 
 	/**
@@ -96,7 +84,7 @@ public class ModelStrawGolem extends ModelBase {
 	}
 
 	@Override
-	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+	public void setRotationAngles(EntityStrawGolem entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		this.head.rotateAngleY = netHeadYaw * 0.017453292F;
 		this.head.rotateAngleX = headPitch * 0.017453292F;
 

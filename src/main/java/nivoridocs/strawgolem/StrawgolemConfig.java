@@ -1,23 +1,47 @@
 package nivoridocs.strawgolem;
 
 import net.minecraft.block.Block;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent.PostConfigChangedEvent;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Config(modid = Strawgolem.MODID)
-@Config.LangKey("strawgolem.config.title")
+import java.util.Collections;
+import java.util.List;
+
 @EventBusSubscriber
 public class StrawgolemConfig {
-	
-	@Config.Comment("Allow the straw golems to replant a crop when they harvest it.")
-	public static boolean replantEnabled = false;
-	
-	@Config.Comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.")
-	@Config.RangeInt(min = -1, max = Integer.MAX_VALUE)
-	public static int lifespan = 168000;
+
+	private static final String FILTER_MODE_WHITELIST = "whitelist";
+	private static final String FILTER_MODE_BLACKLIST = "blacklist";
+
+	public static boolean replantEnabled;
+	public static int lifespan;
+	public static String filterMode;
+	public static List<? extends String> whitelist;
+	public static List<? extends String> blacklist;
+
+	public static class CommonConfig {
+		final ForgeConfigSpec.BooleanValue replantEnabled;
+		final ForgeConfigSpec.IntValue lifespan;
+		final ForgeConfigSpec.ConfigValue<String> filterMode;
+		final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelist;
+		final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklist;
+
+		CommonConfig(final ForgeConfigSpec.Builder builder) {
+			builder.push("Common");
+			replantEnabled = builder.comment("Allow the straw golems to replant a crop when they harvest it.").define("replantEnabled", false);
+			lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -1, Integer.MAX_VALUE);
+			filterMode = builder.comment(
+					"Sets the method for applying harvest filters.  Note that only the most specific match will be taken into consideration.",
+					"If a crop's mod appears in the whitelist, but the crop itself is in the blacklist, the crop will be banned.",
+					"Likewise if a crop's mod appears in the blacklist, but the crop itself is in the whitelist, the crop will be allowed.",
+					"\"none\": allow all crops to be harvested (default).",
+					"\"whitelist\": will deny crops from being harvested unless the most specific match is in the whitelist.",
+					"\"blacklist\": will allows crops to be harvested unless the most specific match is in the blacklist.").define("filterMode", "none");
+			whitelist = builder.comment("Whitelist Filter").defineList("whitelist", Collections.emptyList(), o -> o instanceof String);
+			blacklist = builder.comment("Blacklist Filter").defineList("blacklist", Collections.emptyList(), o -> o instanceof String);
+			builder.pop();
+		}
+	}
 	
 	public static boolean isReplantEnabled() {
 		return replantEnabled;
@@ -26,33 +50,6 @@ public class StrawgolemConfig {
 	public static int getLifespan() {
 		return lifespan;
 	}
-	
-	@SubscribeEvent
-	public static void onConfigChange(PostConfigChangedEvent event) {
-		if (event.getModID().equals(Strawgolem.MODID))
-			ConfigManager.sync(Strawgolem.MODID, Config.Type.INSTANCE);
-	}
-	
-	private StrawgolemConfig() {}
-
-	@Config.Comment({
-			"Sets the method for applying harvest filters.  Note that only the most specific match will be taken into consideration.",
-			"If a crop's mod appears in the whitelist, but the crop itself is in the blacklist, the crop will be banned.",
-			"Likewise if a crop's mod appears in the blacklist, but the crop itself is in the whitelist, the crop will be allowed.",
-			"\"none\": allow all crops to be harvested (default).",
-			"\"whitelist\": will deny crops from being harvested unless the most specific match is in the whitelist.",
-			"\"blacklist\": will allows crops to be harvested unless the most specific match is in the blacklist."
-	})
-	public static String filterMode = "none";
-
-	private static final String FILTER_MODE_WHITELIST = "whitelist";
-	private static final String FILTER_MODE_BLACKLIST = "blacklist";
-
-	@Config.Comment("Whitelist Filter")
-	public static String[] whitelist = new String[0];
-
-	@Config.Comment("Blacklist Filter")
-	public static String[] blacklist = new String[0];
 
 	public static boolean blockHarvestAllowed(Block block) {
 		switch (filterMode)
@@ -78,19 +75,19 @@ public class StrawgolemConfig {
 		}
 	}
 
-	public static FilterMatch blockMatchesFilter(Block block, String[] filter) {
+	public static FilterMatch blockMatchesFilter(Block block, List<? extends String> filter) {
 		FilterMatch bestMatch = FilterMatch.None;
 
 		for (String s : filter) {
 			String[] elements = s.split(":");
 
-			if (elements.length == 1 && block.getRegistryName().getResourceDomain().equals(elements[0]))
+			if (elements.length == 1 && block.getRegistryName().getNamespace().equals(elements[0]))
 			{
 				bestMatch = FilterMatch.Mod;
 				continue;
 			}
 
-			if (elements.length >= 2 && block.getRegistryName().getResourceDomain().equals(elements[0]) && block.getRegistryName().getResourcePath().equals(elements[1]))
+			if (elements.length >= 2 && block.getRegistryName().getNamespace().equals(elements[0]) && block.getRegistryName().getPath().equals(elements[1]))
 			{
 				bestMatch = FilterMatch.Exact;
 				break;

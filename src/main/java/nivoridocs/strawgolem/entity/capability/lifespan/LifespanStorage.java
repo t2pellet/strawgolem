@@ -1,22 +1,24 @@
 package nivoridocs.strawgolem.entity.capability.lifespan;
 
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTPrimitive;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
 public class LifespanStorage implements IStorage<ILifespan> {
 
 	@Override
-	public NBTBase writeNBT(Capability<ILifespan> capability, ILifespan instance, EnumFacing side) {
-		return new NBTTagInt(instance.get());
+	public INBT writeNBT(Capability<ILifespan> capability, ILifespan instance, Direction side) {
+		CompoundNBT tag = new CompoundNBT();
+		tag.putInt("life", instance.get());
+		return tag;
 	}
 
 	@Override
-	public void readNBT(Capability<ILifespan> capability, ILifespan instance, EnumFacing side, NBTBase nbt) {
-		instance.set(((NBTPrimitive) nbt).getInt());
+	public void readNBT(Capability<ILifespan> capability, ILifespan instance, Direction side, INBT nbt) {
+		CompoundNBT tag = (CompoundNBT)nbt;
+		instance.set(tag.getInt("life"));
 	}
 
 }
