@@ -21,8 +21,8 @@ public class StrawGolemCreationEventHandler {
 		
 		BlockPos pumpkin;
 		BlockPos hay;
-		
-		if (block == Blocks.PUMPKIN) {
+
+        if (block == Blocks.CARVED_PUMPKIN) {
 			pumpkin = pos;
 			hay = pos.down();
 		} else if (block == Blocks.HAY_BLOCK) {
@@ -35,18 +35,15 @@ public class StrawGolemCreationEventHandler {
 			worldIn.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
 			worldIn.setBlockState(hay, Blocks.AIR.getDefaultState());
 			EntityStrawGolem strawGolem = new EntityStrawGolem(EntityRegistry.STRAW_GOLEM_TYPE, worldIn);
-			strawGolem.setPosition(getCoord(pos.getX()), pos.getY(), getCoord(pos.getZ()));
+            strawGolem.setPosition(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
 			worldIn.addEntity(strawGolem);
 		}
 	}
 	
-	private static double getCoord(int c) {
-		return c + Math.signum(c)*0.5D;
-	}
-	
+
 	private static boolean checkStructure(World worldIn, BlockPos hay, BlockPos pumpkin) {
 		return worldIn.getBlockState(hay).getBlock() == Blocks.HAY_BLOCK
-				&& worldIn.getBlockState(pumpkin).getBlock() == Blocks.PUMPKIN;
+                && worldIn.getBlockState(pumpkin).getBlock() == Blocks.CARVED_PUMPKIN;
 	}
 	
 	private StrawGolemCreationEventHandler() {
