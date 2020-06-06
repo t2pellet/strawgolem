@@ -13,7 +13,7 @@ public class StrawgolemConfig {
 	private static final String FILTER_MODE_WHITELIST = "whitelist";
 	private static final String FILTER_MODE_BLACKLIST = "blacklist";
 
-	public static boolean replantEnabled;
+	public static boolean harvestEnabled;
 	public static int lifespan;
 	public static String filterMode;
 	public static List<? extends String> whitelist;
@@ -42,9 +42,9 @@ public class StrawgolemConfig {
 			builder.pop();
 		}
 	}
-	
-	public static boolean isReplantEnabled() {
-		return replantEnabled;
+
+	public static boolean isHarvestEnabled() {
+		return harvestEnabled;
 	}
 	
 	public static int getLifespan() {
