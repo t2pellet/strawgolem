@@ -1,4 +1,4 @@
-package com.commodorethrawn.strawgolem.entity.capability.lifespan;
+package com.commodorethrawn.strawgolem.entity.capability;
 
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -15,21 +15,26 @@ public class LifespanProvider implements ICapabilitySerializable<INBT> {
 	@CapabilityInject(ILifespan.class)
 	public static final Capability<ILifespan> LIFESPAN_CAP = null;
 
-	private LazyOptional<ILifespan> instance = LazyOptional.of(LIFESPAN_CAP::getDefaultInstance);
+    private final LazyOptional<ILifespan> lifespanInstance = LazyOptional.of(LIFESPAN_CAP::getDefaultInstance);
 
 	@Nonnull
 	@Override
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-		return cap == LIFESPAN_CAP ? instance.cast() : LazyOptional.empty();
-	}
+        if (cap == LIFESPAN_CAP) {
+            return lifespanInstance.cast();
+        } else {
+            return LazyOptional.empty();
+        }
+    }
 
-	@Override
+
+    @Override
 	public INBT serializeNBT() {
-		return LIFESPAN_CAP.getStorage().writeNBT(LIFESPAN_CAP, instance.orElseThrow(() -> new IllegalArgumentException("cant be empty")), null);
+        return LIFESPAN_CAP.getStorage().writeNBT(LIFESPAN_CAP, lifespanInstance.orElseThrow(() -> new IllegalArgumentException("cant be empty")), null);
 	}
 
 	@Override
 	public void deserializeNBT(INBT nbt) {
-        LIFESPAN_CAP.getStorage().readNBT(LIFESPAN_CAP, instance.orElseThrow(() -> new IllegalArgumentException("cant be empty")), null, nbt);
+        LIFESPAN_CAP.getStorage().readNBT(LIFESPAN_CAP, lifespanInstance.orElseThrow(() -> new IllegalArgumentException("cant be empty")), null, nbt);
 	}
 }

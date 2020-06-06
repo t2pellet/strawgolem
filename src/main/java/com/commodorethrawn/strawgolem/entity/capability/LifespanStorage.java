@@ -1,4 +1,4 @@
-package com.commodorethrawn.strawgolem.entity.capability.lifespan;
+package com.commodorethrawn.strawgolem.entity.capability;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
