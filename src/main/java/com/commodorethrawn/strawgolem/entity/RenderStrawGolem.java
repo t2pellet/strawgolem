@@ -1,6 +1,8 @@
 package com.commodorethrawn.strawgolem.entity;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.client.renderer.entity.layers.HeldItemLayer;
@@ -13,6 +15,13 @@ public class RenderStrawGolem extends LivingRenderer<EntityStrawGolem, ModelStra
 	public RenderStrawGolem(EntityRendererManager rendermanagerIn) {
 		super(rendermanagerIn, new ModelStrawGolem(), 0.5f);
         this.addLayer(new HeldItemLayer(this));
+    }
+
+    @Override
+    public void render(EntityStrawGolem entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+        ModelStrawGolem golem = this.getEntityModel();
+        golem.holdingItem = !entityIn.isHandEmpty();
+        super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     @Override

@@ -40,7 +40,7 @@ public class HarvestGoal extends MoveToBlockGoal {
                 this.destinationBlock.getZ() + 0.5D,
                 10.0F,
                 this.strawgolem.getVerticalFaceSpeed());
-        if (!this.destinationBlock.up().withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq())) {
+        if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq())) {
             ++this.timeoutCounter;
             if (this.shouldMove()) {
                 this.creature.getNavigator().tryMoveToXYZ(this.destinationBlock.getX() + 0.5D, this.destinationBlock.getY() + 2D, this.destinationBlock.getZ() + 0.5D, this.movementSpeed);

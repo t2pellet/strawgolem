@@ -2,6 +2,7 @@ package com.commodorethrawn.strawgolem.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.IHasArm;
 import net.minecraft.client.renderer.model.ModelRenderer;
@@ -18,7 +19,10 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 	private final ModelRenderer Rightarm;
 	private final ModelRenderer Leftarm;
 
+    public boolean holdingItem;
+
 	public ModelStrawGolem() {
+        holdingItem = false;
 		textureWidth = 48;
 		textureHeight = 48;
 
@@ -81,10 +85,19 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 		this.Body.rotateAngleX = 0.0F;
 
 		// Arms idle movement
-		this.Rightarm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
-		this.Leftarm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
-		this.Rightarm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
-		this.Leftarm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
+        if (!holdingItem) {
+            this.Rightarm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
+            this.Leftarm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
+            this.Rightarm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
+            this.Leftarm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
+        } else {
+            this.Rightarm.rotateAngleX = (float) -(0.29D * Math.PI);
+            this.Rightarm.rotateAngleY = (float) -(0.12D * Math.PI);
+            this.Rightarm.rotateAngleZ = (float) (0.08D * Math.PI);
+            this.Leftarm.rotateAngleX = (float) -(0.29D * Math.PI);
+            this.Leftarm.rotateAngleY = (float) (0.12D * Math.PI);
+            this.Leftarm.rotateAngleZ = (float) -(0.08D * Math.PI);
+        }
 	}
 
 	@Override
@@ -99,7 +112,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 
 	@Override
 	public void translateHand(HandSide sideIn, MatrixStack matrixStackIn) {
-		matrixStackIn.translate(-0.34F - Math.sin(this.Rightarm.rotateAngleZ) * 0.5F, 0.8F, Math.sin(this.Rightarm.rotateAngleX) * 0.5F + 0.05F);
-		matrixStackIn.scale(0.5F, 0.5F, 0.5F);
+        matrixStackIn.translate(0.05F, 1.3F, 0.2F);
+        matrixStackIn.rotate(Vector3f.XN.rotationDegrees(90.0F));
 	}
 }
