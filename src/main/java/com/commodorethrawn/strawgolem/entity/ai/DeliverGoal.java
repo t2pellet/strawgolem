@@ -69,7 +69,8 @@ public class DeliverGoal extends MoveToBlockGoal {
         IItemHandler chestInv = chest.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElseThrow(() -> new NullPointerException("Chest IItemhandler cannot be null"));
         ItemStack insertStack = this.strawGolem.inventory.extractItem(0, 64, false);
         for (int i = 0; i < chestInv.getSlots(); ++i) {
-            if (chestInv.getStackInSlot(i).getItem() == Items.AIR || chestInv.getStackInSlot(i).getItem() == insertStack.getItem()) {
+            if (chestInv.getStackInSlot(i).getItem() == Items.AIR
+                    || (chestInv.getStackInSlot(i).getItem() == insertStack.getItem() && chestInv.getStackInSlot(i).getCount() < chestInv.getSlotLimit(0))) {
                 chestInv.insertItem(i, insertStack, false);
                 break;
             }
