@@ -5,8 +5,8 @@ issueTrackerURL="https://github.com/daPoseidonGuy/strawgolem"
     modId="strawgolem"
     version="1.5"
     displayName="Straw Golem"
-    credits="nivoridocs, for making the original mod\nFrenderman, for making the updated golem model"
-    authors="CommodoreThrawn & nivoridocs" #optional
+    credits="nivoridocs, for making the original mod\nFrenderman, for making the updated golem model, testing and design ideasa"
+    authors="CommodoreThrawn" #optional
     # The description text for the mod (multi line!) (#mandatory)
     description='''
     Adds a straw golem to help with farming
