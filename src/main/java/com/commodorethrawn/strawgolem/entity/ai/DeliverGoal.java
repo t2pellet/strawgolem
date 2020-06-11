@@ -2,9 +2,11 @@ package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tileentity.ChestTileEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -17,6 +19,7 @@ import net.minecraftforge.items.IItemHandler;
 public class DeliverGoal extends MoveToBlockGoal {
     private EntityStrawGolem strawGolem;
     private boolean deposited;
+    private Boolean deliveringBlock;
 
     public DeliverGoal(EntityStrawGolem strawGolem, double speedIn) {
         super(strawGolem, speedIn, 24);
@@ -35,7 +38,7 @@ public class DeliverGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
-        return worldIn.getBlockState(pos.up()).getBlock().getTags().contains(Tags.Blocks.CHESTS.getId());
+        return worldIn.getBlockState(pos).getBlock().getTags().contains(Tags.Blocks.CHESTS.getId());
     }
 
     @Override
@@ -45,16 +48,20 @@ public class DeliverGoal extends MoveToBlockGoal {
 
     @Override
     public void tick() {
+        if (deliveringBlock == null) {
+            deliveringBlock = strawGolem.getHeldItem(Hand.MAIN_HAND).getItem() instanceof BlockItem;
+        }
         this.strawGolem.getLookController().setLookPosition(
                 this.destinationBlock.getX() + 0.5D,
-                this.destinationBlock.getY() + 1.0D,
+                this.destinationBlock.getY(),
                 this.destinationBlock.getZ() + 0.5D,
                 10.0F,
                 this.strawGolem.getVerticalFaceSpeed());
-        if (!this.destinationBlock.up().withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq())) {
+        if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq())) {
             ++this.timeoutCounter;
             if (this.shouldMove()) {
-                this.creature.getNavigator().tryMoveToXYZ(this.destinationBlock.getX() + 0.5D, this.destinationBlock.getY() + 2D, this.destinationBlock.getZ() + 0.5D, this.movementSpeed);
+                double speed = deliveringBlock ? movementSpeed * 0.6D : movementSpeed;
+                this.creature.getNavigator().tryMoveToXYZ(this.destinationBlock.getX() + 0.5D, this.destinationBlock.getY() + 1D, this.destinationBlock.getZ() + 0.5D, speed);
             }
         } else {
             timeoutCounter = 0;
@@ -64,7 +71,7 @@ public class DeliverGoal extends MoveToBlockGoal {
 
     private void doDeposit() {
         ServerWorld worldIn = (ServerWorld) this.strawGolem.world;
-        BlockPos pos = this.destinationBlock.up();
+        BlockPos pos = this.destinationBlock;
         ChestTileEntity chest = (ChestTileEntity) worldIn.getTileEntity(pos);
         IItemHandler chestInv = chest.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElseThrow(() -> new NullPointerException("Chest IItemhandler cannot be null"));
         ItemStack insertStack = this.strawGolem.inventory.extractItem(0, 64, false);

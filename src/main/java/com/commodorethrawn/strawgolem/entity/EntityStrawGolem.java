@@ -42,9 +42,6 @@ public class EntityStrawGolem extends GolemEntity {
 		
 		if (lifespan == null)
 			lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-        if (inventory == null) {
-            inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-        }
 
 		lifespan.update();
 		

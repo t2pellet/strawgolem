@@ -1,6 +1,5 @@
 package com.commodorethrawn.strawgolem;
 
-import com.commodorethrawn.strawgolem.entity.EntityRegistry;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -34,7 +33,7 @@ public class CreationHandler {
 			pos = hay;
 			worldIn.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
 			worldIn.setBlockState(hay, Blocks.AIR.getDefaultState());
-			EntityStrawGolem strawGolem = new EntityStrawGolem(EntityRegistry.STRAW_GOLEM_TYPE, worldIn);
+            EntityStrawGolem strawGolem = new EntityStrawGolem(Registry.STRAW_GOLEM_TYPE, worldIn);
             strawGolem.setPosition(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
 			worldIn.addEntity(strawGolem);
 		}

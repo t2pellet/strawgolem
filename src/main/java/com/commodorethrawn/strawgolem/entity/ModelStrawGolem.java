@@ -20,9 +20,11 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 	private final ModelRenderer Leftarm;
 
     public boolean holdingItem;
+    public boolean holdingBlock;
 
 	public ModelStrawGolem() {
         holdingItem = false;
+        holdingBlock = false;
 		textureWidth = 48;
 		textureHeight = 48;
 
@@ -85,18 +87,21 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 		this.Body.rotateAngleX = 0.0F;
 
 		// Arms idle movement
-        if (!holdingItem) {
-            this.Rightarm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
-            this.Leftarm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
-            this.Rightarm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
-            this.Leftarm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
-        } else {
+        if (holdingBlock) {
+            this.Rightarm.rotateAngleX = (float) Math.PI;
+            this.Leftarm.rotateAngleX = (float) Math.PI;
+        } else if (holdingItem) {
             this.Rightarm.rotateAngleX = (float) -(0.29D * Math.PI);
             this.Rightarm.rotateAngleY = (float) -(0.12D * Math.PI);
             this.Rightarm.rotateAngleZ = (float) (0.08D * Math.PI);
             this.Leftarm.rotateAngleX = (float) -(0.29D * Math.PI);
             this.Leftarm.rotateAngleY = (float) (0.12D * Math.PI);
             this.Leftarm.rotateAngleZ = (float) -(0.08D * Math.PI);
+        } else {
+            this.Rightarm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
+            this.Leftarm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
+            this.Rightarm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
+            this.Leftarm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
         }
 	}
 
@@ -112,7 +117,13 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 
 	@Override
 	public void translateHand(HandSide sideIn, MatrixStack matrixStackIn) {
-        matrixStackIn.translate(0.05F, 1.3F, 0.2F);
-        matrixStackIn.rotate(Vector3f.XN.rotationDegrees(90.0F));
+        if (holdingBlock) {
+            matrixStackIn.translate(0.075F, -0.75F, 0.585F);
+            matrixStackIn.rotate(Vector3f.XN.rotationDegrees(15.0F));
+            matrixStackIn.scale(1.5F, 1.5F, 1.5F);
+        } else {
+            matrixStackIn.translate(0.05F, 1.3F, 0.2F);
+            matrixStackIn.rotate(Vector3f.XN.rotationDegrees(90.0F));
+        }
 	}
 }

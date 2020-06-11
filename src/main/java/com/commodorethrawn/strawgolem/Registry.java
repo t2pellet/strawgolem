@@ -1,6 +1,6 @@
-package com.commodorethrawn.strawgolem.entity;
+package com.commodorethrawn.strawgolem;
 
-import com.commodorethrawn.strawgolem.Strawgolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.event.RegistryEvent;
@@ -8,7 +8,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = Strawgolem.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class EntityRegistry {
+public class Registry {
 
     public static EntityType STRAW_GOLEM_TYPE;
 
