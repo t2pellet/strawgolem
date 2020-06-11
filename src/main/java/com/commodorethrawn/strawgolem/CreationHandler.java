@@ -11,7 +11,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 @EventBusSubscriber(modid = Strawgolem.MODID, bus = EventBusSubscriber.Bus.FORGE)
-public class StrawGolemCreationEventHandler {
+public class CreationHandler {
 	
 	@SubscribeEvent
 	public static void onBlockPlaceEvent(BlockEvent.EntityPlaceEvent event) {
@@ -39,15 +39,10 @@ public class StrawGolemCreationEventHandler {
 			worldIn.addEntity(strawGolem);
 		}
 	}
-	
 
 	private static boolean checkStructure(World worldIn, BlockPos hay, BlockPos pumpkin) {
 		return worldIn.getBlockState(hay).getBlock() == Blocks.HAY_BLOCK
                 && worldIn.getBlockState(pumpkin).getBlock() == Blocks.CARVED_PUMPKIN;
-	}
-	
-	private StrawGolemCreationEventHandler() {
-		//
 	}
 	
 }

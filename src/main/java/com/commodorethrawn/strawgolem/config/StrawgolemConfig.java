@@ -20,7 +20,7 @@ public class StrawgolemConfig {
 	public static List<? extends String> blacklist;
 
 	public static class CommonConfig {
-		final ForgeConfigSpec.BooleanValue replantEnabled;
+		final ForgeConfigSpec.BooleanValue harvestEnabled;
 		final ForgeConfigSpec.IntValue lifespan;
 		final ForgeConfigSpec.ConfigValue<String> filterMode;
 		final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelist;
@@ -28,7 +28,7 @@ public class StrawgolemConfig {
 
 		CommonConfig(final ForgeConfigSpec.Builder builder) {
 			builder.push("Common");
-			replantEnabled = builder.comment("Allow the straw golems to replant a crop when they harvest it.").define("replantEnabled", false);
+			harvestEnabled = builder.comment("Allow the straw golems to replant a crop when they harvest it.").define("harvestEnabled", true);
 			lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -1, Integer.MAX_VALUE);
 			filterMode = builder.comment(
 					"Sets the method for applying harvest filters.  Note that only the most specific match will be taken into consideration.",

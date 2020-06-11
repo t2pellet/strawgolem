@@ -33,6 +33,7 @@ public class EntityStrawGolem extends GolemEntity {
 	
 	public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
 		super(type, worldIn);
+		inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class EntityStrawGolem extends GolemEntity {
 	@Override
 	protected void registerAttributes() {
 		super.registerAttributes();
-		this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1.0D);
+		this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(2.0D);
 		this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
 	}
 
@@ -107,7 +108,7 @@ public class EntityStrawGolem extends GolemEntity {
 
 	@Override
 	public int getTalkInterval() {
-		return 120; // TODO
+		return 120;
 	}
 
 	@Override
