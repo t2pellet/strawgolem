@@ -2,11 +2,9 @@ package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tileentity.ChestTileEntity;
-import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -49,7 +47,7 @@ public class DeliverGoal extends MoveToBlockGoal {
     @Override
     public void tick() {
         if (deliveringBlock == null) {
-            deliveringBlock = strawGolem.getHeldItem(Hand.MAIN_HAND).getItem() instanceof BlockItem;
+            deliveringBlock = strawGolem.holdingBlockCrop();
         }
         this.strawGolem.getLookController().setLookPosition(
                 this.destinationBlock.getX() + 0.5D,

@@ -6,6 +6,8 @@ import com.commodorethrawn.strawgolem.entity.ai.HarvestGoal;
 import com.commodorethrawn.strawgolem.entity.capability.ILifespan;
 import com.commodorethrawn.strawgolem.entity.capability.InventoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.LifespanProvider;
+import net.minecraft.block.Block;
+import net.minecraft.block.StemGrownBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.*;
@@ -44,6 +46,7 @@ public class EntityStrawGolem extends GolemEntity {
 			lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
 
 		lifespan.update();
+        if (holdingBlockCrop()) lifespan.update();
 		
 		if (lifespan.isOver())
 			attackEntityFrom(DamageSource.MAGIC, getMaxHealth()*100);
@@ -85,6 +88,10 @@ public class EntityStrawGolem extends GolemEntity {
         ArrayList<ItemStack> heldEquipment = new ArrayList<>();
         heldEquipment.add(inventory.getStackInSlot(0));
         return heldEquipment;
+    }
+
+    public boolean holdingBlockCrop() {
+        return Block.getBlockFromItem(inventory.getStackInSlot(0).getItem()) instanceof StemGrownBlock;
     }
 
     @Override

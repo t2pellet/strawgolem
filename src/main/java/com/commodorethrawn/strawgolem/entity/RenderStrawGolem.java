@@ -2,13 +2,10 @@ package com.commodorethrawn.strawgolem.entity;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.block.Block;
-import net.minecraft.block.StemGrownBlock;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.client.renderer.entity.layers.HeldItemLayer;
-import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderStrawGolem extends LivingRenderer<EntityStrawGolem, ModelStrawGolem> {
@@ -24,7 +21,7 @@ public class RenderStrawGolem extends LivingRenderer<EntityStrawGolem, ModelStra
     public void render(EntityStrawGolem entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
         ModelStrawGolem golem = this.getEntityModel();
         golem.holdingItem = !entityIn.isHandEmpty();
-        golem.holdingBlock = Block.getBlockFromItem(entityIn.getHeldItem(Hand.MAIN_HAND).getItem()) instanceof StemGrownBlock;
+        golem.holdingBlock = entityIn.holdingBlockCrop();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
@@ -37,6 +34,5 @@ public class RenderStrawGolem extends LivingRenderer<EntityStrawGolem, ModelStra
     protected boolean canRenderName(EntityStrawGolem entity) {
         return entity.hasCustomName();
     }
-
 
 }
