@@ -3,9 +3,9 @@ loaderVersion="[31,)" #mandatory This is typically bumped every Minecraft versio
 issueTrackerURL="https://github.com/daPoseidonGuy/strawgolem"
 [[mods]] #mandatory
     modId="strawgolem"
-    version="1.5"
+    version="1.6"
     displayName="Straw Golem"
-    credits="nivoridocs, for making the original mod\nFrenderman, for making the updated golem model, testing and design ideasa"
+    credits="nivoridocs, for making the original mod\nFrenderman, for making the updated golem model, testing and design ideas"
     authors="CommodoreThrawn" #optional
     # The description text for the mod (multi line!) (#mandatory)
     description='''
