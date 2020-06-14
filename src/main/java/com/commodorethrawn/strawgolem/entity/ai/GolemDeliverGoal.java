@@ -8,26 +8,28 @@ import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-public class DeliverGoal extends MoveToBlockGoal {
+public class GolemDeliverGoal extends MoveToBlockGoal {
     private EntityStrawGolem strawGolem;
     private boolean deposited;
     private Boolean deliveringBlock;
 
-    public DeliverGoal(EntityStrawGolem strawGolem, double speedIn) {
-        super(strawGolem, speedIn, 24);
+    public GolemDeliverGoal(EntityStrawGolem strawGolem, double speedIn) {
+        super(strawGolem, speedIn, 32);
         this.strawGolem = strawGolem;
         this.deposited = false;
     }
 
     @Override
     public boolean shouldExecute() {
-        if (super.shouldExecute() && !strawGolem.isHandEmpty()) {
+        if (super.searchForDestination() && !strawGolem.isHandEmpty()) {
+            System.out.println("DELIVERING");
             this.runDelay = 0;
             return true;
         }
@@ -36,7 +38,9 @@ public class DeliverGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
-        return worldIn.getBlockState(pos).getBlock().getTags().contains(Tags.Blocks.CHESTS.getId());
+        RayTraceContext ctx = new RayTraceContext(strawGolem.getPositionVec(), new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawGolem);
+        return worldIn.getTileEntity(pos) instanceof ChestTileEntity
+                && worldIn.rayTraceBlocks(ctx).getPos().equals(pos);
     }
 
     @Override
@@ -58,8 +62,7 @@ public class DeliverGoal extends MoveToBlockGoal {
         if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq())) {
             ++this.timeoutCounter;
             if (this.shouldMove()) {
-                double speed = deliveringBlock ? movementSpeed * 0.6D : movementSpeed;
-                this.creature.getNavigator().tryMoveToXYZ(this.destinationBlock.getX() + 0.5D, this.destinationBlock.getY() + 1D, this.destinationBlock.getZ() + 0.5D, speed);
+                this.creature.getNavigator().tryMoveToXYZ(this.destinationBlock.getX() + 0.5D, this.destinationBlock.getY() + 1D, this.destinationBlock.getZ() + 0.5D, movementSpeed);
             }
         } else {
             timeoutCounter = 0;

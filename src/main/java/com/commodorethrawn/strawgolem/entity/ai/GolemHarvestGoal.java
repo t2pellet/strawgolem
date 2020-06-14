@@ -8,15 +8,17 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.List;
 
-public class HarvestGoal extends MoveToBlockGoal {
+public class GolemHarvestGoal extends MoveToBlockGoal {
 	private EntityStrawGolem strawgolem;
 
-	public HarvestGoal(EntityStrawGolem strawgolem, double speedIn) {
+    public GolemHarvestGoal(EntityStrawGolem strawgolem, double speedIn) {
 		super(strawgolem, speedIn, 16);
 		this.strawgolem = strawgolem;
 	}
@@ -37,7 +39,7 @@ public class HarvestGoal extends MoveToBlockGoal {
                 this.destinationBlock.getZ() + 0.5D,
                 10.0F,
                 this.strawgolem.getVerticalFaceSpeed());
-        double targetDistance = strawgolem.world.getBlockState(destinationBlock).getBlock() instanceof StemGrownBlock ? getTargetDistanceSq() + 1D : getTargetDistanceSq();
+        double targetDistance = strawgolem.world.getBlockState(destinationBlock).getBlock() instanceof StemGrownBlock ? getTargetDistanceSq() + 0.2D : getTargetDistanceSq();
         if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), targetDistance)) {
             ++this.timeoutCounter;
             if (this.shouldMove()) {
@@ -51,6 +53,8 @@ public class HarvestGoal extends MoveToBlockGoal {
 
     @Override
 	protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
+        RayTraceContext ctx = new RayTraceContext(strawgolem.getPositionVec(), new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawgolem);
+        if (!worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) return false;
         BlockState block = worldIn.getBlockState(pos);
         if (StrawgolemConfig.blockHarvestAllowed(block.getBlock())) {
             if (block.getBlock() instanceof CropsBlock) {

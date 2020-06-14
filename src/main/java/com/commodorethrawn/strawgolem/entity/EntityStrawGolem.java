@@ -1,8 +1,9 @@
 package com.commodorethrawn.strawgolem.entity;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.entity.ai.DeliverGoal;
-import com.commodorethrawn.strawgolem.entity.ai.HarvestGoal;
+import com.commodorethrawn.strawgolem.entity.ai.GolemDeliverGoal;
+import com.commodorethrawn.strawgolem.entity.ai.GolemHarvestGoal;
+import com.commodorethrawn.strawgolem.entity.ai.GolemWanderGoal;
 import com.commodorethrawn.strawgolem.entity.capability.ILifespan;
 import com.commodorethrawn.strawgolem.entity.capability.InventoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.LifespanProvider;
@@ -10,12 +11,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.StemGrownBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.AvoidEntityGoal;
+import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.entity.ai.goal.LookRandomlyGoal;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
@@ -32,8 +35,9 @@ public class EntityStrawGolem extends GolemEntity {
 
 	private ILifespan lifespan;
     public IItemHandler inventory;
-	
-	public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
+
+
+    public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
 		super(type, worldIn);
 		inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
 	}
@@ -55,12 +59,11 @@ public class EntityStrawGolem extends GolemEntity {
     @Override
 	protected void registerGoals() {
         int priority = 0;
-        this.goalSelector.addGoal(priority, new SwimGoal(this));
-        this.goalSelector.addGoal(++priority, new AvoidEntityGoal<>(this, MonsterEntity.class, 10.0F, 0.6D, 0.7D));
-        this.goalSelector.addGoal(++priority, new HarvestGoal(this, 0.6D));
-        this.goalSelector.addGoal(++priority, new DeliverGoal(this, 0.6D));
+        this.goalSelector.addGoal(priority, new AvoidEntityGoal<>(this, MonsterEntity.class, 10.0F, 0.6D, 0.7D));
+        this.goalSelector.addGoal(++priority, new GolemHarvestGoal(this, 0.6D));
+        this.goalSelector.addGoal(++priority, new GolemDeliverGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new LookAtGoal(this, PlayerEntity.class, 5.0F));
-        this.goalSelector.addGoal(priority, new WaterAvoidingRandomWalkingGoal(this, 0.5D));
+        this.goalSelector.addGoal(++priority, new GolemWanderGoal(this, 0.5D));
         this.goalSelector.addGoal(++priority, new LookRandomlyGoal(this));
 	}
 
@@ -72,7 +75,7 @@ public class EntityStrawGolem extends GolemEntity {
 	}
 
     public boolean isHandEmpty() {
-        return inventory.getStackInSlot(0).getItem() == Items.AIR;
+        return getHeldItemMainhand().isEmpty();
     }
 
     @Override
@@ -88,6 +91,13 @@ public class EntityStrawGolem extends GolemEntity {
         ArrayList<ItemStack> heldEquipment = new ArrayList<>();
         heldEquipment.add(inventory.getStackInSlot(0));
         return heldEquipment;
+    }
+
+    @Override
+    protected void onDeathUpdate() {
+        super.onDeathUpdate();
+        ItemEntity heldItem = new ItemEntity(this.world, this.lastTickPosX, this.lastTickPosY, this.lastTickPosZ, this.getHeldItem(Hand.MAIN_HAND));
+        this.getEntityWorld().addEntity(heldItem);
     }
 
     public boolean holdingBlockCrop() {
@@ -119,11 +129,6 @@ public class EntityStrawGolem extends GolemEntity {
 	public boolean canDespawn(double distanceToClosestPlayer) {
 		return false;
 	}
-
-    @Override
-    public boolean canBeLeashedTo(PlayerEntity player) {
-        return false;
-    }
 
     @Override
 	protected ResourceLocation getLootTable() {
