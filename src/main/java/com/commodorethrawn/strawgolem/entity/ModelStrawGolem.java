@@ -122,7 +122,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
             matrixStackIn.rotate(Vector3f.XN.rotationDegrees(15.0F));
             matrixStackIn.scale(1.5F, 1.5F, 1.5F);
         } else {
-            matrixStackIn.translate(0.05F, 1.3F, 0.2F);
+			matrixStackIn.translate(0.05F, 1.3F, 0.23F);
             matrixStackIn.rotate(Vector3f.XN.rotationDegrees(90.0F));
         }
 	}

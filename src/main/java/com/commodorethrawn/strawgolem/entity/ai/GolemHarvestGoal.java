@@ -74,18 +74,20 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         Block block = worldIn.getBlockState(pos).getBlock();
         if (shouldMoveTo(worldIn, this.destinationBlock)
                 && worldIn.destroyBlock(pos, true)
-                && StrawgolemConfig.isHarvestEnabled()) {
+                && StrawgolemConfig.isReplantEnabled()) {
             if (!(block instanceof StemGrownBlock)) {
                 worldIn.setBlockState(pos, block.getDefaultState());
                 List<ItemEntity> dropList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(1.0F));
                 for (ItemEntity drop : dropList) {
-                    if (!(drop.getItem().getItem() instanceof BlockNamedItem) || drop.getItem().getUseAction() == UseAction.EAT) {
+                    if (StrawgolemConfig.isDeliveryEnabled() && !(drop.getItem().getItem() instanceof BlockNamedItem) || drop.getItem().getUseAction() == UseAction.EAT) {
                         this.strawgolem.inventory.insertItem(0, drop.getItem(), false);
                     }
                     drop.remove();
                 }
             } else {
-                strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
+                if (StrawgolemConfig.isDeliveryEnabled()) {
+                    strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
+                }
                 List<ItemEntity> dropList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(1.0F));
                 for (ItemEntity drop : dropList) {
                     drop.remove();

@@ -13,23 +13,35 @@ public class StrawgolemConfig {
 	private static final String FILTER_MODE_WHITELIST = "whitelist";
 	private static final String FILTER_MODE_BLACKLIST = "blacklist";
 
-	public static boolean harvestEnabled;
+    public static boolean replantEnabled;
+    public static boolean deliveryEnabled;
 	public static int lifespan;
 	public static String filterMode;
 	public static List<? extends String> whitelist;
 	public static List<? extends String> blacklist;
 
+    public static boolean isReplantEnabled() {
+        return replantEnabled;
+    }
+
+    public static boolean isDeliveryEnabled() {
+        return deliveryEnabled;
+    }
+
 	public static class CommonConfig {
-		final ForgeConfigSpec.BooleanValue harvestEnabled;
+        final ForgeConfigSpec.BooleanValue replantEnabled;
+        final ForgeConfigSpec.BooleanValue deliveryEnabled;
 		final ForgeConfigSpec.IntValue lifespan;
 		final ForgeConfigSpec.ConfigValue<String> filterMode;
 		final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelist;
 		final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklist;
 
 		CommonConfig(final ForgeConfigSpec.Builder builder) {
-			builder.push("Common");
-			harvestEnabled = builder.comment("Allow the straw golems to replant a crop when they harvest it.").define("harvestEnabled", true);
-			lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -1, Integer.MAX_VALUE);
+            builder.push("Harvesting");
+            replantEnabled = builder.comment("Allow the straw golems to replant a crop when they harvest it.").define("replantEnabled", true);
+            deliveryEnabled = builder.comment("Allow the straw golem to deliver a crop (requires replantEnabled = true)").define("deliveryEnabled", true);
+            builder.pop();
+            builder.push("Filtration");
 			filterMode = builder.comment(
 					"Sets the method for applying harvest filters.  Note that only the most specific match will be taken into consideration.",
 					"If a crop's mod appears in the whitelist, but the crop itself is in the blacklist, the crop will be banned.",
@@ -40,13 +52,12 @@ public class StrawgolemConfig {
 			whitelist = builder.comment("Whitelist Filter").defineList("whitelist", Collections.emptyList(), o -> o instanceof String);
 			blacklist = builder.comment("Blacklist Filter").defineList("blacklist", Collections.emptyList(), o -> o instanceof String);
 			builder.pop();
+            builder.push("Miscellaneous");
+            lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -1, Integer.MAX_VALUE);
+            builder.pop();
 		}
 	}
 
-	public static boolean isHarvestEnabled() {
-		return harvestEnabled;
-	}
-	
 	public static int getLifespan() {
 		return lifespan;
 	}

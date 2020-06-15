@@ -32,32 +32,51 @@ import java.util.ArrayList;
 public class EntityStrawGolem extends GolemEntity {
 	
 	public static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
-
-	private ILifespan lifespan;
     public IItemHandler inventory;
+    private ILifespan lifespan;
 
+    @Override
+    protected ResourceLocation getLootTable() {
+        return LOOT;
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent getAmbientSound() {
+        return null; // TODO
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+        return null; // TODO
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent getDeathSound() {
+        return null; // TODO
+    }
+
+    @Override
+    public int getTalkInterval() {
+        return 120;
+    }
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
 		super(type, worldIn);
 		inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
 	}
 
-	@Override
-	public void baseTick() {
-		super.baseTick();
-		
-		if (lifespan == null)
-			lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-
-		lifespan.update();
-        if (holdingBlockCrop()) lifespan.update();
-		
-		if (lifespan.isOver())
-			attackEntityFrom(DamageSource.MAGIC, getMaxHealth()*100);
-	}
+    @Override
+    protected void registerAttributes() {
+        super.registerAttributes();
+        this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(2.0D);
+        this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
+    }
 
     @Override
-	protected void registerGoals() {
+    protected void registerGoals() {
         int priority = 0;
         this.goalSelector.addGoal(priority, new AvoidEntityGoal<>(this, MonsterEntity.class, 10.0F, 0.6D, 0.7D));
         this.goalSelector.addGoal(++priority, new GolemHarvestGoal(this, 0.6D));
@@ -65,14 +84,33 @@ public class EntityStrawGolem extends GolemEntity {
         this.goalSelector.addGoal(++priority, new LookAtGoal(this, PlayerEntity.class, 5.0F));
         this.goalSelector.addGoal(++priority, new GolemWanderGoal(this, 0.5D));
         this.goalSelector.addGoal(++priority, new LookRandomlyGoal(this));
-	}
+    }
 
-	@Override
-	protected void registerAttributes() {
-		super.registerAttributes();
-		this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(2.0D);
-		this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
-	}
+    @Override
+    public void baseTick() {
+        super.baseTick();
+
+        if (lifespan == null)
+            lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
+
+        lifespan.update();
+        if (holdingBlockCrop()) lifespan.update();
+
+        if (lifespan.isOver())
+            attackEntityFrom(DamageSource.MAGIC, getMaxHealth() * 100);
+    }
+
+    @Override
+    protected void onDeathUpdate() {
+        ItemEntity heldItem = new ItemEntity(this.world, this.lastTickPosX, this.lastTickPosY, this.lastTickPosZ, this.getHeldItem(Hand.MAIN_HAND));
+        this.getEntityWorld().addEntity(heldItem);
+        super.onDeathUpdate();
+    }
+
+    @Override
+    public boolean canDespawn(double distanceToClosestPlayer) {
+        return false;
+    }
 
     public boolean isHandEmpty() {
         return getHeldItemMainhand().isEmpty();
@@ -93,46 +131,7 @@ public class EntityStrawGolem extends GolemEntity {
         return heldEquipment;
     }
 
-    @Override
-    protected void onDeathUpdate() {
-        super.onDeathUpdate();
-        ItemEntity heldItem = new ItemEntity(this.world, this.lastTickPosX, this.lastTickPosY, this.lastTickPosZ, this.getHeldItem(Hand.MAIN_HAND));
-        this.getEntityWorld().addEntity(heldItem);
-    }
-
     public boolean holdingBlockCrop() {
         return Block.getBlockFromItem(inventory.getStackInSlot(0).getItem()) instanceof StemGrownBlock;
     }
-
-    @Override
-    @Nullable
-	protected SoundEvent getAmbientSound() {
-		return null; // TODO
-	}
-
-	@Override @Nullable
-	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-		return null; // TODO
-	}
-
-	@Override @Nullable
-	protected SoundEvent getDeathSound() {
-		return null; // TODO
-	}
-
-	@Override
-	public int getTalkInterval() {
-		return 120;
-	}
-
-	@Override
-	public boolean canDespawn(double distanceToClosestPlayer) {
-		return false;
-	}
-
-    @Override
-	protected ResourceLocation getLootTable() {
-		return LOOT;
-	}
-	
 }

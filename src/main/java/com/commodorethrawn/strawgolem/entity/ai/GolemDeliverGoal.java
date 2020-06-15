@@ -29,7 +29,6 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     @Override
     public boolean shouldExecute() {
         if (super.searchForDestination() && !strawGolem.isHandEmpty()) {
-            System.out.println("DELIVERING");
             this.runDelay = 0;
             return true;
         }

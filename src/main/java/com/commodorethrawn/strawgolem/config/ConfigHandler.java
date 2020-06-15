@@ -11,7 +11,8 @@ public class ConfigHandler {
     @SubscribeEvent
     public static void configEvent(final ModConfig.ModConfigEvent event) {
         if (event.getConfig().getSpec() == ConfigHolder.COMMON_SPEC) {
-            StrawgolemConfig.harvestEnabled = ConfigHolder.COMMON_CONFIG.harvestEnabled.get();
+            StrawgolemConfig.replantEnabled = ConfigHolder.COMMON_CONFIG.replantEnabled.get();
+            StrawgolemConfig.deliveryEnabled = ConfigHolder.COMMON_CONFIG.deliveryEnabled.get();
             StrawgolemConfig.lifespan = ConfigHolder.COMMON_CONFIG.lifespan.get();
             StrawgolemConfig.filterMode = ConfigHolder.COMMON_CONFIG.filterMode.get();
             StrawgolemConfig.whitelist = ConfigHolder.COMMON_CONFIG.whitelist.get();
