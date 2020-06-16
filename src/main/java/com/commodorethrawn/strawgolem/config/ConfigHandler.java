@@ -17,6 +17,8 @@ public class ConfigHandler {
             StrawgolemConfig.filterMode = ConfigHolder.COMMON_CONFIG.filterMode.get();
             StrawgolemConfig.whitelist = ConfigHolder.COMMON_CONFIG.whitelist.get();
             StrawgolemConfig.blacklist = ConfigHolder.COMMON_CONFIG.blacklist.get();
+            StrawgolemConfig.searchRangeHorizontal = ConfigHolder.COMMON_CONFIG.searchRangeHorizontal.get();
+            StrawgolemConfig.searchRangeVertical = ConfigHolder.COMMON_CONFIG.searchRangeVertical.get();
         }
     }
 }

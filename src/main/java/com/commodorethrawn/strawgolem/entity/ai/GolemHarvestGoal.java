@@ -19,11 +19,11 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 	private EntityStrawGolem strawgolem;
 
     public GolemHarvestGoal(EntityStrawGolem strawgolem, double speedIn) {
-		super(strawgolem, speedIn, 16);
+        super(strawgolem, speedIn, StrawgolemConfig.getSearchRangeHorizontal(), StrawgolemConfig.getSearchRangeVertical());
 		this.strawgolem = strawgolem;
 	}
 
-	@Override
+    @Override
 	public boolean shouldExecute() {
         if (super.shouldExecute() && strawgolem.isHandEmpty()) {
 			this.runDelay = 0;
@@ -53,7 +53,9 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     @Override
 	protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
-        RayTraceContext ctx = new RayTraceContext(strawgolem.getPositionVec(), new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawgolem);
+        Vec3d posVec = strawgolem.getPositionVec();
+        if (posVec.getY() % 1 > 0.01) posVec = posVec.add(0, 1, 0);
+        RayTraceContext ctx = new RayTraceContext(posVec, new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawgolem);
         if (!worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) return false;
         BlockState block = worldIn.getBlockState(pos);
         if (StrawgolemConfig.blockHarvestAllowed(block.getBlock())) {
@@ -82,7 +84,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                     if (StrawgolemConfig.isDeliveryEnabled() && !(drop.getItem().getItem() instanceof BlockNamedItem) || drop.getItem().getUseAction() == UseAction.EAT) {
                         this.strawgolem.inventory.insertItem(0, drop.getItem(), false);
                     }
-                    drop.remove();
+                    drop.remove(false);
                 }
             } else {
                 if (StrawgolemConfig.isDeliveryEnabled()) {
@@ -90,7 +92,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                 }
                 List<ItemEntity> dropList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(1.0F));
                 for (ItemEntity drop : dropList) {
-                    drop.remove();
+                    drop.remove(false);
                 }
             }
         }

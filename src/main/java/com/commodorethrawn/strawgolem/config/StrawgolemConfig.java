@@ -13,12 +13,14 @@ public class StrawgolemConfig {
 	private static final String FILTER_MODE_WHITELIST = "whitelist";
 	private static final String FILTER_MODE_BLACKLIST = "blacklist";
 
-    public static boolean replantEnabled;
-    public static boolean deliveryEnabled;
-	public static int lifespan;
-	public static String filterMode;
-	public static List<? extends String> whitelist;
-	public static List<? extends String> blacklist;
+	static boolean replantEnabled;
+	static boolean deliveryEnabled;
+	static int lifespan;
+	static String filterMode;
+	static List<? extends String> whitelist;
+	static List<? extends String> blacklist;
+	static int searchRangeHorizontal;
+	static int searchRangeVertical;
 
     public static boolean isReplantEnabled() {
         return replantEnabled;
@@ -28,6 +30,18 @@ public class StrawgolemConfig {
         return deliveryEnabled;
     }
 
+	public static int getSearchRangeHorizontal() {
+		return searchRangeHorizontal;
+	}
+
+	public static int getLifespan() {
+		return lifespan;
+	}
+
+	public static int getSearchRangeVertical() {
+		return searchRangeVertical;
+	}
+
 	public static class CommonConfig {
         final ForgeConfigSpec.BooleanValue replantEnabled;
         final ForgeConfigSpec.BooleanValue deliveryEnabled;
@@ -35,11 +49,15 @@ public class StrawgolemConfig {
 		final ForgeConfigSpec.ConfigValue<String> filterMode;
 		final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelist;
 		final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklist;
+		final ForgeConfigSpec.IntValue searchRangeHorizontal;
+		final ForgeConfigSpec.IntValue searchRangeVertical;
 
 		CommonConfig(final ForgeConfigSpec.Builder builder) {
             builder.push("Harvesting");
             replantEnabled = builder.comment("Allow the straw golems to replant a crop when they harvest it.").define("replantEnabled", true);
             deliveryEnabled = builder.comment("Allow the straw golem to deliver a crop (requires replantEnabled = true)").define("deliveryEnabled", true);
+			searchRangeHorizontal = builder.comment("Horizontal search range for crops and chests").defineInRange("searchRangeHorizontal", 12, 8, 32);
+			searchRangeVertical = builder.comment("Vertical search range for crops and chests").defineInRange("searchRangeVertical", 3, 2, 8);
             builder.pop();
             builder.push("Filtration");
 			filterMode = builder.comment(
@@ -56,10 +74,6 @@ public class StrawgolemConfig {
             lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -1, Integer.MAX_VALUE);
             builder.pop();
 		}
-	}
-
-	public static int getLifespan() {
-		return lifespan;
 	}
 
 	public static boolean blockHarvestAllowed(Block block) {

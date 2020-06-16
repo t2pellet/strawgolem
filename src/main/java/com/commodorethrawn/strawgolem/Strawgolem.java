@@ -2,9 +2,12 @@ package com.commodorethrawn.strawgolem;
 
 import com.commodorethrawn.strawgolem.config.ConfigHolder;
 import com.commodorethrawn.strawgolem.entity.RenderStrawGolem;
-import com.commodorethrawn.strawgolem.entity.capability.ILifespan;
-import com.commodorethrawn.strawgolem.entity.capability.Lifespan;
-import com.commodorethrawn.strawgolem.entity.capability.LifespanStorage;
+import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
+import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
+import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanStorage;
+import com.commodorethrawn.strawgolem.entity.capability.memory.IMemory;
+import com.commodorethrawn.strawgolem.entity.capability.memory.Memory;
+import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryStorage;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -31,6 +34,7 @@ public class Strawgolem {
     public void commonSetup(FMLCommonSetupEvent event) {
         logger.info("Strawgolem common setup");
         CapabilityManager.INSTANCE.register(ILifespan.class, new LifespanStorage(), Lifespan::new);
+        CapabilityManager.INSTANCE.register(IMemory.class, new MemoryStorage(), Memory::new);
     }
 
     public void clientSetup(FMLClientSetupEvent event) {

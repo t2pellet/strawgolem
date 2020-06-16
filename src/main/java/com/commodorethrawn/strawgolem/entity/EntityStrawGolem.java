@@ -4,9 +4,11 @@ import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.entity.ai.GolemDeliverGoal;
 import com.commodorethrawn.strawgolem.entity.ai.GolemHarvestGoal;
 import com.commodorethrawn.strawgolem.entity.ai.GolemWanderGoal;
-import com.commodorethrawn.strawgolem.entity.capability.ILifespan;
 import com.commodorethrawn.strawgolem.entity.capability.InventoryProvider;
-import com.commodorethrawn.strawgolem.entity.capability.LifespanProvider;
+import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
+import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanProvider;
+import com.commodorethrawn.strawgolem.entity.capability.memory.IMemory;
+import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.StemGrownBlock;
 import net.minecraft.entity.EntityType;
@@ -14,6 +16,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
+import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.GolemEntity;
@@ -23,17 +26,18 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 
 public class EntityStrawGolem extends GolemEntity {
 	
 	public static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
     public IItemHandler inventory;
     private ILifespan lifespan;
+    private IMemory memory;
 
     @Override
     protected ResourceLocation getLootTable() {
@@ -43,12 +47,6 @@ public class EntityStrawGolem extends GolemEntity {
     @Override
     @Nullable
     protected SoundEvent getAmbientSound() {
-        return null; // TODO
-    }
-
-    @Override
-    @Nullable
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return null; // TODO
     }
 
@@ -78,17 +76,21 @@ public class EntityStrawGolem extends GolemEntity {
     @Override
     protected void registerGoals() {
         int priority = 0;
-        this.goalSelector.addGoal(priority, new AvoidEntityGoal<>(this, MonsterEntity.class, 10.0F, 0.6D, 0.7D));
+        this.goalSelector.addGoal(priority, new SwimGoal(this));
+        this.goalSelector.addGoal(++priority, new AvoidEntityGoal<>(this, MonsterEntity.class, 10.0F, 0.6D, 0.75D));
         this.goalSelector.addGoal(++priority, new GolemHarvestGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new GolemDeliverGoal(this, 0.6D));
-        this.goalSelector.addGoal(++priority, new LookAtGoal(this, PlayerEntity.class, 5.0F));
         this.goalSelector.addGoal(++priority, new GolemWanderGoal(this, 0.5D));
+        this.goalSelector.addGoal(++priority, new LookAtGoal(this, PlayerEntity.class, 5.0F));
         this.goalSelector.addGoal(++priority, new LookRandomlyGoal(this));
     }
 
     @Override
     public void baseTick() {
         super.baseTick();
+
+        if (memory == null)
+            memory = getCapability(MemoryProvider.MEMORY_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
 
         if (lifespan == null)
             lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
@@ -124,14 +126,20 @@ public class EntityStrawGolem extends GolemEntity {
         return ItemStack.EMPTY;
     }
 
-    @Override
-    public Iterable<ItemStack> getHeldEquipment() {
-        ArrayList<ItemStack> heldEquipment = new ArrayList<>();
-        heldEquipment.add(inventory.getStackInSlot(0));
-        return heldEquipment;
-    }
-
     public boolean holdingBlockCrop() {
         return Block.getBlockFromItem(inventory.getStackInSlot(0).getItem()) instanceof StemGrownBlock;
+    }
+
+    public void addChestPos(BlockPos pos) {
+        if (!memory.containsPosition(pos))
+            memory.addPosition(pos);
+    }
+
+    public BlockPos getChestPos() {
+        return memory.getClosestPosition(this.getPosition());
+    }
+
+    public void removeChestPos(BlockPos pos) {
+        memory.removePosition(pos);
     }
 }

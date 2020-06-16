@@ -1,5 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.item.ItemStack;
@@ -17,18 +18,16 @@ import net.minecraftforge.items.IItemHandler;
 
 public class GolemDeliverGoal extends MoveToBlockGoal {
     private EntityStrawGolem strawGolem;
-    private boolean deposited;
     private Boolean deliveringBlock;
 
     public GolemDeliverGoal(EntityStrawGolem strawGolem, double speedIn) {
-        super(strawGolem, speedIn, 32);
+        super(strawGolem, speedIn, StrawgolemConfig.getSearchRangeHorizontal(), StrawgolemConfig.getSearchRangeVertical());
         this.strawGolem = strawGolem;
-        this.deposited = false;
     }
 
     @Override
     public boolean shouldExecute() {
-        if (super.searchForDestination() && !strawGolem.isHandEmpty()) {
+        if (this.searchForDestination() && !strawGolem.isHandEmpty()) {
             this.runDelay = 0;
             return true;
         }
@@ -36,15 +35,34 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     }
 
     @Override
-    protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
-        RayTraceContext ctx = new RayTraceContext(strawGolem.getPositionVec(), new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawGolem);
-        return worldIn.getTileEntity(pos) instanceof ChestTileEntity
-                && worldIn.rayTraceBlocks(ctx).getPos().equals(pos);
+    public boolean shouldContinueExecuting() {
+        return super.shouldContinueExecuting() && !strawGolem.isHandEmpty();
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
-        return super.shouldContinueExecuting() && !deposited;
+    protected boolean searchForDestination() {
+        BlockPos.Mutable pos = new BlockPos.Mutable(strawGolem.getChestPos());
+        if (shouldMoveTo(strawGolem.world, pos)) {
+            this.destinationBlock = pos;
+            return true;
+        }
+        strawGolem.removeChestPos(pos);
+        return super.searchForDestination();
+    }
+
+    @Override
+    protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
+        Vec3d posVec = strawGolem.getPositionVec();
+        if (posVec.getY() % 1 > 0.01)
+            posVec = posVec.add(0, 1, 0); // Used to patch the ray trace colliding with non-full-height blocks
+        RayTraceContext ctx = new RayTraceContext(posVec, new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawGolem);
+        if (worldIn.getTileEntity(pos) instanceof ChestTileEntity) {
+            if (worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) {
+                strawGolem.addChestPos(pos);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -83,7 +101,6 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
             }
         }
         worldIn.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-        deposited = true;
     }
 
 }

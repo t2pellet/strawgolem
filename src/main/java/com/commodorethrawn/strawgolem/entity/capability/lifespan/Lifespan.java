@@ -1,4 +1,4 @@
-package com.commodorethrawn.strawgolem.entity.capability;
+package com.commodorethrawn.strawgolem.entity.capability.lifespan;
 
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 
