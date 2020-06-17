@@ -104,7 +104,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     protected void onDeathUpdate() {
-        ItemEntity heldItem = new ItemEntity(this.world, this.lastTickPosX, this.lastTickPosY, this.lastTickPosZ, this.getHeldItem(Hand.MAIN_HAND));
+        ItemEntity heldItem = new ItemEntity(this.world, this.prevPosX, this.prevPosY, this.prevPosZ, this.getHeldItem(Hand.MAIN_HAND));
         this.getEntityWorld().addEntity(heldItem);
         super.onDeathUpdate();
     }
