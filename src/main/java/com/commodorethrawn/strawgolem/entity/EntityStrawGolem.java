@@ -13,15 +13,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.StemGrownBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.entity.ai.goal.LookAtGoal;
-import net.minecraft.entity.ai.goal.LookRandomlyGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
@@ -78,6 +77,7 @@ public class EntityStrawGolem extends GolemEntity {
         int priority = 0;
         this.goalSelector.addGoal(priority, new SwimGoal(this));
         this.goalSelector.addGoal(++priority, new AvoidEntityGoal<>(this, MonsterEntity.class, 10.0F, 0.6D, 0.75D));
+        this.goalSelector.addGoal(++priority, new TemptGoal(this, 0.7D, false, Ingredient.fromItems(Items.APPLE)));
         this.goalSelector.addGoal(++priority, new GolemHarvestGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new GolemDeliverGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new GolemWanderGoal(this, 0.5D));
@@ -104,8 +104,10 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     protected void onDeathUpdate() {
-        ItemEntity heldItem = new ItemEntity(this.world, this.prevPosX, this.prevPosY, this.prevPosZ, this.getHeldItem(Hand.MAIN_HAND));
-        this.getEntityWorld().addEntity(heldItem);
+        if (!this.world.isRemote) {
+            ItemEntity heldItem = new ItemEntity(this.world, this.prevPosX, this.prevPosY, this.prevPosZ, this.getHeldItem(Hand.MAIN_HAND));
+            this.getEntityWorld().addEntity(heldItem);
+        }
         super.onDeathUpdate();
     }
 
@@ -131,15 +133,27 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     public void addChestPos(BlockPos pos) {
-        if (!memory.containsPosition(pos))
+        addChestPos(pos, false);
+    }
+
+    public void addChestPos(BlockPos pos, boolean isPriority) {
+        if (!isPriority && !memory.containsPosition(pos))
             memory.addPosition(pos);
+        else
+            memory.setPriorityChest(pos);
     }
 
     public BlockPos getChestPos() {
+        if (memory.hasPriorityChest()) {
+            return memory.getPriorityChest();
+        }
         return memory.getClosestPosition(this.getPosition());
     }
 
     public void removeChestPos(BlockPos pos) {
+        if (memory.hasPriorityChest() && memory.getPriorityChest().equals(pos)) {
+            memory.setPriorityChest(BlockPos.ZERO);
+        }
         memory.removePosition(pos);
     }
 }

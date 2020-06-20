@@ -15,4 +15,10 @@ public interface IMemory {
     void addPosition(BlockPos pos);
 
     void removePosition(BlockPos pos);
+
+    boolean hasPriorityChest();
+
+    BlockPos getPriorityChest();
+
+    void setPriorityChest(BlockPos pos);
 }

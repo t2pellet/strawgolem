@@ -17,7 +17,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public class GolemDeliverGoal extends MoveToBlockGoal {
-    private EntityStrawGolem strawGolem;
+    private final EntityStrawGolem strawGolem;
     private Boolean deliveringBlock;
 
     public GolemDeliverGoal(EntityStrawGolem strawGolem, double speedIn) {
@@ -41,7 +41,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean searchForDestination() {
-        BlockPos.Mutable pos = new BlockPos.Mutable(strawGolem.getChestPos());
+        BlockPos pos = strawGolem.getChestPos();
         if (shouldMoveTo(strawGolem.world, pos)) {
             this.destinationBlock = pos;
             return true;

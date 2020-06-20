@@ -7,10 +7,12 @@ import java.util.List;
 
 public class Memory implements IMemory {
 
-    private List<BlockPos> posList;
+    private final List<BlockPos> posList;
+    private BlockPos priority;
 
     public Memory() {
         posList = new ArrayList<>();
+        priority = BlockPos.ZERO;
     }
 
     @Override
@@ -43,6 +45,21 @@ public class Memory implements IMemory {
     @Override
     public void removePosition(BlockPos pos) {
         posList.remove(pos);
+    }
+
+    @Override
+    public boolean hasPriorityChest() {
+        return priority != BlockPos.ZERO;
+    }
+
+    @Override
+    public BlockPos getPriorityChest() {
+        return priority;
+    }
+
+    @Override
+    public void setPriorityChest(BlockPos pos) {
+        priority = pos;
     }
 
 }
