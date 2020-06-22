@@ -52,15 +52,13 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
-        Vec3d posVec = strawGolem.getPositionVec();
+        Vec3d posVec = strawGolem.getPositionVec().add(0, 1, 0);
         if (posVec.getY() % 1 > 0.01)
             posVec = posVec.add(0, 1, 0); // Used to patch the ray trace colliding with non-full-height blocks
         RayTraceContext ctx = new RayTraceContext(posVec, new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawGolem);
-        if (worldIn.getTileEntity(pos) instanceof ChestTileEntity) {
-            if (worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) {
-                strawGolem.addChestPos(pos);
-                return true;
-            }
+        if (worldIn.getTileEntity(pos) instanceof ChestTileEntity && worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) {
+            strawGolem.addChestPos(pos);
+            return true;
         }
         return false;
     }

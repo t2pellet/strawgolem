@@ -3,15 +3,22 @@ package com.commodorethrawn.strawgolem;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.Items;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+
+import java.util.Random;
 
 @EventBusSubscriber(modid = Strawgolem.MODID, bus = EventBusSubscriber.Bus.FORGE)
 public class EventHandler {
@@ -61,10 +68,22 @@ public class EventHandler {
 	public static void onGolemHealed(PlayerInteractEvent.EntityInteract event) {
 		if (!event.getWorld().isRemote && event.getTarget() instanceof EntityStrawGolem) {
 			if (event.getPlayer().getHeldItemMainhand().getItem() == Items.WHEAT) {
-				event.getPlayer().getHeldItemMainhand().shrink(1);
-				((EntityStrawGolem) event.getTarget()).heal(1.0F);
+				EntityStrawGolem target = (EntityStrawGolem) event.getTarget();
+				if (target.getHealth() != target.getMaxHealth()) {
+					event.getPlayer().getHeldItemMainhand().shrink(1);
+					target.heal(1.0F);
+					spawnHealParticles(event.getTarget().prevPosX, event.getTarget().prevPosY, event.getTarget().prevPosZ);
+
+				}
 			}
 		}
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	private static void spawnHealParticles(double x, double y, double z) {
+		ClientWorld world = Minecraft.getInstance().world;
+		Random rand = new Random();
+		world.addParticle(ParticleTypes.HEART, x + rand.nextDouble() - 0.5, y + 0.4D, z + rand.nextDouble() - 0.5, 0, 0, 0);
 	}
 
 }
