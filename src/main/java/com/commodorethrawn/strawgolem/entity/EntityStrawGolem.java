@@ -14,22 +14,24 @@ import net.minecraft.block.StemGrownBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
+import java.util.Random;
 
 public class EntityStrawGolem extends GolemEntity {
 	
@@ -37,6 +39,7 @@ public class EntityStrawGolem extends GolemEntity {
     public IItemHandler inventory;
     private ILifespan lifespan;
     private IMemory memory;
+    private BlockPos harvestPos;
 
     @Override
     protected ResourceLocation getLootTable() {
@@ -61,9 +64,10 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
-		super(type, worldIn);
-		inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-	}
+        super(type, worldIn);
+        inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
+        harvestPos = BlockPos.ZERO;
+    }
 
     @Override
     protected void registerAttributes() {
@@ -80,7 +84,7 @@ public class EntityStrawGolem extends GolemEntity {
         this.goalSelector.addGoal(++priority, new TemptGoal(this, 0.7D, false, Ingredient.fromItems(Items.APPLE)));
         this.goalSelector.addGoal(++priority, new GolemHarvestGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new GolemDeliverGoal(this, 0.6D));
-        this.goalSelector.addGoal(++priority, new GolemWanderGoal(this, 0.5D));
+        this.goalSelector.addGoal(++priority, new GolemWanderGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new LookAtGoal(this, PlayerEntity.class, 5.0F));
         this.goalSelector.addGoal(++priority, new LookRandomlyGoal(this));
     }
@@ -103,15 +107,6 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     @Override
-    protected void onDeathUpdate() {
-        if (!this.world.isRemote) {
-            ItemEntity heldItem = new ItemEntity(this.world, this.prevPosX, this.prevPosY, this.prevPosZ, this.getHeldItem(Hand.MAIN_HAND));
-            this.getEntityWorld().addEntity(heldItem);
-        }
-        super.onDeathUpdate();
-    }
-
-    @Override
     public boolean canDespawn(double distanceToClosestPlayer) {
         return false;
     }
@@ -130,6 +125,34 @@ public class EntityStrawGolem extends GolemEntity {
 
     public boolean holdingBlockCrop() {
         return Block.getBlockFromItem(inventory.getStackInSlot(0).getItem()) instanceof StemGrownBlock;
+    }
+
+    @Override
+    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
+        super.dropSpecialItems(source, looting, recentlyHitIn);
+        if (EffectiveSide.get().isServer()) {
+            entityDropItem(inventory.getStackInSlot(0).copy());
+            inventory.getStackInSlot(0).setCount(0);
+        }
+    }
+
+    @Override
+    protected boolean processInteract(PlayerEntity player, Hand hand) {
+        if (player.getHeldItem(hand).getItem() == Items.WHEAT) {
+            setHealth(getMaxHealth());
+            spawnHealParticles(lastTickPosX, lastTickPosY, lastTickPosZ);
+            if (EffectiveSide.get().isServer()) {
+                addToLifespan(14000);
+                player.getHeldItem(hand).shrink(1);
+            }
+        }
+        return false;
+    }
+
+    private void spawnHealParticles(double x, double y, double z) {
+        Random rand = new Random();
+        System.out.println("adding particle");
+        world.addParticle(ParticleTypes.HEART, x + rand.nextDouble() - 0.5, y + 0.4D, z + rand.nextDouble() - 0.5, this.getMotion().x, this.getMotion().y, this.getMotion().z);
     }
 
     public void addChestPos(BlockPos pos) {
@@ -155,5 +178,21 @@ public class EntityStrawGolem extends GolemEntity {
             memory.setPriorityChest(BlockPos.ZERO);
         }
         memory.removePosition(pos);
+    }
+
+    public void setHarvesting(BlockPos pos) {
+        harvestPos = pos;
+    }
+
+    public BlockPos getHarvestPos() {
+        return harvestPos;
+    }
+
+    public void clearHarvestPos() {
+        harvestPos = BlockPos.ZERO;
+    }
+
+    public void addToLifespan(int time) {
+        lifespan.set(lifespan.get() + time);
     }
 }

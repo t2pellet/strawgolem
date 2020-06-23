@@ -5,7 +5,7 @@ import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 
 public class GolemWanderGoal extends WaterAvoidingRandomWalkingGoal {
 
-    private EntityStrawGolem strawGolem;
+    private final EntityStrawGolem strawGolem;
 
     public GolemWanderGoal(EntityStrawGolem creature, double speedIn) {
         super(creature, speedIn);
@@ -14,6 +14,6 @@ public class GolemWanderGoal extends WaterAvoidingRandomWalkingGoal {
 
     @Override
     public boolean shouldExecute() {
-        return strawGolem.getHeldItemMainhand().isEmpty() && super.shouldExecute();
+        return strawGolem.isHandEmpty() && super.shouldExecute();
     }
 }

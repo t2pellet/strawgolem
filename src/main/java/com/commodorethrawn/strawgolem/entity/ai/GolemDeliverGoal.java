@@ -27,16 +27,18 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     public boolean shouldExecute() {
-        if (this.searchForDestination() && !strawGolem.isHandEmpty()) {
-            this.runDelay = 0;
-            return true;
-        }
+        if (!strawGolem.isHandEmpty()) return this.searchForDestination();
         return false;
     }
 
     @Override
+    public void startExecuting() {
+        super.startExecuting();
+    }
+
+    @Override
     public boolean shouldContinueExecuting() {
-        return super.shouldContinueExecuting() && !strawGolem.isHandEmpty();
+        return !strawGolem.isHandEmpty() && super.shouldContinueExecuting();
     }
 
     @Override
@@ -74,7 +76,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
                 this.destinationBlock.getZ() + 0.5D,
                 10.0F,
                 this.strawGolem.getVerticalFaceSpeed());
-        if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq())) {
+        if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq() + 0.2D)) {
             ++this.timeoutCounter;
             if (this.shouldMove()) {
                 this.creature.getNavigator().tryMoveToXYZ(this.destinationBlock.getX() + 0.5D, this.destinationBlock.getY() + 1D, this.destinationBlock.getZ() + 0.5D, movementSpeed);
@@ -101,4 +103,8 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
         worldIn.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
+    @Override
+    public double getTargetDistanceSq() {
+        return super.getTargetDistanceSq() + 0.15D;
+    }
 }

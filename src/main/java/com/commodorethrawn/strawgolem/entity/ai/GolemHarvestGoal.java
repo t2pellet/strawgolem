@@ -26,14 +26,28 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     @Override
     public boolean shouldExecute() {
-        if (super.searchForDestination() && strawgolem.isHandEmpty()) {
-            this.runDelay = 0;
+        if (strawgolem.isHandEmpty() && shouldMoveTo(strawgolem.world, strawgolem.getHarvestPos())) {
+            destinationBlock = strawgolem.getHarvestPos();
+            this.runDelay = this.getRunDelay(this.creature);
             return true;
-        } else return false;
-	}
+        }
+        strawgolem.clearHarvestPos();
+        if (this.runDelay > 0) {
+            --this.runDelay;
+            return false;
+        } else {
+            this.runDelay = this.getRunDelay(this.creature);
+            return strawgolem.isHandEmpty() && this.searchForDestination();
+        }
+    }
 
     @Override
-	public void tick() {
+    public void startExecuting() {
+        super.startExecuting();
+    }
+
+    @Override
+    public void tick() {
         this.strawgolem.getLookController().setLookPosition(
                 this.destinationBlock.getX() + 0.5D,
                 this.destinationBlock.getY(),
