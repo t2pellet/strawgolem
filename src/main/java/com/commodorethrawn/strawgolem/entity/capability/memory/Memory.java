@@ -2,39 +2,35 @@ package com.commodorethrawn.strawgolem.entity.capability.memory;
 
 import net.minecraft.util.math.BlockPos;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Memory implements IMemory {
 
-    private final List<BlockPos> posList;
+    private final Set<BlockPos> posList;
     private BlockPos priority;
 
     public Memory() {
-        posList = new ArrayList<>();
+        posList = new HashSet<>();
         priority = BlockPos.ZERO;
     }
 
     @Override
-    public List<BlockPos> getPositionList() {
+    public Set<BlockPos> getPositions() {
         return posList;
     }
 
     @Override
-    public BlockPos getClosestPosition(BlockPos pos) {
+    public BlockPos getDeliveryChest(BlockPos pos) {
+        if (priority != BlockPos.ZERO) return priority;
         if (posList.size() == 0) return BlockPos.ZERO;
-        BlockPos closest = posList.get(0);
-        for (int i = 1; i < posList.size(); ++i) {
-            if (pos.distanceSq(closest) > pos.distanceSq(posList.get(i))) {
-                closest = posList.get(i);
+        BlockPos closest = BlockPos.ZERO;
+        for (BlockPos chestPos : posList) {
+            if (pos.distanceSq(closest) >= pos.distanceSq(chestPos)) {
+                closest = chestPos;
             }
         }
         return closest;
-    }
-
-    @Override
-    public boolean containsPosition(BlockPos pos) {
-        return posList.contains(pos);
     }
 
     @Override
@@ -44,12 +40,8 @@ public class Memory implements IMemory {
 
     @Override
     public void removePosition(BlockPos pos) {
+        if (priority.equals(pos)) priority = BlockPos.ZERO;
         posList.remove(pos);
-    }
-
-    @Override
-    public boolean hasPriorityChest() {
-        return priority != BlockPos.ZERO;
     }
 
     @Override

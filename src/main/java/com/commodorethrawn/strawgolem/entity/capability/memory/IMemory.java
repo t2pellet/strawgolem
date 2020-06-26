@@ -2,21 +2,17 @@ package com.commodorethrawn.strawgolem.entity.capability.memory;
 
 import net.minecraft.util.math.BlockPos;
 
-import java.util.List;
+import java.util.Set;
 
 public interface IMemory {
 
-    List<BlockPos> getPositionList();
+    Set<BlockPos> getPositions();
 
-    BlockPos getClosestPosition(BlockPos pos);
-
-    boolean containsPosition(BlockPos pos);
+    BlockPos getDeliveryChest(BlockPos pos);
 
     void addPosition(BlockPos pos);
 
     void removePosition(BlockPos pos);
-
-    boolean hasPriorityChest();
 
     BlockPos getPriorityChest();
 

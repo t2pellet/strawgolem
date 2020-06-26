@@ -4,6 +4,7 @@ import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.Items;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -11,6 +12,7 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -22,38 +24,43 @@ public class EventHandler {
 
 	@SubscribeEvent
 	public static void onGolemBuilt(BlockEvent.EntityPlaceEvent event) {
-		if (!event.getWorld().isRemote()) {
-			World worldIn = (World) event.getWorld();
-			BlockPos pos = event.getPos();
-			Block block = event.getState().getBlock();
+		World worldIn = (World) event.getWorld();
+		BlockPos pos = event.getPos();
+		Block block = event.getState().getBlock();
 
-			BlockPos pumpkin;
-			BlockPos hay;
+		BlockPos pumpkin;
+		BlockPos hay;
 
-			if (block == Blocks.CARVED_PUMPKIN) {
-				pumpkin = pos;
-				hay = pos.down();
-			} else if (block == Blocks.HAY_BLOCK) {
-				pumpkin = pos.up();
-				hay = pos;
-			} else return;
+		if (block == Blocks.CARVED_PUMPKIN) {
+			pumpkin = pos;
+			hay = pos.down();
+		} else if (block == Blocks.HAY_BLOCK) {
+			pumpkin = pos.up();
+			hay = pos;
+		} else return;
+		spawnGolem(worldIn, hay, pumpkin);
+	}
 
-			if (checkStructure(worldIn, hay, pumpkin)) {
-				pos = hay;
-				worldIn.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
-				worldIn.setBlockState(hay, Blocks.AIR.getDefaultState());
-				EntityStrawGolem strawGolem = new EntityStrawGolem(Registry.STRAW_GOLEM_TYPE, worldIn);
-				strawGolem.setPosition(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
-				worldIn.addEntity(strawGolem);
-			}
+	@SubscribeEvent
+	public static void onGolemBuiltAlternate(PlayerInteractEvent.RightClickBlock event) {
+		if (event.getPlayer().getHeldItemOffhand().getItem() == Items.SHEARS
+			&& event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.PUMPKIN) {
+			spawnGolem(event.getWorld(), event.getPos(), event.getPos().down());
 		}
 	}
 
-	private static boolean checkStructure(World worldIn, BlockPos hay, BlockPos pumpkin) {
-		return worldIn.getBlockState(hay).getBlock() == Blocks.HAY_BLOCK
-				&& worldIn.getBlockState(pumpkin).getBlock() == Blocks.CARVED_PUMPKIN;
-	}
 
+	private static void spawnGolem(World worldIn, BlockPos hay, BlockPos pumpkin) {
+		if (worldIn.getBlockState(hay).getBlock() == Blocks.HAY_BLOCK
+				&& worldIn.getBlockState(pumpkin).getBlock() == Blocks.CARVED_PUMPKIN) {
+			BlockPos pos = hay;
+			worldIn.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
+			worldIn.setBlockState(hay, Blocks.AIR.getDefaultState());
+			EntityStrawGolem strawGolem = new EntityStrawGolem(Registry.STRAW_GOLEM_TYPE, worldIn);
+			strawGolem.setPosition(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+			worldIn.addEntity(strawGolem);
+		}
+	}
 
 	@SubscribeEvent
 	public static void onGolemHurt(LivingAttackEvent event) {

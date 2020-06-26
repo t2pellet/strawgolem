@@ -9,6 +9,8 @@ import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanProvider;
 import com.commodorethrawn.strawgolem.entity.capability.memory.IMemory;
 import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryProvider;
+import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
+import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.StemGrownBlock;
 import net.minecraft.entity.EntityType;
@@ -39,6 +41,7 @@ public class EntityStrawGolem extends GolemEntity {
     public IItemHandler inventory;
     private ILifespan lifespan;
     private IMemory memory;
+    private IProfession profession;
     private BlockPos harvestPos;
 
     @Override
@@ -66,6 +69,7 @@ public class EntityStrawGolem extends GolemEntity {
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
         super(type, worldIn);
         inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
+        profession = getCapability(ProfessionProvider.PROFESSION_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
         harvestPos = BlockPos.ZERO;
     }
 
@@ -160,23 +164,15 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     public void addChestPos(BlockPos pos, boolean isPriority) {
-        if (!isPriority && !memory.containsPosition(pos))
-            memory.addPosition(pos);
-        else
-            memory.setPriorityChest(pos);
+        if (isPriority) memory.setPriorityChest(pos);
+        memory.addPosition(pos);
     }
 
     public BlockPos getChestPos() {
-        if (memory.hasPriorityChest()) {
-            return memory.getPriorityChest();
-        }
-        return memory.getClosestPosition(this.getPosition());
+        return memory.getDeliveryChest(this.getPosition());
     }
 
     public void removeChestPos(BlockPos pos) {
-        if (memory.hasPriorityChest() && memory.getPriorityChest().equals(pos)) {
-            memory.setPriorityChest(BlockPos.ZERO);
-        }
         memory.removePosition(pos);
     }
 

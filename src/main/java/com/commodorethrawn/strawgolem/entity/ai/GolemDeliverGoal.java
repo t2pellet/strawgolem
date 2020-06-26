@@ -101,6 +101,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
             }
         }
         worldIn.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        strawGolem.getNavigator().clearPath();
     }
 
     @Override

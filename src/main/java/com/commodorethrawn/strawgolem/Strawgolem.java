@@ -8,6 +8,9 @@ import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanStorage
 import com.commodorethrawn.strawgolem.entity.capability.memory.IMemory;
 import com.commodorethrawn.strawgolem.entity.capability.memory.Memory;
 import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryStorage;
+import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
+import com.commodorethrawn.strawgolem.entity.capability.profession.Profession;
+import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionStorage;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -35,6 +38,7 @@ public class Strawgolem {
         logger.info("Strawgolem common setup");
         CapabilityManager.INSTANCE.register(ILifespan.class, new LifespanStorage(), Lifespan::new);
         CapabilityManager.INSTANCE.register(IMemory.class, new MemoryStorage(), Memory::new);
+        CapabilityManager.INSTANCE.register(IProfession.class, new ProfessionStorage(), Profession::new);
     }
 
     public void clientSetup(FMLClientSetupEvent event) {
