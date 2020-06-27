@@ -6,18 +6,21 @@ import net.minecraft.block.*;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.*;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.List;
 
 public class GolemHarvestGoal extends MoveToBlockGoal {
     private final EntityStrawGolem strawgolem;
-    private Block destinationBlockType;
 
     public GolemHarvestGoal(EntityStrawGolem strawgolem, double speedIn) {
         super(strawgolem, speedIn, StrawgolemConfig.getSearchRangeHorizontal(), StrawgolemConfig.getSearchRangeVertical());
@@ -26,12 +29,14 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     @Override
     public boolean shouldExecute() {
+        /* Checks for position set by the event handler (set when a block grows nearby) */
         if (strawgolem.isHandEmpty() && shouldMoveTo(strawgolem.world, strawgolem.getHarvestPos())) {
             destinationBlock = strawgolem.getHarvestPos();
             this.runDelay = this.getRunDelay(this.creature);
             return true;
         }
         strawgolem.clearHarvestPos();
+        /* Based off the vanilla code of shouldExecute, with additional check to ensure the golems hand is empty */
         if (this.runDelay > 0) {
             --this.runDelay;
             return false;
@@ -46,6 +51,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         super.startExecuting();
     }
 
+    /* Almost copied from the vanilla tick() method, just calling doHarvest when it gets to the block and some tweaks for different kinds of blocks */
     @Override
     public void tick() {
         this.strawgolem.getLookController().setLookPosition(
@@ -55,8 +61,9 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                 10.0F,
                 this.strawgolem.getVerticalFaceSpeed());
         double targetDistance = getTargetDistanceSq();
+        Block destinationBlockType = this.strawgolem.world.getBlockState(destinationBlock).getBlock();
         if (destinationBlockType instanceof StemGrownBlock) targetDistance += 0.2D;
-        if (destinationBlockType instanceof SweetBerryBushBlock) targetDistance += 0.55D;
+        if (destinationBlockType instanceof BushBlock) targetDistance += 0.55D;
         if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), targetDistance)) {
             ++this.timeoutCounter;
             if (this.shouldMove()) {
@@ -76,48 +83,54 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         if (!worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) return false;
         BlockState block = worldIn.getBlockState(pos);
         if (StrawgolemConfig.blockHarvestAllowed(block.getBlock())) {
-            if (block.getBlock() instanceof CropsBlock && ((CropsBlock) block.getBlock()).isMaxAge(block)) {
-                destinationBlockType = block.getBlock();
+            if (block.getBlock() instanceof CropsBlock)
+                return ((CropsBlock) block.getBlock()).isMaxAge(block);
+            else if (block.getBlock() instanceof StemGrownBlock)
                 return true;
-            } else if (block.getBlock() instanceof StemGrownBlock) {
-                destinationBlockType = block.getBlock();
+            else if (block.getBlockState() == Blocks.NETHER_WART.getDefaultState().with(NetherWartBlock.AGE, 3))
                 return true;
-            } else if (block.getBlockState() == Blocks.NETHER_WART.getDefaultState().with(NetherWartBlock.AGE, 3)) {
-                destinationBlockType = block.getBlock();
-                return true;
-            } else if (worldIn.getBlockState(pos) == Blocks.SWEET_BERRY_BUSH.getDefaultState().with(SweetBerryBushBlock.AGE, 3)) {
-                destinationBlockType = block.getBlock();
-                return true;
-            } else {
-                return false;
-            }
+            else if (block.getBlock() instanceof BushBlock && block.getBlock() instanceof IGrowable)
+                return block.has(BlockStateProperties.AGE_0_3) && block.get(BlockStateProperties.AGE_0_3) == 3;
         }
         return false;
 	}
 
+	/* Handles the logic for harvesting */
     private void doHarvest() {
         ServerWorld worldIn = (ServerWorld) this.strawgolem.world;
         BlockPos pos = this.destinationBlock;
-        Block block = worldIn.getBlockState(pos).getBlock();
+        BlockState state = worldIn.getBlockState(pos);
+        Block block = state.getBlock();
+        /* If its the right block to harvest */
         if (shouldMoveTo(worldIn, pos)
-                && worldIn.destroyBlock(pos, true)
+                && worldIn.destroyBlock(pos, false)
                 && StrawgolemConfig.isReplantEnabled()) {
-            if (!(block instanceof StemGrownBlock)) {
+            if (block instanceof StemGrownBlock && StrawgolemConfig.isDeliveryEnabled()) { // Handle replanting gourd blocks
+                strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
+                List<ItemEntity> dropList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(1.0F));
+                for (ItemEntity drop : dropList) {
+                    drop.remove(false);
+                }
+            }
+            else if (block instanceof CropsBlock || block instanceof NetherWartBlock) {// Handle replanting most non-gourd blocks
                 worldIn.setBlockState(pos, block.getDefaultState());
-                List<ItemEntity> dropList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(1.0F));
-                for (ItemEntity drop : dropList) {
-                    if (StrawgolemConfig.isDeliveryEnabled() && !(drop.getItem().getItem() instanceof BlockNamedItem) || drop.getItem().getUseAction() == UseAction.EAT) {
-                        this.strawgolem.inventory.insertItem(0, drop.getItem(), false);
-                    }
-                    drop.remove(false);
-                }
-            } else {
-                if (StrawgolemConfig.isDeliveryEnabled()) {
-                    strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
-                }
-                List<ItemEntity> dropList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(1.0F));
-                for (ItemEntity drop : dropList) {
-                    drop.remove(false);
+                if (block instanceof CropsBlock) {
+                    CropsBlock crop = (CropsBlock) block;
+                    pickupDrops(worldIn, crop.withAge(crop.getMaxAge()), pos);
+                } else pickupDrops(worldIn, state.with(NetherWartBlock.AGE, 3), pos);
+            } else if (state.has(BlockStateProperties.AGE_0_3)) { // Handle anything else (I'm assuming that its going to be a bush of some sort)
+                worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
+                pickupDrops(worldIn, state.with(BlockStateProperties.AGE_0_3, 3), pos);
+            }
+        }
+    }
+
+    private void pickupDrops(ServerWorld worldIn, BlockState state, BlockPos pos) {
+        if (StrawgolemConfig.isDeliveryEnabled()) {
+            List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getTileEntity(pos));
+            for (ItemStack drop : drops) {
+                if (!(drop.getItem() instanceof BlockNamedItem) || drop.getUseAction() == UseAction.EAT || drop.getItem() == Items.NETHER_WART) {
+                    this.strawgolem.inventory.insertItem(0, drop, false);
                 }
             }
         }

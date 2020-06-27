@@ -28,6 +28,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.items.IItemHandler;
@@ -143,11 +144,17 @@ public class EntityStrawGolem extends GolemEntity {
     @Override
     protected boolean processInteract(PlayerEntity player, Hand hand) {
         if (player.getHeldItem(hand).getItem() == Items.WHEAT) {
-            setHealth(getMaxHealth());
             spawnHealParticles(lastTickPosX, lastTickPosY, lastTickPosZ);
-            if (EffectiveSide.get().isServer()) {
-                addToLifespan(14000);
-                player.getHeldItem(hand).shrink(1);
+            if (!player.isShiftKeyDown()) {
+                setHealth(getMaxHealth());
+                if (EffectiveSide.get().isServer()) {
+                    addToLifespan(14000);
+                    player.getHeldItem(hand).shrink(1);
+                }
+            } else {
+                if (EffectiveSide.get().isServer())
+                    player.sendMessage(new StringTextComponent("Ordering: ").appendSibling(getDisplayName()));
+                player.getPersistentData().putInt("golemId", getEntityId());
             }
         }
         return false;

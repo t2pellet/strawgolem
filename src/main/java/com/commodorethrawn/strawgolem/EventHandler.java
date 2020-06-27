@@ -5,11 +5,14 @@ import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
+import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -82,6 +85,19 @@ public class EventHandler {
 					break;
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void setPriorityChest(PlayerInteractEvent.RightClickBlock event) {
+		if (!event.getWorld().isRemote
+			&& event.getWorld().getTileEntity(event.getPos()) instanceof ChestTileEntity
+			&& event.getPlayer().getPersistentData().contains("golemId")
+			&& event.getHand() == Hand.MAIN_HAND
+			&& event.getPlayer().getHeldItemMainhand().getItem() == Items.WHEAT) {
+			EntityStrawGolem golem = (EntityStrawGolem) event.getWorld().getEntityByID(event.getPlayer().getPersistentData().getInt("golemId"));
+			golem.addChestPos(event.getPos(), true);
+			event.getPlayer().sendMessage(golem.getDisplayName().appendText(" will now deliver to this chest"));
 		}
 	}
 
