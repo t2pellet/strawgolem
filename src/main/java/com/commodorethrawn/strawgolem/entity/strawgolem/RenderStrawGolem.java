@@ -1,4 +1,4 @@
-package com.commodorethrawn.strawgolem.entity;
+package com.commodorethrawn.strawgolem.entity.strawgolem;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.mojang.blaze3d.matrix.MatrixStack;

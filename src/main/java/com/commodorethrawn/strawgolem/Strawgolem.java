@@ -1,7 +1,8 @@
 package com.commodorethrawn.strawgolem;
 
 import com.commodorethrawn.strawgolem.config.ConfigHolder;
-import com.commodorethrawn.strawgolem.entity.RenderStrawGolem;
+import com.commodorethrawn.strawgolem.entity.irongolem.RenderIronGolem;
+import com.commodorethrawn.strawgolem.entity.strawgolem.RenderStrawGolem;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanStorage;
@@ -11,6 +12,7 @@ import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryStorage;
 import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.Profession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionStorage;
+import net.minecraft.entity.EntityType;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -44,6 +46,7 @@ public class Strawgolem {
     public void clientSetup(FMLClientSetupEvent event) {
         logger.info("Strawgolem client setup");
         RenderingRegistry.registerEntityRenderingHandler(Registry.STRAW_GOLEM_TYPE, RenderStrawGolem::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityType.IRON_GOLEM, RenderIronGolem::new);
     }
 
 

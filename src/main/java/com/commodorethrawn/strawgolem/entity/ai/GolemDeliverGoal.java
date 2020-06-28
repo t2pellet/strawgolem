@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
-import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -43,12 +43,14 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean searchForDestination() {
-        BlockPos pos = strawGolem.getChestPos();
+        BlockPos pos = strawGolem.getMemory().getDeliveryChest(strawGolem.getPosition());
         if (shouldMoveTo(strawGolem.world, pos)) {
             this.destinationBlock = pos;
             return true;
         }
-        strawGolem.removeChestPos(pos);
+        if (strawGolem.getMemory().getPriorityChest().equals(pos))
+            strawGolem.getMemory().setPriorityChest(BlockPos.ZERO);
+        strawGolem.getMemory().removePosition(pos);
         return super.searchForDestination();
     }
 
@@ -59,7 +61,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
             posVec = posVec.add(0, 1, 0); // Used to patch the ray trace colliding with non-full-height blocks
         RayTraceContext ctx = new RayTraceContext(posVec, new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawGolem);
         if (worldIn.getTileEntity(pos) instanceof ChestTileEntity && worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) {
-            strawGolem.addChestPos(pos);
+            strawGolem.getMemory().addPosition(pos);
             return true;
         }
         return false;

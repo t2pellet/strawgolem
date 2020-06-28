@@ -1,9 +1,7 @@
-package com.commodorethrawn.strawgolem.entity;
+package com.commodorethrawn.strawgolem.entity.strawgolem;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.entity.ai.GolemDeliverGoal;
-import com.commodorethrawn.strawgolem.entity.ai.GolemHarvestGoal;
-import com.commodorethrawn.strawgolem.entity.ai.GolemWanderGoal;
+import com.commodorethrawn.strawgolem.entity.ai.*;
 import com.commodorethrawn.strawgolem.entity.capability.InventoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanProvider;
@@ -18,6 +16,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -38,7 +37,7 @@ import java.util.Random;
 
 public class EntityStrawGolem extends GolemEntity {
 	
-	public static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
+	private static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
     public IItemHandler inventory;
     private ILifespan lifespan;
     private IMemory memory;
@@ -90,8 +89,8 @@ public class EntityStrawGolem extends GolemEntity {
         this.goalSelector.addGoal(++priority, new GolemHarvestGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new GolemDeliverGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new GolemWanderGoal(this, 0.6D));
-        this.goalSelector.addGoal(++priority, new LookAtGoal(this, PlayerEntity.class, 5.0F));
-        this.goalSelector.addGoal(++priority, new LookRandomlyGoal(this));
+        this.goalSelector.addGoal(++priority, new GolemLookAtPlayerGoal(this, 5.0F));
+        this.goalSelector.addGoal(++priority, new GolemLookRandomlyGoal(this));
     }
 
     @Override
@@ -132,6 +131,7 @@ public class EntityStrawGolem extends GolemEntity {
         return Block.getBlockFromItem(inventory.getStackInSlot(0).getItem()) instanceof StemGrownBlock;
     }
 
+    /* Makes golem drop held item */
     @Override
     protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
         super.dropSpecialItems(source, looting, recentlyHitIn);
@@ -141,6 +141,7 @@ public class EntityStrawGolem extends GolemEntity {
         }
     }
 
+    /* Handle setting priority chest & healing */
     @Override
     protected boolean processInteract(PlayerEntity player, Hand hand) {
         if (player.getHeldItem(hand).getItem() == Items.WHEAT) {
@@ -162,25 +163,27 @@ public class EntityStrawGolem extends GolemEntity {
 
     private void spawnHealParticles(double x, double y, double z) {
         Random rand = new Random();
-        System.out.println("adding particle");
         world.addParticle(ParticleTypes.HEART, x + rand.nextDouble() - 0.5, y + 0.4D, z + rand.nextDouble() - 0.5, this.getMotion().x, this.getMotion().y, this.getMotion().z);
     }
 
-    public void addChestPos(BlockPos pos) {
-        addChestPos(pos, false);
+    /* Used to handle when the iron golem picks it up */
+    @Override
+    public void setPosition(double posX, double posY, double posZ) {
+        if (isPassenger() && getRidingEntity() instanceof IronGolemEntity) {
+            IronGolemEntity ironGolem = (IronGolemEntity) getRidingEntity();
+            double lookX = ironGolem.getLookVec().x;
+            double lookZ = ironGolem.getLookVec().z;
+            double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
+            lookX /= magnitude;
+            lookZ /= magnitude;
+            super.setPosition(posX + 1.9D * lookX, posY - 0.5D, posZ + 1.9D * lookZ);
+        } else {
+            super.setPosition(posX, posY, posZ);
+        }
     }
 
-    public void addChestPos(BlockPos pos, boolean isPriority) {
-        if (isPriority) memory.setPriorityChest(pos);
-        memory.addPosition(pos);
-    }
-
-    public BlockPos getChestPos() {
-        return memory.getDeliveryChest(this.getPosition());
-    }
-
-    public void removeChestPos(BlockPos pos) {
-        memory.removePosition(pos);
+    public IMemory getMemory() {
+        return memory;
     }
 
     public void setHarvesting(BlockPos pos) {

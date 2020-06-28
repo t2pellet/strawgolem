@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
-import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import net.minecraft.block.*;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.entity.item.ItemEntity;
@@ -12,10 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.List;
 
@@ -47,8 +44,8 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     }
 
     @Override
-    public void startExecuting() {
-        super.startExecuting();
+    public boolean shouldContinueExecuting() {
+        return super.shouldContinueExecuting() && !strawgolem.isPassenger();
     }
 
     /* Almost copied from the vanilla tick() method, just calling doHarvest when it gets to the block and some tweaks for different kinds of blocks */

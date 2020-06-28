@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.capability;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanProvider;
 import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionProvider;

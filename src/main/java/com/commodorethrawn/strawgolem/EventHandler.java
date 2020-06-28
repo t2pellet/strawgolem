@@ -1,9 +1,11 @@
 package com.commodorethrawn.strawgolem;
 
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
-import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.ai.PickupGolemGoal;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.item.Items;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.util.DamageSource;
@@ -12,8 +14,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -46,7 +48,7 @@ public class EventHandler {
 
 	@SubscribeEvent
 	public static void onGolemBuiltAlternate(PlayerInteractEvent.RightClickBlock event) {
-		if (event.getPlayer().getHeldItemOffhand().getItem() == Items.SHEARS
+		if (event.getPlayer().getHeldItemMainhand().getItem() == Items.SHEARS
 			&& event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.PUMPKIN) {
 			spawnGolem(event.getWorld(), event.getPos(), event.getPos().down());
 		}
@@ -96,9 +98,18 @@ public class EventHandler {
 			&& event.getHand() == Hand.MAIN_HAND
 			&& event.getPlayer().getHeldItemMainhand().getItem() == Items.WHEAT) {
 			EntityStrawGolem golem = (EntityStrawGolem) event.getWorld().getEntityByID(event.getPlayer().getPersistentData().getInt("golemId"));
-			golem.addChestPos(event.getPos(), true);
+			assert golem != null;
+			golem.getMemory().setPriorityChest(event.getPos());
+			golem.getMemory().addPosition(event.getPos());
 			event.getPlayer().sendMessage(golem.getDisplayName().appendText(" will now deliver to this chest"));
 		}
 	}
 
+	@SubscribeEvent
+	public static void ironGolemSpawn(EntityJoinWorldEvent event) {
+		if (!event.getWorld().isRemote && event.getEntity() instanceof IronGolemEntity) {
+			IronGolemEntity golem = (IronGolemEntity) event.getEntity();
+			golem.goalSelector.addGoal(2, new PickupGolemGoal(golem, 0.8D));
+		}
+	}
 }

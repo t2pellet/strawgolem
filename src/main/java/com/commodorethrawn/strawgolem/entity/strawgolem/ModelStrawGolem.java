@@ -1,4 +1,4 @@
-package com.commodorethrawn.strawgolem.entity;
+package com.commodorethrawn.strawgolem.entity.strawgolem;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.IHasArm;
 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
 
