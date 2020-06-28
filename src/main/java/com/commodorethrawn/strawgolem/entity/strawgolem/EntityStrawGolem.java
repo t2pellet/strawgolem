@@ -11,10 +11,10 @@ import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.StemGrownBlock;
+import net.minecraft.command.impl.PlaySoundCommand;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,22 +22,25 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.items.IItemHandler;
 
-import javax.annotation.Nullable;
 import java.util.Random;
 
 public class EntityStrawGolem extends GolemEntity {
-	
 	private static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
+    public static final SoundEvent GOLEM_AMBIENT = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_ambient"));
+    public static final SoundEvent GOLEM_STRAINED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_strained"));
+    public static final SoundEvent GOLEM_HURT = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_hurt"));
+    public static final SoundEvent GOLEM_DEATH = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_death"));
+    public static final SoundEvent GOLEM_HEAL = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_heal"));
+    public static final SoundEvent GOLEM_SCARED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_scared"));
+    public static final SoundEvent GOLEM_INTERESTED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_interested"));
+
     public IItemHandler inventory;
     private ILifespan lifespan;
     private IMemory memory;
@@ -50,15 +53,19 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     @Override
-    @Nullable
     protected SoundEvent getAmbientSound() {
-        return null; // TODO
+        if (holdingBlockCrop()) return GOLEM_STRAINED;
+        return GOLEM_AMBIENT;
     }
 
     @Override
-    @Nullable
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+        return GOLEM_HURT;
+    }
+
+    @Override
     protected SoundEvent getDeathSound() {
-        return null; // TODO
+        return GOLEM_DEATH;
     }
 
     @Override
@@ -76,7 +83,7 @@ public class EntityStrawGolem extends GolemEntity {
     @Override
     protected void registerAttributes() {
         super.registerAttributes();
-        this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(2.0D);
+        this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(3.0D);
         this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
     }
 
@@ -84,8 +91,8 @@ public class EntityStrawGolem extends GolemEntity {
     protected void registerGoals() {
         int priority = 0;
         this.goalSelector.addGoal(priority, new SwimGoal(this));
-        this.goalSelector.addGoal(++priority, new AvoidEntityGoal<>(this, MonsterEntity.class, 10.0F, 0.6D, 0.75D));
-        this.goalSelector.addGoal(++priority, new TemptGoal(this, 0.7D, false, Ingredient.fromItems(Items.APPLE)));
+        this.goalSelector.addGoal(++priority, new GolemFleeGoal(this));
+        this.goalSelector.addGoal(++priority, new GolemTemptGoal(this));
         this.goalSelector.addGoal(++priority, new GolemHarvestGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new GolemDeliverGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new GolemWanderGoal(this, 0.6D));
@@ -105,6 +112,7 @@ public class EntityStrawGolem extends GolemEntity {
 
         lifespan.update();
         if (holdingBlockCrop()) lifespan.update();
+        if (world.isRainingAt(getPosition()) && world.canSeeSky(getPosition())) lifespan.update();
 
         if (lifespan.isOver())
             attackEntityFrom(DamageSource.MAGIC, getMaxHealth() * 100);
@@ -149,6 +157,7 @@ public class EntityStrawGolem extends GolemEntity {
             if (!player.isShiftKeyDown()) {
                 setHealth(getMaxHealth());
                 if (EffectiveSide.get().isServer()) {
+                    playSound(GOLEM_HEAL, 1.0F, 1.0F);
                     addToLifespan(14000);
                     player.getHeldItem(hand).shrink(1);
                 }
