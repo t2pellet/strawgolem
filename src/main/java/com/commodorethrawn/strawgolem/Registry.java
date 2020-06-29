@@ -13,6 +13,10 @@ public class Registry {
 
     public static EntityType<EntityStrawGolem> STRAW_GOLEM_TYPE;
 
+    /**
+     * Registers the entities of the mod
+     * @param event
+     */
     @SubscribeEvent
     public static void registerEntity(final RegistryEvent.Register<EntityType<?>> event) {
         STRAW_GOLEM_TYPE = EntityType.Builder.create(EntityStrawGolem::new, EntityClassification.CREATURE)
@@ -22,6 +26,10 @@ public class Registry {
         event.getRegistry().register(STRAW_GOLEM_TYPE);
     }
 
+    /**
+     * Registers the sounds of the mod
+     * @param event
+     */
     @SubscribeEvent
     public static void registerSound(final RegistryEvent.Register<SoundEvent> event) {
         event.getRegistry().registerAll(

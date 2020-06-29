@@ -11,18 +11,20 @@ import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.StemGrownBlock;
-import net.minecraft.command.impl.PlaySoundCommand;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.*;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -54,7 +56,9 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        if (holdingBlockCrop()) return GOLEM_STRAINED;
+        if (goalSelector.getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof GolemFleeGoal))
+            return GOLEM_SCARED;
+        else if (holdingBlockCrop()) return GOLEM_STRAINED;
         return GOLEM_AMBIENT;
     }
 
@@ -123,6 +127,9 @@ public class EntityStrawGolem extends GolemEntity {
         return false;
     }
 
+    /**
+     * @return whether the hand is empty
+     */
     public boolean isHandEmpty() {
         return getHeldItemMainhand().isEmpty();
     }
@@ -135,6 +142,9 @@ public class EntityStrawGolem extends GolemEntity {
         return ItemStack.EMPTY;
     }
 
+    /**
+     * @return whether the golem is holding a gourd block
+     */
     public boolean holdingBlockCrop() {
         return Block.getBlockFromItem(inventory.getStackInSlot(0).getItem()) instanceof StemGrownBlock;
     }
@@ -159,7 +169,7 @@ public class EntityStrawGolem extends GolemEntity {
                 if (EffectiveSide.get().isServer()) {
                     playSound(GOLEM_HEAL, 1.0F, 1.0F);
                     addToLifespan(14000);
-                    player.getHeldItem(hand).shrink(1);
+                    if (!player.isCreative()) player.getHeldItem(hand).shrink(1);
                 }
             } else {
                 if (EffectiveSide.get().isServer())
@@ -170,6 +180,12 @@ public class EntityStrawGolem extends GolemEntity {
         return false;
     }
 
+    /**
+     * Spawns the heal particles based on location x, y, z
+     * @param x
+     * @param y
+     * @param z
+     */
     private void spawnHealParticles(double x, double y, double z) {
         Random rand = new Random();
         world.addParticle(ParticleTypes.HEART, x + rand.nextDouble() - 0.5, y + 0.4D, z + rand.nextDouble() - 0.5, this.getMotion().x, this.getMotion().y, this.getMotion().z);
@@ -191,22 +207,53 @@ public class EntityStrawGolem extends GolemEntity {
         }
     }
 
+    @Override
+    public void stopRiding() {
+        LivingEntity ridingEntity = (LivingEntity) getRidingEntity();
+        super.stopRiding();
+        if (ridingEntity instanceof IronGolemEntity) {
+            double lookX = ridingEntity.getLookVec().x;
+            double lookZ = ridingEntity.getLookVec().z;
+            double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
+            lookX /= magnitude;
+            lookZ /= magnitude;
+            super.setPosition(getPositionVec().x + lookX, getPositionVec().y, getPositionVec().z + lookZ);
+        }
+    }
+
+    /**
+     * @return the golem's memory capability
+     */
     public IMemory getMemory() {
         return memory;
     }
 
+    /**
+     * Sets the harvest position to pos
+     * @param pos
+     */
     public void setHarvesting(BlockPos pos) {
         harvestPos = pos;
     }
 
+    /**
+     * @return the harvest position
+     */
     public BlockPos getHarvestPos() {
         return harvestPos;
     }
 
+    /**
+     * Clears the harvest position
+     */
     public void clearHarvestPos() {
         harvestPos = BlockPos.ZERO;
     }
 
+    /**
+     * Adds time to the lifespan
+     * @param time
+     */
     public void addToLifespan(int time) {
         lifespan.set(lifespan.get() + time);
     }

@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.IHasArm;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
 
@@ -16,9 +15,9 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 	private final ModelRenderer Head;
 	private final ModelRenderer Body;
 	private final ModelRenderer rightleg;
-	private final ModelRenderer Leftleg;
-	private final ModelRenderer Rightarm;
-	private final ModelRenderer Leftarm;
+	private final ModelRenderer leftleg;
+	private final ModelRenderer rightArm;
+	private final ModelRenderer leftArm;
 
     public boolean holdingItem;
     public boolean holdingBlock;
@@ -42,17 +41,17 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 		rightleg.setRotationPoint(-2.0F, 21.0F, 0.0F);
 		rightleg.setTextureOffset(12, 43).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 3.0F, 2.0F, 0.0F, false);
 
-		Leftleg = new ModelRenderer(this);
-		Leftleg.setRotationPoint(2.0F, 21.0F, 0.0F);
-		Leftleg.setTextureOffset(12, 43).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 3.0F, 2.0F, 0.0F, false);
+		leftleg = new ModelRenderer(this);
+		leftleg.setRotationPoint(2.0F, 21.0F, 0.0F);
+		leftleg.setTextureOffset(12, 43).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 3.0F, 2.0F, 0.0F, false);
 
-		Rightarm = new ModelRenderer(this);
-		Rightarm.setRotationPoint(-5.0F, 12.0F, 0.0F);
-		Rightarm.setTextureOffset(4, 39).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F, 0.0F, false);
+		rightArm = new ModelRenderer(this);
+		rightArm.setRotationPoint(-5.0F, 12.0F, 0.0F);
+		rightArm.setTextureOffset(4, 39).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F, 0.0F, false);
 
-		Leftarm = new ModelRenderer(this);
-		Leftarm.setRotationPoint(5.0F, 12.0F, 0.0F);
-		Leftarm.setTextureOffset(4, 39).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F, 0.0F, false);
+		leftArm = new ModelRenderer(this);
+		leftArm.setRotationPoint(5.0F, 12.0F, 0.0F);
+		leftArm.setTextureOffset(4, 39).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F, 0.0F, false);
 	}
 
 	@Override
@@ -67,42 +66,42 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 		float swingAmountArm = 1.7F * limbSwingAmount;
 		float swingAmoungLeg = 2.5F * limbSwingAmount;
 
-		this.Rightarm.rotateAngleX = MathHelper.cos(auxLimbSwing + (float) Math.PI) * swingAmountArm;
-		this.Leftarm.rotateAngleX = MathHelper.cos(auxLimbSwing) * swingAmountArm;
-		this.Rightarm.rotateAngleZ = 0.0F;
-		this.Leftarm.rotateAngleZ = 0.0F;
+		this.rightArm.rotateAngleX = MathHelper.cos(auxLimbSwing + (float) Math.PI) * swingAmountArm;
+		this.leftArm.rotateAngleX = MathHelper.cos(auxLimbSwing) * swingAmountArm;
+		this.rightArm.rotateAngleZ = 0.0F;
+		this.leftArm.rotateAngleZ = 0.0F;
 		this.rightleg.rotateAngleX = MathHelper.cos(auxLimbSwing) * swingAmoungLeg;
-		this.Leftleg.rotateAngleX = MathHelper.cos(auxLimbSwing + (float) Math.PI) * swingAmoungLeg;
+		this.leftleg.rotateAngleX = MathHelper.cos(auxLimbSwing + (float) Math.PI) * swingAmoungLeg;
 		this.rightleg.rotateAngleY = 0.0F;
-		this.Leftleg.rotateAngleY = 0.0F;
+		this.leftleg.rotateAngleY = 0.0F;
 		this.rightleg.rotateAngleZ = 0.0F;
-		this.Leftleg.rotateAngleZ = 0.0F;
+		this.leftleg.rotateAngleZ = 0.0F;
 
-		this.Rightarm.rotateAngleY = 0.0F;
-		this.Rightarm.rotateAngleZ = 0.0F;
+		this.rightArm.rotateAngleY = 0.0F;
+		this.rightArm.rotateAngleZ = 0.0F;
 
-		this.Leftarm.rotateAngleY = 0.0F;
+		this.leftArm.rotateAngleY = 0.0F;
 
-		this.Rightarm.rotateAngleY = 0.0F;
+		this.rightArm.rotateAngleY = 0.0F;
 
 		this.Body.rotateAngleX = 0.0F;
 
 		// Arms idle movement
         if (holdingBlock) {
-            this.Rightarm.rotateAngleX = (float) Math.PI;
-            this.Leftarm.rotateAngleX = (float) Math.PI;
+            this.rightArm.rotateAngleX = (float) Math.PI;
+            this.leftArm.rotateAngleX = (float) Math.PI;
         } else if (holdingItem) {
-            this.Rightarm.rotateAngleX = (float) -(0.29D * Math.PI);
-            this.Rightarm.rotateAngleY = (float) -(0.12D * Math.PI);
-            this.Rightarm.rotateAngleZ = (float) (0.08D * Math.PI);
-            this.Leftarm.rotateAngleX = (float) -(0.29D * Math.PI);
-            this.Leftarm.rotateAngleY = (float) (0.12D * Math.PI);
-            this.Leftarm.rotateAngleZ = (float) -(0.08D * Math.PI);
+            this.rightArm.rotateAngleX = (float) -(0.29D * Math.PI);
+            this.rightArm.rotateAngleY = (float) -(0.12D * Math.PI);
+            this.rightArm.rotateAngleZ = (float) (0.08D * Math.PI);
+            this.leftArm.rotateAngleX = (float) -(0.29D * Math.PI);
+            this.leftArm.rotateAngleY = (float) (0.12D * Math.PI);
+            this.leftArm.rotateAngleZ = (float) -(0.08D * Math.PI);
         } else {
-            this.Rightarm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
-            this.Leftarm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
-            this.Rightarm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
-            this.Leftarm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
+            this.rightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
+            this.leftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.06F + 0.06F;
+            this.rightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
+            this.leftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.06F;
         }
 	}
 
@@ -111,9 +110,9 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 		Head.render(matrixStack, buffer, packedLight, packedOverlay);
 		Body.render(matrixStack, buffer, packedLight, packedOverlay);
 		rightleg.render(matrixStack, buffer, packedLight, packedOverlay);
-		Leftleg.render(matrixStack, buffer, packedLight, packedOverlay);
-		Rightarm.render(matrixStack, buffer, packedLight, packedOverlay);
-		Leftarm.render(matrixStack, buffer, packedLight, packedOverlay);
+		leftleg.render(matrixStack, buffer, packedLight, packedOverlay);
+		rightArm.render(matrixStack, buffer, packedLight, packedOverlay);
+		leftArm.render(matrixStack, buffer, packedLight, packedOverlay);
 	}
 
 	@Override

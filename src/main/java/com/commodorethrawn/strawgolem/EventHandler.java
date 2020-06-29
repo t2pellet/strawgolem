@@ -27,6 +27,10 @@ import java.util.List;
 @EventBusSubscriber(modid = Strawgolem.MODID, bus = EventBusSubscriber.Bus.FORGE)
 public class EventHandler {
 
+	/**
+	 * Handles golem building based on block placement
+	 * @param event
+	 */
 	@SubscribeEvent
 	public static void onGolemBuilt(BlockEvent.EntityPlaceEvent event) {
 		World worldIn = (World) event.getWorld();

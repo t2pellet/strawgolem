@@ -92,7 +92,10 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         return false;
 	}
 
-	/* Handles the logic for harvesting */
+    /**
+     * Handles the harvesting logic
+     * Destroys the target crop, picking it up if delivery is enabled, replanting if enabled
+     */
     private void doHarvest() {
         ServerWorld worldIn = (ServerWorld) this.strawgolem.world;
         BlockPos pos = this.destinationBlock;
@@ -122,6 +125,12 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         }
     }
 
+    /**
+     * Picks up the drops of the crop at pos if deliver is enabled
+     * @param worldIn
+     * @param state
+     * @param pos
+     */
     private void pickupDrops(ServerWorld worldIn, BlockState state, BlockPos pos) {
         if (StrawgolemConfig.isDeliveryEnabled()) {
             List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getTileEntity(pos));

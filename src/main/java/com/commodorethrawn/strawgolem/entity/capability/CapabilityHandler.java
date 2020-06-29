@@ -19,6 +19,10 @@ public class CapabilityHandler {
     public static final ResourceLocation MEMORY_RES = new ResourceLocation(Strawgolem.MODID, "memory");
     public static final ResourceLocation PROFESSION_RES = new ResourceLocation(Strawgolem.MODID, "profession");
 
+    /**
+     * Attaches the mods capabilities
+     * @param event
+     */
 	@SubscribeEvent
 	public static void onAttachCapability(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof EntityStrawGolem) {

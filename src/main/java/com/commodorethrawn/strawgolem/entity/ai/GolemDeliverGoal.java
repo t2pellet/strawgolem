@@ -89,6 +89,10 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
         }
     }
 
+    /**
+     * Handles the logic for deposits
+     * Finds first empty/compatible slot in the chest and puts the golem's held item there
+     */
     private void doDeposit() {
         ServerWorld worldIn = (ServerWorld) this.strawGolem.world;
         BlockPos pos = this.destinationBlock;

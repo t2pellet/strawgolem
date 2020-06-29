@@ -25,7 +25,7 @@ public class PickupGolemGoal extends Goal {
     public boolean shouldExecute() {
         if (!this.ironGolem.world.isDaytime() || ironGolem.getPassengers().size() != 0) {
             return false;
-        } else if (this.ironGolem.getRNG().nextInt(2000) != 0) {
+        } else if (this.ironGolem.getRNG().nextInt(5) != 0) {
             return false;
         } else {
             this.strawGolem = this.ironGolem.world.getClosestEntityWithinAABB(EntityStrawGolem.class, predicate, this.ironGolem, this.ironGolem.getPosX(), this.ironGolem.getPosY(), this.ironGolem.getPosZ(), this.ironGolem.getBoundingBox().grow(15.0D, 4.0D, 15.0D));
@@ -55,6 +55,7 @@ public class PickupGolemGoal extends Goal {
                 strawGolem.setInvulnerable(true);
             }
             strawGolem.getLookController().setLookPositionWithEntity(ironGolem, 10.0F, strawGolem.getVerticalFaceSpeed());
+            ironGolem.getNavigator().clearPath();
             if(pickupTime == 1) {
                 strawGolem.stopRiding();
                 strawGolem.setInvulnerable(false);

@@ -6,6 +6,10 @@ import net.minecraft.client.renderer.entity.model.SegmentedModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.entity.passive.IronGolemEntity;
 
+/**
+ * Replacement for vanilla golem model
+ * @param <T>
+ */
 public class ModelIronGolem<T extends IronGolemEntity> extends SegmentedModel<T> {
     private final ModelRenderer ironGolemHead;
     private final ModelRenderer ironGolemBody;
@@ -53,6 +57,13 @@ public class ModelIronGolem<T extends IronGolemEntity> extends SegmentedModel<T>
         this.ironGolemRightLeg.rotateAngleY = 0.0F;
     }
 
+    /**
+     * Same as original, except when holding a straw golem
+     * @param entityIn
+     * @param limbSwing
+     * @param limbSwingAmount
+     * @param partialTick
+     */
     @Override
     public void setLivingAnimations(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
         int i = entityIn.getAttackTimer();
