@@ -128,6 +128,7 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     /**
+     * Returns true if the golem is not holding anything, and false otherwise
      * @return whether the hand is empty
      */
     public boolean isHandEmpty() {
@@ -143,6 +144,7 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     /**
+     * Returns true if the golem is holding a block crop, and false otherwise
      * @return whether the golem is holding a gourd block
      */
     public boolean holdingBlockCrop() {
@@ -222,6 +224,7 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     /**
+     * Returnns the memory, capability, used to store and retrieve chest positions
      * @return the golem's memory capability
      */
     public IMemory getMemory() {
@@ -237,6 +240,7 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     /**
+     * Returns the position to be used to initiate the GolemHarvestGoal
      * @return the harvest position
      */
     public BlockPos getHarvestPos() {

@@ -3,13 +3,12 @@ package com.commodorethrawn.strawgolem;
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.entity.ai.PickupGolemGoal;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.*;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.item.Items;
+import net.minecraft.state.DirectionProperty;
 import net.minecraft.tileentity.ChestTileEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
@@ -19,6 +18,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
@@ -54,7 +54,12 @@ public class EventHandler {
 	public static void onGolemBuiltAlternate(PlayerInteractEvent.RightClickBlock event) {
 		if (event.getPlayer().getHeldItemMainhand().getItem() == Items.SHEARS
 			&& event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.PUMPKIN) {
-			spawnGolem(event.getWorld(), event.getPos(), event.getPos().down());
+			Direction facing = event.getPlayer().getHorizontalFacing().getOpposite();
+			event.getWorld().setBlockState(event.getPos(), Blocks.CARVED_PUMPKIN.getDefaultState().with(HorizontalBlock.HORIZONTAL_FACING, facing));
+			event.setCanceled(true);
+			event.getWorld().playSound(event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F, true);
+			event.getPlayer().getHeldItemMainhand().damageItem(1, event.getPlayer(), p -> p.sendBreakAnimation(Hand.MAIN_HAND));
+			spawnGolem(event.getWorld(), event.getPos().down(), event.getPos());
 		}
 	}
 

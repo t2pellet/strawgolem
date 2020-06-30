@@ -7,12 +7,15 @@ import net.minecraft.entity.passive.IronGolemEntity;
 
 import java.util.EnumSet;
 
+/**
+ * Task responsible for iron golems picking up straw golems
+ */
 public class PickupGolemGoal extends Goal {
 
     private final double speed;
     private EntityStrawGolem strawGolem;
     private final IronGolemEntity ironGolem;
-    private static final EntityPredicate predicate = (new EntityPredicate()).setDistance(15.0D).allowFriendlyFire().setLineOfSiteRequired();
+    private static final EntityPredicate predicate = (new EntityPredicate()).setDistance(10.0D).allowFriendlyFire().setLineOfSiteRequired();
     private int pickupTime;
 
     public PickupGolemGoal(IronGolemEntity creature, double speedIn) {
@@ -23,14 +26,13 @@ public class PickupGolemGoal extends Goal {
 
     @Override
     public boolean shouldExecute() {
-        if (!this.ironGolem.world.isDaytime() || ironGolem.getPassengers().size() != 0) {
-            return false;
-        } else if (this.ironGolem.getRNG().nextInt(5) != 0) {
-            return false;
-        } else {
-            this.strawGolem = this.ironGolem.world.getClosestEntityWithinAABB(EntityStrawGolem.class, predicate, this.ironGolem, this.ironGolem.getPosX(), this.ironGolem.getPosY(), this.ironGolem.getPosZ(), this.ironGolem.getBoundingBox().grow(15.0D, 4.0D, 15.0D));
+        if (this.ironGolem.world.isDaytime()
+            && this.ironGolem.getRNG().nextInt(4000) == 0
+            && this.ironGolem.getPassengers().size() == 0) {
+            strawGolem = ironGolem.world.getClosestEntityWithinAABB(EntityStrawGolem.class, predicate, this.ironGolem, this.ironGolem.getPosX(), this.ironGolem.getPosY(), this.ironGolem.getPosZ(), this.ironGolem.getBoundingBox().grow(10.0D, 3.0D, 10.0D));
             return strawGolem != null && strawGolem.isHandEmpty() && !strawGolem.isPassenger();
         }
+        return false;
     }
 
     @Override
@@ -46,8 +48,8 @@ public class PickupGolemGoal extends Goal {
 
     @Override
     public void tick() {
-        strawGolem.getLookController().setLookPositionWithEntity(strawGolem, 0.0F, 0.0F);
         if (strawGolem.getRidingEntity() != ironGolem && strawGolem.getDistance(ironGolem) > 2.2D) {
+            strawGolem.getLookController().setLookPositionWithEntity(strawGolem, 0.0F, 0.0F);
             ironGolem.getNavigator().tryMoveToEntityLiving(strawGolem, speed);
         } else {
             if (!strawGolem.isPassenger()) {

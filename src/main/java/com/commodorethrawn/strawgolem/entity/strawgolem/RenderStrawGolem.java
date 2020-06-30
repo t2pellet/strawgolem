@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.HeldItemLayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.biome.Biome;
 
 public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGolem> {
 
@@ -14,7 +15,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
 
 	public RenderStrawGolem(EntityRendererManager rendermanagerIn) {
 		super(rendermanagerIn, new ModelStrawGolem(), 0.5f);
-        this.addLayer(new HeldItemLayer(this));
+        this.addLayer(new HeldItemLayer<>(this));
     }
 
     @Override
@@ -22,6 +23,14 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         ModelStrawGolem golem = this.getEntityModel();
         golem.holdingItem = !entityIn.isHandEmpty();
         golem.holdingBlock = entityIn.holdingBlockCrop();
+        // Shivering movement
+        Biome b = entityIn.world.getBiome(entityIn.getPosition());
+        if (b.getTempCategory() == Biome.TempCategory.COLD ||
+                (b.getTempCategory() == Biome.TempCategory.MEDIUM && entityIn.getPosY() > 100)) {
+            double offX = entityIn.getRNG().nextDouble() / 24 - 1 / 48F;
+            double offZ = entityIn.getRNG().nextDouble() / 24 - 1 / 48F;
+            matrixStackIn.translate(offX, 0, offZ);
+        }
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
