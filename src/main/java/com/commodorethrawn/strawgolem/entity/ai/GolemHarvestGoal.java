@@ -4,15 +4,14 @@ import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import net.minecraft.block.*;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.*;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 import java.util.List;
 
@@ -103,40 +102,19 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         Block block = state.getBlock();
         /* If its the right block to harvest */
         if (shouldMoveTo(worldIn, pos)
-                && worldIn.destroyBlock(pos, false)
-                && StrawgolemConfig.isReplantEnabled()) {
-            if (block instanceof StemGrownBlock && StrawgolemConfig.isDeliveryEnabled()) { // Handle replanting gourd blocks
+                && worldIn.destroyBlock(pos, true)) {
+            if (block instanceof StemGrownBlock) {
                 strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
-                List<ItemEntity> dropList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(1.0F));
-                for (ItemEntity drop : dropList) {
-                    drop.remove(false);
-                }
-            }
-            else if (block instanceof CropsBlock || block instanceof NetherWartBlock) {// Handle replanting most non-gourd blocks
-                worldIn.setBlockState(pos, block.getDefaultState());
+            } else {
                 if (block instanceof CropsBlock) {
                     CropsBlock crop = (CropsBlock) block;
-                    pickupDrops(worldIn, crop.withAge(crop.getMaxAge()), pos);
-                } else pickupDrops(worldIn, state.with(NetherWartBlock.AGE, 3), pos);
-            } else if (state.has(BlockStateProperties.AGE_0_3)) { // Handle anything else (I'm assuming that its going to be a bush of some sort)
-                worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
-                pickupDrops(worldIn, state.with(BlockStateProperties.AGE_0_3, 3), pos);
-            }
-        }
-    }
-
-    /**
-     * Picks up the drops of the crop at pos if deliver is enabled
-     * @param worldIn
-     * @param state
-     * @param pos
-     */
-    private void pickupDrops(ServerWorld worldIn, BlockState state, BlockPos pos) {
-        if (StrawgolemConfig.isDeliveryEnabled()) {
-            List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getTileEntity(pos));
-            for (ItemStack drop : drops) {
-                if (!(drop.getItem() instanceof BlockNamedItem) || drop.getUseAction() == UseAction.EAT || drop.getItem() == Items.NETHER_WART) {
-                    this.strawgolem.inventory.insertItem(0, drop, false);
+                    if (StrawgolemConfig.isReplantEnabled()) worldIn.setBlockState(pos, crop.getDefaultState());
+                } else if (state.has(BlockStateProperties.AGE_0_3)) {
+                    if (StrawgolemConfig.isReplantEnabled()) {
+                        if (block == Blocks.NETHER_WART_BLOCK) worldIn.setBlockState(pos, block.getDefaultState());
+                        else
+                            worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
+                    }
                 }
             }
         }

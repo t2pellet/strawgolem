@@ -11,10 +11,12 @@ import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.StemGrownBlock;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -141,6 +143,30 @@ public class EntityStrawGolem extends GolemEntity {
             return inventory.getStackInSlot(0);
         }
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public boolean canPickUpLoot() {
+        return true;
+    }
+
+    @Override
+    public boolean canPickUpItem(ItemStack itemstackIn) {
+        if (isHandEmpty()) return true;
+        if (itemstackIn.getItem() == getHeldItemMainhand().getItem()) {
+            return itemstackIn.getCount() + getHeldItemMainhand().getCount() < getHeldItemMainhand().getMaxStackSize();
+        }
+        return false;
+    }
+
+    @Override
+    public void onItemPickup(Entity entityIn, int quantity) {
+        if (entityIn instanceof ItemEntity) {
+            ItemEntity item = (ItemEntity) entityIn;
+            ItemStack stack = item.getItem();
+            inventory.insertItem(0, stack, false);
+        }
+        super.onItemPickup(entityIn, quantity);
     }
 
     /**
