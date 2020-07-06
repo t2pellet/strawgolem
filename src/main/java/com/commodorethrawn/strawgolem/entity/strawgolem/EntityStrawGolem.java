@@ -152,9 +152,11 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     public boolean canPickUpItem(ItemStack itemstackIn) {
-        if (isHandEmpty()) return true;
-        if (itemstackIn.getItem() == getHeldItemMainhand().getItem()) {
-            return itemstackIn.getCount() + getHeldItemMainhand().getCount() < getHeldItemMainhand().getMaxStackSize();
+        if (isHandEmpty() || itemstackIn.getItem() == getHeldItemMainhand().getItem()) {
+            return (itemstackIn.getUseAction() == UseAction.EAT
+                    || itemstackIn.getItem() == Items.NETHER_WART
+                    || !(itemstackIn.getItem() instanceof BlockItem))
+                    && itemstackIn.getCount() + getHeldItemMainhand().getCount() < getHeldItemMainhand().getMaxStackSize();
         }
         return false;
     }
@@ -248,6 +250,29 @@ public class EntityStrawGolem extends GolemEntity {
             super.setPosition(getPositionVec().x + lookX, getPositionVec().y, getPositionVec().z + lookZ);
         }
     }
+
+    /* Helps with harvesting goal */
+
+    public boolean shouldHarvestBlock(IWorldReader worldIn, BlockPos pos) {
+        Vec3d posVec = getPositionVec();
+        if (posVec.getY() % 1 > 0.01) posVec = posVec.add(0, 1, 0);
+        RayTraceContext ctx = new RayTraceContext(posVec, new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this);
+        if (!worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) return false;
+        BlockState block = worldIn.getBlockState(pos);
+        if (StrawgolemConfig.blockHarvestAllowed(block.getBlock())) {
+            if (block.getBlock() instanceof CropsBlock)
+                return ((CropsBlock) block.getBlock()).isMaxAge(block);
+            else if (block.getBlock() instanceof StemGrownBlock)
+                return true;
+            else if (block.getBlock() == Blocks.NETHER_WART)
+                return block.get(NetherWartBlock.AGE) == 3;
+            else if (block.getBlock() instanceof BushBlock && block.getBlock() instanceof IGrowable)
+                return block.has(BlockStateProperties.AGE_0_3) && block.get(BlockStateProperties.AGE_0_3) == 3;
+        }
+        return false;
+    }
+
+    /* Handles capabilities */
 
     /**
      * Returnns the memory, capability, used to store and retrieve chest positions

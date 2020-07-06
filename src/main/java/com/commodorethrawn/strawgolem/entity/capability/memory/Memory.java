@@ -22,7 +22,7 @@ public class Memory implements IMemory {
 
     @Override
     public BlockPos getDeliveryChest(BlockPos pos) {
-        if (priority != BlockPos.ZERO) return priority;
+        if (!priority.equals(BlockPos.ZERO)) return priority;
         if (posList.size() == 0) return BlockPos.ZERO;
         BlockPos closest = BlockPos.ZERO;
         for (BlockPos chestPos : posList) {

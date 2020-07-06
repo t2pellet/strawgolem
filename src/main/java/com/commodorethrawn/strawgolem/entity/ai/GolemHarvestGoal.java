@@ -3,12 +3,13 @@ package com.commodorethrawn.strawgolem.entity.ai;
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import net.minecraft.block.*;
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.*;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.*;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
@@ -26,20 +27,25 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     @Override
     public boolean shouldExecute() {
         /* Checks for position set by the event handler (set when a block grows nearby) */
-        if (strawgolem.isHandEmpty() && shouldMoveTo(strawgolem.world, strawgolem.getHarvestPos())) {
+        if (strawgolem.isHandEmpty() && !strawgolem.getHarvestPos().equals(BlockPos.ZERO)) {
             destinationBlock = strawgolem.getHarvestPos();
-            this.runDelay = this.getRunDelay(this.creature);
-            return true;
+            this.runDelay = getRunDelay(this.creature);
+            strawgolem.clearHarvestPos();
+            return strawgolem.shouldHarvestBlock(strawgolem.world, destinationBlock);
         }
-        strawgolem.clearHarvestPos();
         /* Based off the vanilla code of shouldExecute, with additional check to ensure the golems hand is empty */
         if (this.runDelay > 0) {
             --this.runDelay;
             return false;
         } else {
-            this.runDelay = this.getRunDelay(this.creature);
+            this.runDelay = getRunDelay(this.creature);
             return strawgolem.isHandEmpty() && this.searchForDestination();
         }
+    }
+
+    @Override
+    protected int getRunDelay(CreatureEntity creatureIn) {
+        return 240;
     }
 
     @Override
@@ -59,7 +65,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         double targetDistance = getTargetDistanceSq();
         Block destinationBlockType = this.strawgolem.world.getBlockState(destinationBlock).getBlock();
         if (destinationBlockType instanceof StemGrownBlock) targetDistance += 0.2D;
-        if (destinationBlockType instanceof BushBlock) targetDistance += 0.55D;
+        if (destinationBlockType instanceof BushBlock) targetDistance += 0.5D;
         if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), targetDistance)) {
             ++this.timeoutCounter;
             if (this.shouldMove()) {
@@ -73,22 +79,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     @Override
 	protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
-        Vec3d posVec = strawgolem.getPositionVec();
-        if (posVec.getY() % 1 > 0.01) posVec = posVec.add(0, 1, 0);
-        RayTraceContext ctx = new RayTraceContext(posVec, new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawgolem);
-        if (!worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) return false;
-        BlockState block = worldIn.getBlockState(pos);
-        if (StrawgolemConfig.blockHarvestAllowed(block.getBlock())) {
-            if (block.getBlock() instanceof CropsBlock)
-                return ((CropsBlock) block.getBlock()).isMaxAge(block);
-            else if (block.getBlock() instanceof StemGrownBlock)
-                return true;
-            else if (block.getBlockState() == Blocks.NETHER_WART.getDefaultState().with(NetherWartBlock.AGE, 3))
-                return true;
-            else if (block.getBlock() instanceof BushBlock && block.getBlock() instanceof IGrowable)
-                return block.has(BlockStateProperties.AGE_0_3) && block.get(BlockStateProperties.AGE_0_3) == 3;
-        }
-        return false;
+        return strawgolem.shouldHarvestBlock(worldIn, pos) && strawgolem.isHandEmpty();
 	}
 
     /**
@@ -102,18 +93,33 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         Block block = state.getBlock();
         /* If its the right block to harvest */
         if (shouldMoveTo(worldIn, pos)
-                && worldIn.destroyBlock(pos, true)) {
-            if (block instanceof StemGrownBlock) {
-                strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
-            } else {
+                && worldIn.destroyBlock(pos, false)) {
+            if (StrawgolemConfig.isReplantEnabled()) {
                 if (block instanceof CropsBlock) {
                     CropsBlock crop = (CropsBlock) block;
-                    if (StrawgolemConfig.isReplantEnabled()) worldIn.setBlockState(pos, crop.getDefaultState());
-                } else if (state.has(BlockStateProperties.AGE_0_3)) {
-                    if (StrawgolemConfig.isReplantEnabled()) {
-                        if (block == Blocks.NETHER_WART_BLOCK) worldIn.setBlockState(pos, block.getDefaultState());
-                        else
-                            worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
+                    worldIn.setBlockState(pos, crop.getDefaultState());
+                } else if (block instanceof NetherWartBlock) {
+                    worldIn.setBlockState(pos, block.getDefaultState().with(NetherWartBlock.AGE, 0));
+                } else if (state.has(BlockStateProperties.AGE_0_3) && block instanceof BushBlock) { // Bushes
+                    worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
+                }
+            }
+            if (StrawgolemConfig.isDeliveryEnabled()) {
+                if (block instanceof StemGrownBlock) {
+                    strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
+                } else if (block instanceof CropsBlock || block instanceof NetherWartBlock) {
+                    List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getTileEntity(pos));
+                    for (ItemStack drop : drops) {
+                        if (!(drop.getItem() instanceof BlockItem) || drop.getUseAction() == UseAction.EAT || drop.getItem() == Items.NETHER_WART) {
+                            strawgolem.inventory.insertItem(0, drop, false);
+                        }
+                    }
+                } else { // Bushes
+                    BlockRayTraceResult result = new BlockRayTraceResult(strawgolem.getPositionVec(), strawgolem.getHorizontalFacing().getOpposite(), pos, false);
+                    state.onBlockActivated(worldIn, null, Hand.MAIN_HAND, result);
+                    List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2));
+                    for (ItemEntity item : itemList) {
+                        item.setPosition(strawgolem.getPosX(), strawgolem.getPosY(), strawgolem.getPosZ());
                     }
                 }
             }
