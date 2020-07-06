@@ -10,17 +10,17 @@ import java.util.List;
 @EventBusSubscriber
 public class StrawgolemConfig {
 
-	private static final String FILTER_MODE_WHITELIST = "whitelist";
-	private static final String FILTER_MODE_BLACKLIST = "blacklist";
+    private static final String FILTER_MODE_WHITELIST = "whitelist";
+    private static final String FILTER_MODE_BLACKLIST = "blacklist";
 
-	static boolean replantEnabled;
-	static boolean deliveryEnabled;
-	static int lifespan;
-	static String filterMode;
-	static List<? extends String> whitelist;
-	static List<? extends String> blacklist;
-	static int searchRangeHorizontal;
-	static int searchRangeVertical;
+    static boolean replantEnabled;
+    static boolean deliveryEnabled;
+    static int lifespan;
+    static String filterMode;
+    static List<? extends String> whitelist;
+    static List<? extends String> blacklist;
+    static int searchRangeHorizontal;
+    static int searchRangeVertical;
 
     public static boolean isReplantEnabled() {
         return replantEnabled;
@@ -30,102 +30,98 @@ public class StrawgolemConfig {
         return deliveryEnabled;
     }
 
-	public static int getSearchRangeHorizontal() {
-		return searchRangeHorizontal;
-	}
+    public static int getSearchRangeHorizontal() {
+        return searchRangeHorizontal;
+    }
 
-	public static int getLifespan() {
-		return lifespan;
-	}
+    public static int getLifespan() {
+        return lifespan;
+    }
 
-	public static int getSearchRangeVertical() {
-		return searchRangeVertical;
-	}
+    public static int getSearchRangeVertical() {
+        return searchRangeVertical;
+    }
 
-	public static class CommonConfig {
+    public static boolean blockHarvestAllowed(Block block) {
+        switch (filterMode) {
+            case FILTER_MODE_WHITELIST:
+                // prioritise whitelist
+                FilterMatch whitelistMatch = blockMatchesFilter(block, whitelist);
+                // if we got a whitelist match by mod, check if we're blacklisted by item
+                if (whitelistMatch == FilterMatch.Mod)
+                    return blockMatchesFilter(block, blacklist) != FilterMatch.Exact;
+                return whitelistMatch != FilterMatch.None;
+
+            case FILTER_MODE_BLACKLIST:
+                // prioritise blacklist
+                FilterMatch blacklistMatch = blockMatchesFilter(block, whitelist);
+                // if we got a blacklist match by mod, check if we're whitelisted by item
+                if (blacklistMatch == FilterMatch.Mod)
+                    return blockMatchesFilter(block, whitelist) == FilterMatch.Exact;
+                return blacklistMatch == FilterMatch.None;
+
+            default:
+                return true;
+        }
+    }
+
+    public static FilterMatch blockMatchesFilter(Block block, List<? extends String> filter) {
+        FilterMatch bestMatch = FilterMatch.None;
+
+        for (String s : filter) {
+            String[] elements = s.split(":");
+
+            if (elements.length == 1 && block.getRegistryName().getNamespace().equals(elements[0])) {
+                bestMatch = FilterMatch.Mod;
+                continue;
+            }
+
+            if (elements.length >= 2 && block.getRegistryName().getNamespace().equals(elements[0]) && block.getRegistryName().getPath().equals(elements[1])) {
+                bestMatch = FilterMatch.Exact;
+                break;
+            }
+        }
+
+        return bestMatch;
+    }
+
+    public enum FilterMatch {
+        None,
+        Mod,
+        Exact,
+    }
+
+    public static class CommonConfig {
         final ForgeConfigSpec.BooleanValue replantEnabled;
         final ForgeConfigSpec.BooleanValue deliveryEnabled;
-		final ForgeConfigSpec.IntValue lifespan;
-		final ForgeConfigSpec.ConfigValue<String> filterMode;
-		final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelist;
-		final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklist;
-		final ForgeConfigSpec.IntValue searchRangeHorizontal;
-		final ForgeConfigSpec.IntValue searchRangeVertical;
+        final ForgeConfigSpec.IntValue lifespan;
+        final ForgeConfigSpec.ConfigValue<String> filterMode;
+        final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelist;
+        final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklist;
+        final ForgeConfigSpec.IntValue searchRangeHorizontal;
+        final ForgeConfigSpec.IntValue searchRangeVertical;
 
-		CommonConfig(final ForgeConfigSpec.Builder builder) {
+        CommonConfig(final ForgeConfigSpec.Builder builder) {
             builder.push("Harvesting");
             replantEnabled = builder.comment("Allow the straw golems to replant a crop when they harvest it.").define("replantEnabled", true);
             deliveryEnabled = builder.comment("Allow the straw golem to deliver a crop (requires replantEnabled = true)").define("deliveryEnabled", true);
-			searchRangeHorizontal = builder.comment("Horizontal search range for crops and chests").defineInRange("searchRangeHorizontal", 12, 8, 32);
-			searchRangeVertical = builder.comment("Vertical search range for crops and chests").defineInRange("searchRangeVertical", 3, 2, 8);
+            searchRangeHorizontal = builder.comment("Horizontal search range for crops and chests").defineInRange("searchRangeHorizontal", 12, 8, 32);
+            searchRangeVertical = builder.comment("Vertical search range for crops and chests").defineInRange("searchRangeVertical", 3, 2, 8);
             builder.pop();
             builder.push("Filtration");
-			filterMode = builder.comment(
-					"Sets the method for applying harvest filters.  Note that only the most specific match will be taken into consideration.",
-					"If a crop's mod appears in the whitelist, but the crop itself is in the blacklist, the crop will be banned.",
-					"Likewise if a crop's mod appears in the blacklist, but the crop itself is in the whitelist, the crop will be allowed.",
-					"\"none\": allow all crops to be harvested (default).",
-					"\"whitelist\": will deny crops from being harvested unless the most specific match is in the whitelist.",
-					"\"blacklist\": will allows crops to be harvested unless the most specific match is in the blacklist.").define("filterMode", "none");
-			whitelist = builder.comment("Whitelist Filter").defineList("whitelist", Collections.emptyList(), o -> o instanceof String);
-			blacklist = builder.comment("Blacklist Filter").defineList("blacklist", Collections.emptyList(), o -> o instanceof String);
-			builder.pop();
+            filterMode = builder.comment(
+                    "Sets the method for applying harvest filters.  Note that only the most specific match will be taken into consideration.",
+                    "If a crop's mod appears in the whitelist, but the crop itself is in the blacklist, the crop will be banned.",
+                    "Likewise if a crop's mod appears in the blacklist, but the crop itself is in the whitelist, the crop will be allowed.",
+                    "\"none\": allow all crops to be harvested (default).",
+                    "\"whitelist\": will deny crops from being harvested unless the most specific match is in the whitelist.",
+                    "\"blacklist\": will allows crops to be harvested unless the most specific match is in the blacklist.").define("filterMode", "none");
+            whitelist = builder.comment("Whitelist Filter").defineList("whitelist", Collections.emptyList(), o -> o instanceof String);
+            blacklist = builder.comment("Blacklist Filter").defineList("blacklist", Collections.emptyList(), o -> o instanceof String);
+            builder.pop();
             builder.push("Miscellaneous");
             lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -1, Integer.MAX_VALUE);
             builder.pop();
-		}
-	}
-
-	public static boolean blockHarvestAllowed(Block block) {
-		switch (filterMode)
-		{
-		case FILTER_MODE_WHITELIST:
-			// prioritise whitelist
-			FilterMatch whitelistMatch = blockMatchesFilter(block, whitelist);
-			// if we got a whitelist match by mod, check if we're blacklisted by item
-			if (whitelistMatch == FilterMatch.Mod)
-				return blockMatchesFilter(block, blacklist) != FilterMatch.Exact;
-			return whitelistMatch != FilterMatch.None;
-
-		case FILTER_MODE_BLACKLIST:
-			// prioritise blacklist
-			FilterMatch blacklistMatch = blockMatchesFilter(block, whitelist);
-			// if we got a blacklist match by mod, check if we're whitelisted by item
-			if (blacklistMatch == FilterMatch.Mod)
-				return blockMatchesFilter(block, whitelist) == FilterMatch.Exact;
-			return blacklistMatch == FilterMatch.None;
-
-		default:
-			return true;
-		}
-	}
-
-	public static FilterMatch blockMatchesFilter(Block block, List<? extends String> filter) {
-		FilterMatch bestMatch = FilterMatch.None;
-
-		for (String s : filter) {
-			String[] elements = s.split(":");
-
-			if (elements.length == 1 && block.getRegistryName().getNamespace().equals(elements[0]))
-			{
-				bestMatch = FilterMatch.Mod;
-				continue;
-			}
-
-			if (elements.length >= 2 && block.getRegistryName().getNamespace().equals(elements[0]) && block.getRegistryName().getPath().equals(elements[1]))
-			{
-				bestMatch = FilterMatch.Exact;
-				break;
-			}
-		}
-
-		return bestMatch;
-	}
-
-	public enum FilterMatch
-	{
-		None,
-		Mod,
-		Exact,
-	}
+        }
+    }
 }

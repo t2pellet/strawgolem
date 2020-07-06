@@ -1,6 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.strawgolem;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.ai.*;
 import com.commodorethrawn.strawgolem.entity.capability.InventoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
@@ -9,8 +10,7 @@ import com.commodorethrawn.strawgolem.entity.capability.memory.IMemory;
 import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionProvider;
-import net.minecraft.block.Block;
-import net.minecraft.block.StemGrownBlock;
+import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -20,15 +20,21 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.UseAction;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.items.IItemHandler;
@@ -36,7 +42,6 @@ import net.minecraftforge.items.IItemHandler;
 import java.util.Random;
 
 public class EntityStrawGolem extends GolemEntity {
-	private static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
     public static final SoundEvent GOLEM_AMBIENT = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_ambient"));
     public static final SoundEvent GOLEM_STRAINED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_strained"));
     public static final SoundEvent GOLEM_HURT = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_hurt"));
@@ -44,12 +49,20 @@ public class EntityStrawGolem extends GolemEntity {
     public static final SoundEvent GOLEM_HEAL = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_heal"));
     public static final SoundEvent GOLEM_SCARED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_scared"));
     public static final SoundEvent GOLEM_INTERESTED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_interested"));
-
+    private static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
     public IItemHandler inventory;
     private ILifespan lifespan;
     private IMemory memory;
     private IProfession profession;
     private BlockPos harvestPos;
+
+    public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
+        super(type, worldIn);
+        inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
+        profession = getCapability(ProfessionProvider.PROFESSION_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
+        lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
+        harvestPos = BlockPos.ZERO;
+    }
 
     @Override
     protected ResourceLocation getLootTable() {
@@ -60,7 +73,7 @@ public class EntityStrawGolem extends GolemEntity {
     protected SoundEvent getAmbientSound() {
         if (goalSelector.getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof GolemFleeGoal))
             return GOLEM_SCARED;
-        else if (holdingBlockCrop()) return GOLEM_STRAINED;
+        else if (holdingFullBlock()) return GOLEM_STRAINED;
         return GOLEM_AMBIENT;
     }
 
@@ -76,14 +89,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     public int getTalkInterval() {
-        return 120;
-    }
-
-    public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
-        super(type, worldIn);
-        inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-        profession = getCapability(ProfessionProvider.PROFESSION_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-        harvestPos = BlockPos.ZERO;
+        return holdingFullBlock() ? 60 : 120;
     }
 
     @Override
@@ -113,24 +119,19 @@ public class EntityStrawGolem extends GolemEntity {
         if (memory == null)
             memory = getCapability(MemoryProvider.MEMORY_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
 
-        if (lifespan == null)
-            lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-
         lifespan.update();
-        if (holdingBlockCrop()) lifespan.update();
+        if (holdingFullBlock()) lifespan.update();
         if (world.isRainingAt(getPosition()) && world.canSeeSky(getPosition())) lifespan.update();
 
         if (lifespan.isOver())
             attackEntityFrom(DamageSource.MAGIC, getMaxHealth() * 100);
     }
 
-    @Override
-    public boolean canDespawn(double distanceToClosestPlayer) {
-        return false;
-    }
+    /* Handle inventory */
 
     /**
      * Returns true if the golem is not holding anything, and false otherwise
+     *
      * @return whether the hand is empty
      */
     public boolean isHandEmpty() {
@@ -144,6 +145,17 @@ public class EntityStrawGolem extends GolemEntity {
         }
         return ItemStack.EMPTY;
     }
+
+    /**
+     * Returns true if the golem is holding a block crop, and false otherwise
+     *
+     * @return whether the golem is holding a gourd block
+     */
+    public boolean holdingFullBlock() {
+        return Block.getBlockFromItem(inventory.getStackInSlot(0).getItem()) instanceof StemGrownBlock;
+    }
+
+    /* Handle picking up items */
 
     @Override
     public boolean canPickUpLoot() {
@@ -171,15 +183,13 @@ public class EntityStrawGolem extends GolemEntity {
         super.onItemPickup(entityIn, quantity);
     }
 
-    /**
-     * Returns true if the golem is holding a block crop, and false otherwise
-     * @return whether the golem is holding a gourd block
-     */
-    public boolean holdingBlockCrop() {
-        return Block.getBlockFromItem(inventory.getStackInSlot(0).getItem()) instanceof StemGrownBlock;
+    /* Miscellaneous */
+
+    @Override
+    public boolean canDespawn(double distanceToClosestPlayer) {
+        return false;
     }
 
-    /* Makes golem drop held item */
     @Override
     protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
         super.dropSpecialItems(source, looting, recentlyHitIn);
@@ -189,14 +199,15 @@ public class EntityStrawGolem extends GolemEntity {
         }
     }
 
-    /* Handle setting priority chest & healing */
+    // Handle setting priority chest & healing
     @Override
     protected boolean processInteract(PlayerEntity player, Hand hand) {
         if (player.getHeldItem(hand).getItem() == Items.WHEAT) {
             spawnHealParticles(lastTickPosX, lastTickPosY, lastTickPosZ);
-            if (!player.isShiftKeyDown()) {
-                setHealth(getMaxHealth());
+            if (!player.isShiftKeyDown() &&
+                    (getHealth() != getMaxHealth() || getCurrentLifespan() < StrawgolemConfig.getLifespan() * 2)) {
                 if (EffectiveSide.get().isServer()) {
+                    setHealth(getMaxHealth());
                     playSound(GOLEM_HEAL, 1.0F, 1.0F);
                     addToLifespan(14000);
                     if (!player.isCreative()) player.getHeldItem(hand).shrink(1);
@@ -212,6 +223,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Spawns the heal particles based on location x, y, z
+     *
      * @param x
      * @param y
      * @param z
@@ -221,7 +233,8 @@ public class EntityStrawGolem extends GolemEntity {
         world.addParticle(ParticleTypes.HEART, x + rand.nextDouble() - 0.5, y + 0.4D, z + rand.nextDouble() - 0.5, this.getMotion().x, this.getMotion().y, this.getMotion().z);
     }
 
-    /* Used to handle when the iron golem picks it up */
+    /* Handles being picked up by iron golem */
+
     @Override
     public void setPosition(double posX, double posY, double posZ) {
         if (isPassenger() && getRidingEntity() instanceof IronGolemEntity) {
@@ -276,6 +289,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Returnns the memory, capability, used to store and retrieve chest positions
+     *
      * @return the golem's memory capability
      */
     public IMemory getMemory() {
@@ -284,6 +298,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Sets the harvest position to pos
+     *
      * @param pos
      */
     public void setHarvesting(BlockPos pos) {
@@ -292,6 +307,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Returns the position to be used to initiate the GolemHarvestGoal
+     *
      * @return the harvest position
      */
     public BlockPos getHarvestPos() {
@@ -305,8 +321,13 @@ public class EntityStrawGolem extends GolemEntity {
         harvestPos = BlockPos.ZERO;
     }
 
+    public int getCurrentLifespan() {
+        return lifespan.get();
+    }
+
     /**
      * Adds time to the lifespan
+     *
      * @param time
      */
     public void addToLifespan(int time) {

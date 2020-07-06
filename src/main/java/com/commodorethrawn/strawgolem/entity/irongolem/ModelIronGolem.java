@@ -8,6 +8,7 @@ import net.minecraft.entity.passive.IronGolemEntity;
 
 /**
  * Replacement for vanilla golem model
+ *
  * @param <T>
  */
 public class ModelIronGolem<T extends IronGolemEntity> extends SegmentedModel<T> {
@@ -49,8 +50,8 @@ public class ModelIronGolem<T extends IronGolemEntity> extends SegmentedModel<T>
 
     @Override
     public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        this.ironGolemHead.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
-        this.ironGolemHead.rotateAngleX = headPitch * ((float)Math.PI / 180F);
+        this.ironGolemHead.rotateAngleY = netHeadYaw * ((float) Math.PI / 180F);
+        this.ironGolemHead.rotateAngleX = headPitch * ((float) Math.PI / 180F);
         this.ironGolemLeftLeg.rotateAngleX = -1.5F * this.triangleWave(limbSwing, 13.0F) * limbSwingAmount;
         this.ironGolemRightLeg.rotateAngleX = 1.5F * this.triangleWave(limbSwing, 13.0F) * limbSwingAmount;
         this.ironGolemLeftLeg.rotateAngleY = 0.0F;
@@ -59,6 +60,7 @@ public class ModelIronGolem<T extends IronGolemEntity> extends SegmentedModel<T>
 
     /**
      * Same as original, except when holding a straw golem
+     *
      * @param entityIn
      * @param limbSwing
      * @param limbSwingAmount
@@ -68,12 +70,12 @@ public class ModelIronGolem<T extends IronGolemEntity> extends SegmentedModel<T>
     public void setLivingAnimations(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
         int i = entityIn.getAttackTimer();
         if (i > 0) {
-            this.ironGolemRightArm.rotateAngleX = -2.0F + 1.5F * this.triangleWave((float)i - partialTick, 10.0F);
-            this.ironGolemLeftArm.rotateAngleX = -2.0F + 1.5F * this.triangleWave((float)i - partialTick, 10.0F);
+            this.ironGolemRightArm.rotateAngleX = -2.0F + 1.5F * this.triangleWave((float) i - partialTick, 10.0F);
+            this.ironGolemLeftArm.rotateAngleX = -2.0F + 1.5F * this.triangleWave((float) i - partialTick, 10.0F);
         } else {
             int j = entityIn.getHoldRoseTick();
             if (j > 0) {
-                this.ironGolemRightArm.rotateAngleX = -0.8F + 0.025F * this.triangleWave((float)j, 70.0F);
+                this.ironGolemRightArm.rotateAngleX = -0.8F + 0.025F * this.triangleWave((float) j, 70.0F);
                 this.ironGolemLeftArm.rotateAngleX = 0.0F;
             } else if (entityIn.getPassengers().size() == 1 && entityIn.getPassengers().get(0) instanceof EntityStrawGolem) {
                 ironGolemLeftArm.rotateAngleX = -0.45F * (float) Math.PI;

@@ -11,15 +11,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class LifespanProvider implements ICapabilitySerializable<INBT> {
-	
-	@CapabilityInject(ILifespan.class)
-	public static final Capability<ILifespan> LIFESPAN_CAP = null;
+
+    @CapabilityInject(ILifespan.class)
+    public static final Capability<ILifespan> LIFESPAN_CAP = null;
 
     private final LazyOptional<ILifespan> lifespanInstance = LazyOptional.of(LIFESPAN_CAP::getDefaultInstance);
 
-	@Nonnull
-	@Override
-	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == LIFESPAN_CAP) {
             return lifespanInstance.cast();
         } else {
@@ -29,12 +29,12 @@ public class LifespanProvider implements ICapabilitySerializable<INBT> {
 
 
     @Override
-	public INBT serializeNBT() {
+    public INBT serializeNBT() {
         return LIFESPAN_CAP.getStorage().writeNBT(LIFESPAN_CAP, lifespanInstance.orElseThrow(() -> new IllegalArgumentException("cant be empty")), null);
-	}
+    }
 
-	@Override
-	public void deserializeNBT(INBT nbt) {
+    @Override
+    public void deserializeNBT(INBT nbt) {
         LIFESPAN_CAP.getStorage().readNBT(LIFESPAN_CAP, lifespanInstance.orElseThrow(() -> new IllegalArgumentException("cant be empty")), null, nbt);
-	}
+    }
 }

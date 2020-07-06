@@ -1,7 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
 
 public class GolemLookRandomlyGoal extends LookRandomlyGoal {

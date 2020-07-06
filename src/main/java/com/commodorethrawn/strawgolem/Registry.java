@@ -15,19 +15,21 @@ public class Registry {
 
     /**
      * Registers the entities of the mod
+     *
      * @param event
      */
     @SubscribeEvent
     public static void registerEntity(final RegistryEvent.Register<EntityType<?>> event) {
         STRAW_GOLEM_TYPE = EntityType.Builder.create(EntityStrawGolem::new, EntityClassification.CREATURE)
-                                .setTrackingRange(48).setUpdateInterval(3).size(0.6F, 0.9F)
-                                .build("strawgolem");
+                .setTrackingRange(48).setUpdateInterval(3).size(0.6F, 0.9F)
+                .build("strawgolem");
         STRAW_GOLEM_TYPE.setRegistryName(Strawgolem.MODID, "strawgolem");
         event.getRegistry().register(STRAW_GOLEM_TYPE);
     }
 
     /**
      * Registers the sounds of the mod
+     *
      * @param event
      */
     @SubscribeEvent

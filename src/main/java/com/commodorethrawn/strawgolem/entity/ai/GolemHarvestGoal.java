@@ -9,10 +9,11 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.*;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 import java.util.List;
 
@@ -78,9 +79,9 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     }
 
     @Override
-	protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
+    protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
         return strawgolem.shouldHarvestBlock(worldIn, pos) && strawgolem.isHandEmpty();
-	}
+    }
 
     /**
      * Handles the harvesting logic

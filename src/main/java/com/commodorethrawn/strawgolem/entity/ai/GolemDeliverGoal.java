@@ -70,7 +70,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     @Override
     public void tick() {
         if (deliveringBlock == null) {
-            deliveringBlock = strawGolem.holdingBlockCrop();
+            deliveringBlock = strawGolem.holdingFullBlock();
         }
         this.strawGolem.getLookController().setLookPosition(
                 this.destinationBlock.getX() + 0.5D,
@@ -78,7 +78,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
                 this.destinationBlock.getZ() + 0.5D,
                 10.0F,
                 this.strawGolem.getVerticalFaceSpeed());
-        if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq() + 0.2D)) {
+        if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), this.getTargetDistanceSq())) {
             ++this.timeoutCounter;
             if (this.shouldMove()) {
                 this.creature.getNavigator().tryMoveToXYZ(this.destinationBlock.getX() + 0.5D, this.destinationBlock.getY() + 1D, this.destinationBlock.getZ() + 0.5D, movementSpeed);
@@ -112,6 +112,6 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     public double getTargetDistanceSq() {
-        return super.getTargetDistanceSq() + 0.15D;
+        return super.getTargetDistanceSq() + 0.3D;
     }
 }

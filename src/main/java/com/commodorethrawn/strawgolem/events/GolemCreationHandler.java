@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.Mod;
 public class GolemCreationHandler {
     /**
      * Handles golem building based on block placement
+     *
      * @param event
      */
     @SubscribeEvent
@@ -44,7 +45,8 @@ public class GolemCreationHandler {
     }
 
     /**
-     * Handles golem building baced on shearing the pumpkin
+     * Handles golem building based on shearing the pumpkin
+     *
      * @param event
      */
     @SubscribeEvent

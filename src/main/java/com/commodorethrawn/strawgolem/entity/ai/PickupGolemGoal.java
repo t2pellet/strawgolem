@@ -12,10 +12,10 @@ import java.util.EnumSet;
  */
 public class PickupGolemGoal extends Goal {
 
+    private static final EntityPredicate predicate = (new EntityPredicate()).setDistance(7.5D).allowFriendlyFire().setLineOfSiteRequired();
     private final double speed;
-    private EntityStrawGolem strawGolem;
     private final IronGolemEntity ironGolem;
-    private static final EntityPredicate predicate = (new EntityPredicate()).setDistance(10.0D).allowFriendlyFire().setLineOfSiteRequired();
+    private EntityStrawGolem strawGolem;
     private int pickupTime;
 
     public PickupGolemGoal(IronGolemEntity creature, double speedIn) {
@@ -27,9 +27,9 @@ public class PickupGolemGoal extends Goal {
     @Override
     public boolean shouldExecute() {
         if (this.ironGolem.world.isDaytime()
-            && this.ironGolem.getRNG().nextInt(4000) == 0
-            && this.ironGolem.getPassengers().size() == 0) {
-            strawGolem = ironGolem.world.getClosestEntityWithinAABB(EntityStrawGolem.class, predicate, this.ironGolem, this.ironGolem.getPosX(), this.ironGolem.getPosY(), this.ironGolem.getPosZ(), this.ironGolem.getBoundingBox().grow(10.0D, 3.0D, 10.0D));
+                && this.ironGolem.getRNG().nextInt(8000) == 0
+                && this.ironGolem.getPassengers().size() == 0) {
+            strawGolem = ironGolem.world.getClosestEntityWithinAABB(EntityStrawGolem.class, predicate, this.ironGolem, this.ironGolem.getPosX(), this.ironGolem.getPosY(), this.ironGolem.getPosZ(), this.ironGolem.getBoundingBox().grow(7.5D, 2.0D, 7.5D));
             return strawGolem != null && strawGolem.isHandEmpty() && !strawGolem.isPassenger();
         }
         return false;
@@ -58,7 +58,7 @@ public class PickupGolemGoal extends Goal {
             }
             strawGolem.getLookController().setLookPositionWithEntity(ironGolem, 10.0F, strawGolem.getVerticalFaceSpeed());
             ironGolem.getNavigator().clearPath();
-            if(pickupTime == 1) {
+            if (pickupTime == 1) {
                 strawGolem.stopRiding();
                 strawGolem.setInvulnerable(false);
             }

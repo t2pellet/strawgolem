@@ -8,12 +8,14 @@ public interface IMemory {
 
     /**
      * Returns the set of all remembered chest positions
+     *
      * @return the positions
      */
     Set<BlockPos> getPositions();
 
     /**
      * Retrieves and returns the closest chest to the BlockPos pos
+     *
      * @param pos
      * @return the closest position
      */
@@ -21,12 +23,14 @@ public interface IMemory {
 
     /**
      * Adds pos to the remembered positions
+     *
      * @param pos
      */
     void addPosition(BlockPos pos);
 
     /**
      * Removes pos from the remembered positions
+     *
      * @param pos
      */
     void removePosition(BlockPos pos);
@@ -38,6 +42,7 @@ public interface IMemory {
 
     /**
      * Sets the priority chest to pos
+     *
      * @param pos
      */
     void setPriorityChest(BlockPos pos);

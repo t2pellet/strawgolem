@@ -10,7 +10,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Set;
 
 public class MemoryStorage implements Capability.IStorage<IMemory> {
@@ -37,7 +36,7 @@ public class MemoryStorage implements Capability.IStorage<IMemory> {
         }
         INBT posTag = tag.get("priority");
         if (posTag instanceof CompoundNBT) {
-            instance.setPriorityChest(NBTUtil.readBlockPos((CompoundNBT)posTag));
+            instance.setPriorityChest(NBTUtil.readBlockPos((CompoundNBT) posTag));
         }
     }
 }

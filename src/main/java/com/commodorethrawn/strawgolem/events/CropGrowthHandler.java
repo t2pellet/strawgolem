@@ -22,7 +22,7 @@ import java.util.Queue;
 
 /**
  * Handles how golems tend to harvest crops
- *
+ * <p>
  * Every time a crop grows, it checks for a golem nearby to harvest. If none is found it is added to a queue
  * Every 100 ticks, it goes through the queue checking for golems to harvest, skipping through already harvested blocks
  * and breaking when it cannot find a golem to harvest
@@ -76,13 +76,14 @@ public class CropGrowthHandler {
 
     /**
      * Returns the first golem nearby that has line of sight to the crop, or null if there are none
+     *
      * @param crop
      * @return applicable golem or null if none apply
      */
     private static EntityStrawGolem getCropGolem(CropQueueEntry crop) {
         AxisAlignedBB golemAABB = new AxisAlignedBB(crop.pos).grow(StrawgolemConfig.getSearchRangeHorizontal(),
-                                                                    StrawgolemConfig.getSearchRangeVertical(),
-                                                                    StrawgolemConfig.getSearchRangeHorizontal());
+                StrawgolemConfig.getSearchRangeVertical(),
+                StrawgolemConfig.getSearchRangeHorizontal());
         List<EntityStrawGolem> golemList = crop.world.getEntitiesWithinAABB(EntityStrawGolem.class, golemAABB);
         for (EntityStrawGolem golem : golemList) {
             if (golem.shouldHarvestBlock(crop.world, crop.pos) && golem.isHandEmpty()) {
@@ -94,6 +95,7 @@ public class CropGrowthHandler {
 
     /**
      * Returns true if the crop is applicable and fully grown, false otherwise
+     *
      * @param entry
      * @return whether the block is fully grown
      */

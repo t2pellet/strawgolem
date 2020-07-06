@@ -2,7 +2,6 @@ package com.commodorethrawn.strawgolem.storage;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.events.CropGrowthHandler;
-import net.minecraft.client.renderer.model.BlockPart;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -16,7 +15,7 @@ import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-import java.util.*;
+import java.util.Iterator;
 
 public class StrawgolemSaveData extends WorldSavedData {
 
@@ -27,6 +26,11 @@ public class StrawgolemSaveData extends WorldSavedData {
     public StrawgolemSaveData(String name) {
         super(name);
         markDirty();
+    }
+
+    public static StrawgolemSaveData get(final ServerWorld world) {
+        DimensionSavedDataManager storage = world.getSavedData();
+        return storage.getOrCreate(StrawgolemSaveData::new, Strawgolem.MODID);
     }
 
     @Override
@@ -60,10 +64,5 @@ public class StrawgolemSaveData extends WorldSavedData {
         }
         compound.put("listTag", listTag);
         return compound;
-    }
-
-    public static StrawgolemSaveData get(final ServerWorld world) {
-        DimensionSavedDataManager storage = world.getSavedData();
-        return storage.getOrCreate(StrawgolemSaveData::new, Strawgolem.MODID);
     }
 }
