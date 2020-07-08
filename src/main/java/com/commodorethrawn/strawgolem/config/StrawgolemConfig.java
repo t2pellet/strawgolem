@@ -21,6 +21,9 @@ public class StrawgolemConfig {
     static List<? extends String> blacklist;
     static int searchRangeHorizontal;
     static int searchRangeVertical;
+    static boolean soundsEnabled;
+    static boolean golemInteract;
+    static boolean enableHwyla;
 
     public static boolean isReplantEnabled() {
         return replantEnabled;
@@ -29,6 +32,19 @@ public class StrawgolemConfig {
     public static boolean isDeliveryEnabled() {
         return deliveryEnabled;
     }
+
+    public static boolean isSoundsEnabled() {
+        return soundsEnabled;
+    }
+
+    public static boolean isEnableHwyla() {
+        return enableHwyla;
+    }
+
+    public static boolean doGolemPickup() {
+        return golemInteract;
+    }
+
 
     public static int getSearchRangeHorizontal() {
         return searchRangeHorizontal;
@@ -92,19 +108,22 @@ public class StrawgolemConfig {
     }
 
     public static class CommonConfig {
-        final ForgeConfigSpec.BooleanValue replantEnabled;
-        final ForgeConfigSpec.BooleanValue deliveryEnabled;
+        final ForgeConfigSpec.BooleanValue enableReplant;
+        final ForgeConfigSpec.BooleanValue enableDelivery;
         final ForgeConfigSpec.IntValue lifespan;
         final ForgeConfigSpec.ConfigValue<String> filterMode;
         final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelist;
         final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklist;
         final ForgeConfigSpec.IntValue searchRangeHorizontal;
         final ForgeConfigSpec.IntValue searchRangeVertical;
+        final ForgeConfigSpec.BooleanValue soundsEnabled;
+        final ForgeConfigSpec.BooleanValue golemInteract;
+        final ForgeConfigSpec.BooleanValue enableHwyla;
 
         CommonConfig(final ForgeConfigSpec.Builder builder) {
             builder.push("Harvesting");
-            replantEnabled = builder.comment("Allow the straw golems to replant a crop when they harvest it.").define("replantEnabled", true);
-            deliveryEnabled = builder.comment("Allow the straw golem to deliver a crop (requires replantEnabled = true)").define("deliveryEnabled", true);
+            enableReplant = builder.comment("Allow the straw golems to replant a crop when they harvest it.").define("replantEnabled", true);
+            enableDelivery = builder.comment("Allow the straw golem to deliver a crop (requires replantEnabled = true)").define("deliveryEnabled", true);
             searchRangeHorizontal = builder.comment("Horizontal search range for crops and chests").defineInRange("searchRangeHorizontal", 12, 8, 32);
             searchRangeVertical = builder.comment("Vertical search range for crops and chests").defineInRange("searchRangeVertical", 3, 2, 8);
             builder.pop();
@@ -121,6 +140,9 @@ public class StrawgolemConfig {
             builder.pop();
             builder.push("Miscellaneous");
             lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -1, Integer.MAX_VALUE);
+            soundsEnabled = builder.comment("Enable/disable golem sounds").define("soundsEnabled", true);
+            golemInteract = builder.comment("Enable iron golems picking up straw golems occasionally").define("golemInteract", true);
+            enableHwyla = builder.comment("Enable HWYLA compatibility").define("enableHwyla", true);
             builder.pop();
         }
     }

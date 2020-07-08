@@ -26,10 +26,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.UseAction;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.Vec3d;
@@ -71,20 +68,23 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        if (goalSelector.getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof GolemFleeGoal))
-            return GOLEM_SCARED;
-        else if (holdingFullBlock()) return GOLEM_STRAINED;
-        return GOLEM_AMBIENT;
+        if (StrawgolemConfig.isSoundsEnabled()) {
+            if (goalSelector.getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof GolemFleeGoal))
+                return GOLEM_SCARED;
+            else if (holdingFullBlock()) return GOLEM_STRAINED;
+            return GOLEM_AMBIENT;
+        }
+        return null;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return GOLEM_HURT;
+        return StrawgolemConfig.isSoundsEnabled() ? GOLEM_HURT : null;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return GOLEM_DEATH;
+        return StrawgolemConfig.isSoundsEnabled() ? GOLEM_DEATH : null;
     }
 
     @Override
@@ -125,6 +125,8 @@ public class EntityStrawGolem extends GolemEntity {
 
         if (lifespan.isOver())
             attackEntityFrom(DamageSource.MAGIC, getMaxHealth() * 100);
+
+
     }
 
     /* Handle inventory */
@@ -209,6 +211,7 @@ public class EntityStrawGolem extends GolemEntity {
                 if (EffectiveSide.get().isServer()) {
                     setHealth(getMaxHealth());
                     playSound(GOLEM_HEAL, 1.0F, 1.0F);
+                    playSound(SoundEvents.BLOCK_GRASS_STEP, 1.0F, 1.0F);
                     addToLifespan(14000);
                     if (!player.isCreative()) player.getHeldItem(hand).shrink(1);
                 }

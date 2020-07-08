@@ -1,6 +1,7 @@
 package com.commodorethrawn.strawgolem.events;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.ai.PickupGolemGoal;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -12,7 +13,9 @@ public class IronGolemHandler {
 
     @SubscribeEvent
     public static void ironGolemSpawn(EntityJoinWorldEvent event) {
-        if (!event.getWorld().isRemote && event.getEntity() instanceof IronGolemEntity) {
+        if (!event.getWorld().isRemote
+                && event.getEntity() instanceof IronGolemEntity
+                && StrawgolemConfig.doGolemPickup()) {
             IronGolemEntity golem = (IronGolemEntity) event.getEntity();
             golem.goalSelector.addGoal(2, new PickupGolemGoal(golem, 0.8D));
         }
