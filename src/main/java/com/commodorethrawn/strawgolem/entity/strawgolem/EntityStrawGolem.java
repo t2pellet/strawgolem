@@ -10,6 +10,8 @@ import com.commodorethrawn.strawgolem.entity.capability.memory.IMemory;
 import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionProvider;
+import com.commodorethrawn.strawgolem.network.MessageLifespan;
+import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -20,6 +22,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -34,8 +37,10 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.IItemHandler;
 
+import javax.annotation.Nonnull;
 import java.util.Random;
 
 public class EntityStrawGolem extends GolemEntity {
@@ -52,13 +57,16 @@ public class EntityStrawGolem extends GolemEntity {
     private IMemory memory;
     private IProfession profession;
     private BlockPos harvestPos;
+    public boolean isHarvesting;
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
         super(type, worldIn);
         inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
         profession = getCapability(ProfessionProvider.PROFESSION_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
         lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
+        memory = getCapability(MemoryProvider.MEMORY_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
         harvestPos = BlockPos.ZERO;
+        isHarvesting = false;
     }
 
     @Override
@@ -115,17 +123,16 @@ public class EntityStrawGolem extends GolemEntity {
     @Override
     public void baseTick() {
         super.baseTick();
+        if (!world.isRemote) {
+            lifespan.update();
+            if (holdingFullBlock()) lifespan.update();
+            if (world.isRainingAt(getPosition()) && world.canSeeSky(getPosition())) lifespan.update();
 
-        if (memory == null)
-            memory = getCapability(MemoryProvider.MEMORY_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-
-        lifespan.update();
-        if (holdingFullBlock()) lifespan.update();
-        if (world.isRainingAt(getPosition()) && world.canSeeSky(getPosition())) lifespan.update();
-
-        if (lifespan.isOver())
-            attackEntityFrom(DamageSource.MAGIC, getMaxHealth() * 100);
-
+            if (lifespan.get() % 300 == 0 && lifespan.get() != 0)
+                PacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new MessageLifespan(this));
+            if (lifespan.isOver())
+                attackEntityFrom(DamageSource.MAGIC, getMaxHealth() * 100);
+        }
 
     }
 
@@ -192,6 +199,7 @@ public class EntityStrawGolem extends GolemEntity {
         return false;
     }
 
+    //Drops held item
     @Override
     protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
         super.dropSpecialItems(source, looting, recentlyHitIn);
@@ -203,25 +211,34 @@ public class EntityStrawGolem extends GolemEntity {
 
     // Handle setting priority chest & healing
     @Override
-    protected boolean processInteract(PlayerEntity player, Hand hand) {
+    protected boolean processInteract(PlayerEntity player, @Nonnull Hand hand) {
         if (player.getHeldItem(hand).getItem() == Items.WHEAT) {
-            spawnHealParticles(lastTickPosX, lastTickPosY, lastTickPosZ);
-            if (!player.isShiftKeyDown() &&
-                    (getHealth() != getMaxHealth() || getCurrentLifespan() < StrawgolemConfig.getLifespan() * 2)) {
-                if (EffectiveSide.get().isServer()) {
+            if (EffectiveSide.get().isServer()) {
+                if (player.isShiftKeyDown()) {
+                    sendMessage(new StringTextComponent("Ordering: ").appendSibling(getDisplayName()));
+                    player.getPersistentData().putInt("golemId", getEntityId());
+                } else if (isGolemHurt()) {
                     setHealth(getMaxHealth());
                     playSound(GOLEM_HEAL, 1.0F, 1.0F);
                     playSound(SoundEvents.BLOCK_GRASS_STEP, 1.0F, 1.0F);
-                    addToLifespan(14000);
+                    addToLifespan(12000);
                     if (!player.isCreative()) player.getHeldItem(hand).shrink(1);
+                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new MessageLifespan(this));
                 }
-            } else {
-                if (EffectiveSide.get().isServer())
-                    player.sendMessage(new StringTextComponent("Ordering: ").appendSibling(getDisplayName()));
-                player.getPersistentData().putInt("golemId", getEntityId());
+            }
+            if (!player.isShiftKeyDown() && isGolemHurt()) {
+                spawnHealParticles(lastTickPosX, lastTickPosY, lastTickPosZ);
             }
         }
-        return false;
+        return false; //I dont want that right click animation
+    }
+
+    /**
+     * Returns whether the golem is in an imperfect state (i.e. lifespan is low enough or it has taken damage)
+     * @return whether golem is hurt
+     */
+    private boolean isGolemHurt() {
+        return getHealth() != getMaxHealth() || getCurrentLifespan() < StrawgolemConfig.getLifespan() * 2;
     }
 
     /**

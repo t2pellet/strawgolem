@@ -13,6 +13,7 @@ import com.commodorethrawn.strawgolem.entity.capability.profession.Profession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionStorage;
 import com.commodorethrawn.strawgolem.entity.irongolem.RenderIronGolem;
 import com.commodorethrawn.strawgolem.entity.strawgolem.RenderStrawGolem;
+import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -43,6 +44,7 @@ public class Strawgolem {
         CapabilityManager.INSTANCE.register(ILifespan.class, new LifespanStorage(), Lifespan::new);
         CapabilityManager.INSTANCE.register(IMemory.class, new MemoryStorage(), Memory::new);
         CapabilityManager.INSTANCE.register(IProfession.class, new ProfessionStorage(), Profession::new);
+        PacketHandler.register();
     }
 
     public void clientSetup(FMLClientSetupEvent event) {
