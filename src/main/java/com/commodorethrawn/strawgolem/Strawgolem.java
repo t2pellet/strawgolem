@@ -1,5 +1,6 @@
 package com.commodorethrawn.strawgolem;
 
+import com.commodorethrawn.strawgolem.compat.CompatHwyla;
 import com.commodorethrawn.strawgolem.config.ConfigHolder;
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
@@ -15,7 +16,9 @@ import com.commodorethrawn.strawgolem.entity.irongolem.RenderIronGolem;
 import com.commodorethrawn.strawgolem.entity.strawgolem.RenderStrawGolem;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.entity.EntityType;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -36,6 +39,9 @@ public class Strawgolem {
         logger.info("Initializing strawgolem");
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
+        if (ModList.get().isLoaded("waila")) {
+            MinecraftForge.EVENT_BUS.register(CompatHwyla.class);
+        }
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
     }
 
