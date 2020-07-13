@@ -13,17 +13,24 @@ public class StrawgolemConfig {
     private static final String FILTER_MODE_WHITELIST = "whitelist";
     private static final String FILTER_MODE_BLACKLIST = "blacklist";
 
+    /* Harvesting */
     static boolean replantEnabled;
     static boolean deliveryEnabled;
-    static int lifespan;
+    static int searchRangeHorizontal;
+    static int searchRangeVertical;
     static String filterMode;
     static List<? extends String> whitelist;
     static List<? extends String> blacklist;
-    static int searchRangeHorizontal;
-    static int searchRangeVertical;
+    /* Misc */
     static boolean soundsEnabled;
+    static boolean shiverEnabled;
     static boolean golemInteract;
     static boolean enableHwyla;
+    /* Lifespan */
+    static int lifespan;
+    static boolean rainPenalty;
+    static boolean waterPenalty;
+    static boolean heavyPenalty;
 
     public static boolean isReplantEnabled() {
         return replantEnabled;
@@ -37,6 +44,10 @@ public class StrawgolemConfig {
         return soundsEnabled;
     }
 
+    public static boolean isShiverEnabled() {
+        return shiverEnabled;
+    }
+
     public static boolean isEnableHwyla() {
         return enableHwyla;
     }
@@ -45,13 +56,19 @@ public class StrawgolemConfig {
         return golemInteract;
     }
 
-
     public static int getSearchRangeHorizontal() {
         return searchRangeHorizontal;
     }
 
     public static int getLifespan() {
         return lifespan;
+    }
+
+    public static boolean isLifespanPenalty(String penalty) {
+        if (penalty.equals("rain")) return rainPenalty;
+        else if (penalty.equals("water")) return waterPenalty;
+        else if (penalty.equals("heavy")) return heavyPenalty;
+        return false;
     }
 
     public static int getSearchRangeVertical() {
@@ -108,17 +125,14 @@ public class StrawgolemConfig {
     }
 
     public static class CommonConfig {
-        final ForgeConfigSpec.BooleanValue enableReplant;
-        final ForgeConfigSpec.BooleanValue enableDelivery;
+        final ForgeConfigSpec.BooleanValue enableReplant, enableDelivery;
         final ForgeConfigSpec.IntValue lifespan;
         final ForgeConfigSpec.ConfigValue<String> filterMode;
-        final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelist;
-        final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklist;
-        final ForgeConfigSpec.IntValue searchRangeHorizontal;
-        final ForgeConfigSpec.IntValue searchRangeVertical;
-        final ForgeConfigSpec.BooleanValue soundsEnabled;
-        final ForgeConfigSpec.BooleanValue golemInteract;
+        final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelist, blacklist;
+        final ForgeConfigSpec.IntValue searchRangeHorizontal, searchRangeVertical;
+        final ForgeConfigSpec.BooleanValue soundsEnabled, golemInteract, shiverEnabled;
         final ForgeConfigSpec.BooleanValue enableHwyla;
+        final ForgeConfigSpec.BooleanValue waterPenalty, rainPenalty, heavyPenalty;
 
         CommonConfig(final ForgeConfigSpec.Builder builder) {
             builder.push("Harvesting");
@@ -138,9 +152,15 @@ public class StrawgolemConfig {
             whitelist = builder.comment("Whitelist Filter").defineList("whitelist", Collections.emptyList(), o -> o instanceof String);
             blacklist = builder.comment("Blacklist Filter").defineList("blacklist", Collections.emptyList(), o -> o instanceof String);
             builder.pop();
-            builder.push("Miscellaneous");
+            builder.push("Lifespan");
             lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -1, Integer.MAX_VALUE);
+            heavyPenalty = builder.comment("Enable lifespan penalty for carrying a heavy item").define("heavyPenalty", true);
+            rainPenalty = builder.comment("Enable lifespan penalty for being in the rain").define("rainPenalty", true);
+            waterPenalty = builder.comment("Enable lifespan penalty for being in the water").define("waterPenalty", true);
+            builder.pop();
+            builder.push("Miscellaneous");
             soundsEnabled = builder.comment("Enable/disable golem sounds").define("soundsEnabled", true);
+            shiverEnabled = builder.comment("Enable/disable golem shivering in cold").define("shiverEnabled", true);
             golemInteract = builder.comment("Enable iron golems picking up straw golems occasionally").define("golemInteract", true);
             enableHwyla = builder.comment("Enable HWYLA compatibility").define("enableHwyla", true);
             builder.pop();

@@ -2,6 +2,7 @@ package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
+import net.minecraft.util.math.BlockPos;
 
 public class GolemLookRandomlyGoal extends LookRandomlyGoal {
 
@@ -14,6 +15,8 @@ public class GolemLookRandomlyGoal extends LookRandomlyGoal {
 
     @Override
     public boolean shouldExecute() {
-        return !strawGolem.isPassenger() && super.shouldExecute();
+        return !strawGolem.isPassenger()
+                && strawGolem.getHarvestPos().equals(BlockPos.ZERO)
+                && super.shouldExecute();
     }
 }

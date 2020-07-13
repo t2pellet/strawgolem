@@ -1,5 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
+import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import net.minecraft.block.*;
@@ -7,6 +8,7 @@ import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.*;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -32,6 +34,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
             destinationBlock = strawgolem.getHarvestPos();
             this.runDelay = getRunDelay(this.creature);
             strawgolem.clearHarvestPos();
+            System.out.println("CHECKING FOR HARVEST: " + destinationBlock);
             return strawgolem.shouldHarvestBlock(strawgolem.world, destinationBlock);
         }
         /* Based off the vanilla code of shouldExecute, with additional check to ensure the golems hand is empty */
@@ -46,12 +49,18 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     @Override
     protected int getRunDelay(CreatureEntity creatureIn) {
-        return 240;
+        return 400;
     }
 
     @Override
     public boolean shouldContinueExecuting() {
         return super.shouldContinueExecuting() && !strawgolem.isPassenger();
+    }
+
+    /* Needed to flag the golem as executing when *it* finds the crop via searchForDestination */
+    @Override
+    public void startExecuting() {
+        super.startExecuting();
     }
 
     /* Almost copied from the vanilla tick() method, just calling doHarvest when it gets to the block and some tweaks for different kinds of blocks */
@@ -66,7 +75,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         double targetDistance = getTargetDistanceSq();
         Block destinationBlockType = this.strawgolem.world.getBlockState(destinationBlock).getBlock();
         if (destinationBlockType instanceof StemGrownBlock) targetDistance += 0.2D;
-        if (destinationBlockType instanceof BushBlock) targetDistance += 0.5D;
+        if (destinationBlockType instanceof BushBlock) targetDistance += 0.55D;
         if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), targetDistance)) {
             ++this.timeoutCounter;
             if (this.shouldMove()) {
@@ -117,11 +126,14 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                     }
                 } else { // Bushes
                     BlockRayTraceResult result = new BlockRayTraceResult(strawgolem.getPositionVec(), strawgolem.getHorizontalFacing().getOpposite(), pos, false);
-                    state.onBlockActivated(worldIn, null, Hand.MAIN_HAND, result);
-                    List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2));
-                    for (ItemEntity item : itemList) {
-                        item.setPosition(strawgolem.getPosX(), strawgolem.getPosY(), strawgolem.getPosZ());
-                    }
+                    try {
+                        state.onBlockActivated(worldIn, null, Hand.MAIN_HAND, result);
+                        List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2));
+                        for (ItemEntity item : itemList) {
+                            strawgolem.inventory.insertItem(0, item.getItem(), false);
+                            item.remove();
+                        }
+                    } catch (NullPointerException ignored) {};
                 }
             }
         }

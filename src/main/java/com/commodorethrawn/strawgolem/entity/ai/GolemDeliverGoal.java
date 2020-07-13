@@ -5,7 +5,10 @@ import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.pathfinding.Path;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.tileentity.ChestTileEntity;
+import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -56,13 +59,15 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
-        Vec3d posVec = strawGolem.getPositionVec().add(0, 1, 0);
-        if (posVec.getY() % 1 > 0.01)
-            posVec = posVec.add(0, 1, 0); // Used to patch the ray trace colliding with non-full-height blocks
-        RayTraceContext ctx = new RayTraceContext(posVec, new Vec3d(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawGolem);
-        if (worldIn.getTileEntity(pos) instanceof ChestTileEntity && worldIn.rayTraceBlocks(ctx).getPos().equals(pos)) {
-            strawGolem.getMemory().addPosition(pos);
-            return true;
+        if (worldIn.getTileEntity(pos) != null
+            && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()) {
+            Vec3d golemPos = new Vec3d(strawGolem.getPosition().up());
+            if (strawGolem.getPositionVec().y % 1 != 0) golemPos.add(0, 0.5, 0);
+            RayTraceContext ctx = new RayTraceContext(new Vec3d(pos.up()), golemPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawGolem);
+            if (worldIn.rayTraceBlocks(ctx).getPos().withinDistance(strawGolem.getPosition(), 2.0D)) {
+                strawGolem.getMemory().addPosition(pos);
+                return true;
+            }
         }
         return false;
     }
@@ -96,8 +101,8 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     private void doDeposit() {
         ServerWorld worldIn = (ServerWorld) this.strawGolem.world;
         BlockPos pos = this.destinationBlock;
-        ChestTileEntity chest = (ChestTileEntity) worldIn.getTileEntity(pos);
-        IItemHandler chestInv = chest.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElseThrow(() -> new NullPointerException("Chest IItemhandler cannot be null"));
+        IItemHandler chestInv =  worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+                .orElseThrow(() -> new NullPointerException("Chest IItemhandler cannot be null"));
         ItemStack insertStack = this.strawGolem.inventory.extractItem(0, 64, false);
         for (int i = 0; i < chestInv.getSlots(); ++i) {
             if (chestInv.getStackInSlot(i).getItem() == Items.AIR

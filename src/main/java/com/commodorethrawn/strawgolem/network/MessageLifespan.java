@@ -37,7 +37,6 @@ public class MessageLifespan {
                 ILifespan lifespan = golem.getCapability(LifespanProvider.LIFESPAN_CAP, null)
                         .orElseThrow(() -> new IllegalArgumentException("cant be empty"));
                 lifespan.set(time);
-                System.out.println("updated golem lifespan");
             }
         }));
         ctx.get().setPacketHandled(true);

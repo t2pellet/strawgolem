@@ -47,6 +47,7 @@ public class StrawgolemSaveData extends WorldSavedData {
                 world = ServerLifecycleHooks.getCurrentServer().getWorld(DimensionType.getById(entryTag.getInt("world")));
             }
             if (world != null && pos != null) {
+                System.out.println("Reading");
                 CropGrowthHandler.cropQueue.add(new CropGrowthHandler.CropQueueEntry(pos, world));
             }
         }
@@ -61,6 +62,7 @@ public class StrawgolemSaveData extends WorldSavedData {
             CropGrowthHandler.CropQueueEntry entry = cropIterator.next();
             entryTag.put("pos", NBTUtil.writeBlockPos(entry.getPos()));
             entryTag.putInt("world", entry.getWorld().getDimension().getType().getId());
+            listTag.add(entryTag);
         }
         compound.put("listTag", listTag);
         return compound;

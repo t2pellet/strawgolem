@@ -5,6 +5,8 @@ import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
 import net.minecraft.block.*;
+import net.minecraft.pathfinding.Path;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -16,9 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Handles how golems tend to harvest crops
@@ -43,17 +43,21 @@ public class CropGrowthHandler {
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            if (tick % 100 == 0) {
-                while (!cropQueue.isEmpty()) {
+            if (tick % 120 == 0) {
+                int iteration = 0;
+                while (!cropQueue.isEmpty() && iteration < cropQueue.size()) {
                     if (!isFullyGrown(cropQueue.peek())) {
                         cropQueue.remove();
                         data.markDirty();
                         continue;
                     }
                     EntityStrawGolem golem = getCropGolem(cropQueue.peek());
-                    if (golem == null) break;
-                    golem.setHarvesting(cropQueue.remove().getPos());
+                    if (golem != null) {
+                        Strawgolem.logger.info("Found a golem");
+                        golem.setHarvesting(cropQueue.remove().getPos());
+                    } else cropQueue.add(cropQueue.remove());
                     data.markDirty();
+                    ++iteration;
                 }
             }
             ++tick;
@@ -61,7 +65,7 @@ public class CropGrowthHandler {
     }
 
     @SubscribeEvent
-    public static void onCropGrowth(BlockEvent.CropGrowEvent event) {
+    public static void onCropGrowth(BlockEvent.CropGrowEvent.Post event) {
         CropQueueEntry entry = new CropQueueEntry(event.getPos(), event.getWorld());
         if (!event.getWorld().isRemote() && isFullyGrown(entry)) {
             EntityStrawGolem golem = getCropGolem(entry);
@@ -75,18 +79,21 @@ public class CropGrowthHandler {
     }
 
     /**
-     * Returns the first golem nearby that has line of sight to the crop, or null if there are none
+     * Returns the first golem nearby that has path to the crop, or null if there are none
      *
      * @param crop
      * @return applicable golem or null if none apply
      */
     private static EntityStrawGolem getCropGolem(CropQueueEntry crop) {
-        AxisAlignedBB golemAABB = new AxisAlignedBB(crop.pos).grow(StrawgolemConfig.getSearchRangeHorizontal(),
+        AxisAlignedBB golemAABB = new AxisAlignedBB(crop.pos).grow(
+                StrawgolemConfig.getSearchRangeHorizontal(),
                 StrawgolemConfig.getSearchRangeVertical(),
                 StrawgolemConfig.getSearchRangeHorizontal());
         List<EntityStrawGolem> golemList = crop.world.getEntitiesWithinAABB(EntityStrawGolem.class, golemAABB);
         for (EntityStrawGolem golem : golemList) {
-            if (golem.shouldHarvestBlock(crop.world, crop.pos) && golem.isHandEmpty()) {
+            if (golem.getHarvestPos().equals(BlockPos.ZERO)
+                    && golem.shouldHarvestBlock(crop.world, crop.pos)
+                    && golem.isHandEmpty()) {
                 return golem;
             }
         }
@@ -108,15 +115,17 @@ public class CropGrowthHandler {
             return true;
         } else if (state.getBlock() instanceof NetherWartBlock) {
             return state.get(NetherWartBlock.AGE) == 3;
-        } else if (state.getBlock() instanceof BushBlock && state.has(BlockStateProperties.AGE_0_3)) {
+        } else if (state.getBlock() instanceof BushBlock
+                && state.getBlock() instanceof IGrowable
+                && state.has(BlockStateProperties.AGE_0_3)) {
             return state.get(BlockStateProperties.AGE_0_3) == 3;
         }
         return false;
     }
 
     public static class CropQueueEntry {
-        private BlockPos pos;
-        private IWorld world;
+        private final BlockPos pos;
+        private final IWorld world;
 
         public CropQueueEntry(BlockPos pos, IWorld world) {
             this.pos = pos;
