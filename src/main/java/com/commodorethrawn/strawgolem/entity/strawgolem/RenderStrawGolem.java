@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.strawgolem;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -27,7 +27,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         golem.holdingBlock = entityIn.holdingFullBlock();
         // Shivering movement
         Biome b = entityIn.world.getBiome(entityIn.getPosition());
-        if (StrawgolemConfig.isShiverEnabled() &&
+        if (ConfigHelper.isShiverEnabled() &&
                 (b.getTempCategory() == Biome.TempCategory.COLD ||
                 (b.getTempCategory() == Biome.TempCategory.MEDIUM && entityIn.getPosY() > 100))) {
             double offX = entityIn.getRNG().nextDouble() / 32 - 1 / 64F;
@@ -39,7 +39,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
 
     @Override
     public ResourceLocation getEntityTexture(EntityStrawGolem golem) {
-        if (golem.getCurrentLifespan() < StrawgolemConfig.getLifespan() / 2) {
+        if (golem.getCurrentLifespan() < ConfigHelper.getLifespan() / 2) {
             return TEXTURE_OLD;
         }
         return TEXTURE;

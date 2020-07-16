@@ -1,8 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
-import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.entity.monster.MonsterEntity;
 
@@ -18,7 +17,7 @@ public class GolemFleeGoal extends AvoidEntityGoal<MonsterEntity> {
     @Override
     public void startExecuting() {
         super.startExecuting();
-        if (StrawgolemConfig.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
+        if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
     }
 
     @Override

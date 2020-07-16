@@ -1,18 +1,18 @@
 package com.commodorethrawn.strawgolem.events;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
 import net.minecraft.block.*;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.BonemealEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -43,7 +43,7 @@ public class CropGrowthHandler {
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            if (tick % 120 == 0) {
+            if (tick % 200 == 0) {
                 int iteration = 0;
                 while (!cropQueue.isEmpty() && iteration < cropQueue.size()) {
                     if (!isFullyGrown(cropQueue.peek())) {
@@ -53,7 +53,6 @@ public class CropGrowthHandler {
                     }
                     EntityStrawGolem golem = getCropGolem(cropQueue.peek());
                     if (golem != null) {
-                        Strawgolem.logger.info("Found a golem");
                         golem.setHarvesting(cropQueue.remove().getPos());
                     } else cropQueue.add(cropQueue.remove());
                     data.markDirty();
@@ -62,6 +61,11 @@ public class CropGrowthHandler {
             }
             ++tick;
         }
+    }
+
+    @SubscribeEvent
+    public static void test(PlayerInteractEvent.RightClickBlock event) {
+        System.out.println("RIGHT CLICK BLOCK");
     }
 
     @SubscribeEvent
@@ -78,21 +82,34 @@ public class CropGrowthHandler {
         }
     }
 
+    @SubscribeEvent
+    public static void onCropGrowth(BonemealEvent event) {
+        CropQueueEntry entry = new CropQueueEntry(event.getPos(), event.getWorld());
+        if (!event.getWorld().isRemote() && isNearlyGrown(entry)) {
+            EntityStrawGolem golem = getCropGolem(entry);
+            if (golem != null) {
+                golem.setHarvesting(entry.getPos());
+            } else {
+                cropQueue.add(new CropQueueEntry(event.getPos(), event.getWorld()));
+                data.markDirty();
+            }
+        }
+    }
+
     /**
      * Returns the first golem nearby that has path to the crop, or null if there are none
-     *
      * @param crop
      * @return applicable golem or null if none apply
      */
     private static EntityStrawGolem getCropGolem(CropQueueEntry crop) {
         AxisAlignedBB golemAABB = new AxisAlignedBB(crop.pos).grow(
-                StrawgolemConfig.getSearchRangeHorizontal(),
-                StrawgolemConfig.getSearchRangeVertical(),
-                StrawgolemConfig.getSearchRangeHorizontal());
+                ConfigHelper.getSearchRangeHorizontal(),
+                ConfigHelper.getSearchRangeVertical(),
+                ConfigHelper.getSearchRangeHorizontal());
         List<EntityStrawGolem> golemList = crop.world.getEntitiesWithinAABB(EntityStrawGolem.class, golemAABB);
         for (EntityStrawGolem golem : golemList) {
             if (golem.getHarvestPos().equals(BlockPos.ZERO)
-                    && golem.shouldHarvestBlock(crop.world, crop.pos)
+                    && golem.canSeeBlock(crop.world, crop.pos)
                     && golem.isHandEmpty()) {
                 return golem;
             }
@@ -102,23 +119,49 @@ public class CropGrowthHandler {
 
     /**
      * Returns true if the crop is applicable and fully grown, false otherwise
-     *
      * @param entry
      * @return whether the block is fully grown
      */
     private static boolean isFullyGrown(CropQueueEntry entry) {
         BlockState state = entry.getWorld().getBlockState(entry.getPos());
-        if (state.getBlock() instanceof CropsBlock) {
-            CropsBlock crop = (CropsBlock) state.getBlock();
-            return crop.isMaxAge(state);
-        } else if (state.getBlock() instanceof StemGrownBlock) {
-            return true;
-        } else if (state.getBlock() instanceof NetherWartBlock) {
-            return state.get(NetherWartBlock.AGE) == 3;
-        } else if (state.getBlock() instanceof BushBlock
-                && state.getBlock() instanceof IGrowable
-                && state.has(BlockStateProperties.AGE_0_3)) {
-            return state.get(BlockStateProperties.AGE_0_3) == 3;
+        if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
+            if (state.getBlock() instanceof CropsBlock) {
+                CropsBlock crop = (CropsBlock) state.getBlock();
+                return crop.isMaxAge(state);
+            } else if (state.getBlock() instanceof StemGrownBlock) {
+                return true;
+            } else if (state.getBlock() instanceof NetherWartBlock) {
+                return state.get(NetherWartBlock.AGE) == 3;
+            } else if (state.getBlock() instanceof BushBlock
+                    && state.getBlock() instanceof IGrowable
+                    && state.has(BlockStateProperties.AGE_0_3)) {
+                return state.get(BlockStateProperties.AGE_0_3) == 3;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if the crop is applicable and almost fully grown, false otherwise
+     * Used for bone meal event
+     * @param entry
+     * @return whether the crop is nearly fully grown
+     */
+    private static boolean isNearlyGrown(CropQueueEntry entry) {
+        BlockState state = entry.getWorld().getBlockState(entry.getPos());
+        if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
+            if (state.getBlock() instanceof CropsBlock) {
+                CropsBlock crop = (CropsBlock) state.getBlock();
+                return state.get(crop.getAgeProperty()) >= crop.getMaxAge() - 2;
+            } else if (state.getBlock() instanceof StemGrownBlock) {
+                return true;
+            } else if (state.getBlock() instanceof NetherWartBlock) {
+                return state.get(NetherWartBlock.AGE) == 2;
+            } else if (state.getBlock() instanceof BushBlock
+                    && state.getBlock() instanceof IGrowable
+                    && state.has(BlockStateProperties.AGE_0_3)) {
+                return state.get(BlockStateProperties.AGE_0_3) == 2;
+            }
         }
         return false;
     }

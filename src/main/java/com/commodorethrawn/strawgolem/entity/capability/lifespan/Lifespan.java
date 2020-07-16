@@ -1,12 +1,12 @@
 package com.commodorethrawn.strawgolem.entity.capability.lifespan;
 
-import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 
 public class Lifespan implements ILifespan {
     private int tickLeft;
 
     public Lifespan() {
-        this.tickLeft = StrawgolemConfig.getLifespan();
+        this.tickLeft = ConfigHelper.getLifespan();
     }
 
     @Override

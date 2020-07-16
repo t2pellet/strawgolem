@@ -1,8 +1,8 @@
 package com.commodorethrawn.strawgolem;
 
 import com.commodorethrawn.strawgolem.compat.CompatHwyla;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.config.ConfigHolder;
-import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanStorage;
@@ -56,7 +56,7 @@ public class Strawgolem {
     public void clientSetup(FMLClientSetupEvent event) {
         logger.info("Strawgolem client setup");
         RenderingRegistry.registerEntityRenderingHandler(Registry.STRAW_GOLEM_TYPE, RenderStrawGolem::new);
-        if (StrawgolemConfig.doGolemPickup()) {
+        if (ConfigHelper.doGolemPickup()) {
             RenderingRegistry.registerEntityRenderingHandler(EntityType.IRON_GOLEM, RenderIronGolem::new);
         }
     }

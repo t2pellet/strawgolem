@@ -1,19 +1,13 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
-import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.tileentity.ChestTileEntity;
-import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -24,7 +18,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     private Boolean deliveringBlock;
 
     public GolemDeliverGoal(EntityStrawGolem strawGolem, double speedIn) {
-        super(strawGolem, speedIn, StrawgolemConfig.getSearchRangeHorizontal(), StrawgolemConfig.getSearchRangeVertical());
+        super(strawGolem, speedIn, ConfigHelper.getSearchRangeHorizontal(), ConfigHelper.getSearchRangeVertical());
         this.strawGolem = strawGolem;
     }
 
@@ -60,14 +54,10 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     @Override
     protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
         if (worldIn.getTileEntity(pos) != null
-            && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()) {
-            Vec3d golemPos = new Vec3d(strawGolem.getPosition().up());
-            if (strawGolem.getPositionVec().y % 1 != 0) golemPos.add(0, 0.5, 0);
-            RayTraceContext ctx = new RayTraceContext(new Vec3d(pos.up()), golemPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, strawGolem);
-            if (worldIn.rayTraceBlocks(ctx).getPos().withinDistance(strawGolem.getPosition(), 2.0D)) {
+            && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()
+            && strawGolem.canSeeBlock(worldIn, pos)) {
                 strawGolem.getMemory().addPosition(pos);
                 return true;
-            }
         }
         return false;
     }

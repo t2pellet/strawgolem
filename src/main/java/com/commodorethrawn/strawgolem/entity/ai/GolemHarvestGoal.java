@@ -1,21 +1,26 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
-import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.pathfinding.Path;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.List;
 
@@ -23,7 +28,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     private final EntityStrawGolem strawgolem;
 
     public GolemHarvestGoal(EntityStrawGolem strawgolem, double speedIn) {
-        super(strawgolem, speedIn, StrawgolemConfig.getSearchRangeHorizontal(), StrawgolemConfig.getSearchRangeVertical());
+        super(strawgolem, speedIn, ConfigHelper.getSearchRangeHorizontal(), ConfigHelper.getSearchRangeVertical());
         this.strawgolem = strawgolem;
     }
 
@@ -49,7 +54,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     @Override
     protected int getRunDelay(CreatureEntity creatureIn) {
-        return 400;
+        return 300;
     }
 
     @Override
@@ -102,19 +107,9 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         BlockState state = worldIn.getBlockState(pos);
         Block block = state.getBlock();
         /* If its the right block to harvest */
-        if (shouldMoveTo(worldIn, pos)
-                && worldIn.destroyBlock(pos, false)) {
-            if (StrawgolemConfig.isReplantEnabled()) {
-                if (block instanceof CropsBlock) {
-                    CropsBlock crop = (CropsBlock) block;
-                    worldIn.setBlockState(pos, crop.getDefaultState());
-                } else if (block instanceof NetherWartBlock) {
-                    worldIn.setBlockState(pos, block.getDefaultState().with(NetherWartBlock.AGE, 0));
-                } else if (state.has(BlockStateProperties.AGE_0_3) && block instanceof BushBlock) { // Bushes
-                    worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
-                }
-            }
-            if (StrawgolemConfig.isDeliveryEnabled()) {
+        if (shouldMoveTo(worldIn, pos)) {
+            worldIn.playSound(null, pos, SoundEvents.BLOCK_CROP_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            if (ConfigHelper.isDeliveryEnabled()) {
                 if (block instanceof StemGrownBlock) {
                     strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
                 } else if (block instanceof CropsBlock || block instanceof NetherWartBlock) {
@@ -125,16 +120,33 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                         }
                     }
                 } else { // Bushes
+                    PlayerEntity fake = FakePlayerFactory.get(worldIn, new GameProfile(null, "golem"));
                     BlockRayTraceResult result = new BlockRayTraceResult(strawgolem.getPositionVec(), strawgolem.getHorizontalFacing().getOpposite(), pos, false);
                     try {
-                        state.onBlockActivated(worldIn, null, Hand.MAIN_HAND, result);
+                        state.onBlockActivated(worldIn, fake, Hand.MAIN_HAND, result);
+                        MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickBlock(fake, Hand.MAIN_HAND, pos, strawgolem.getHorizontalFacing().getOpposite()));
                         List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2));
                         for (ItemEntity item : itemList) {
                             strawgolem.inventory.insertItem(0, item.getItem(), false);
                             item.remove();
                         }
                     } catch (NullPointerException ignored) {};
+                    fake.remove(false);
                 }
+            }
+            if (ConfigHelper.isReplantEnabled()) {
+                if (block instanceof CropsBlock) {
+                    CropsBlock crop = (CropsBlock) block;
+                    worldIn.setBlockState(pos, crop.getDefaultState());
+                } else if (block instanceof NetherWartBlock) {
+                    worldIn.setBlockState(pos, block.getDefaultState().with(NetherWartBlock.AGE, 0));
+                } else if (state.has(BlockStateProperties.AGE_0_3) && block instanceof BushBlock) { // Bushes
+                    worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
+                } else {
+                    worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+                }
+            } else {
+                worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.strawgolem;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.ai.*;
 import com.commodorethrawn.strawgolem.entity.capability.InventoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
@@ -13,23 +13,17 @@ import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionPro
 import com.commodorethrawn.strawgolem.network.MessageLifespan;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.block.*;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.UseAction;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -77,7 +71,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        if (StrawgolemConfig.isSoundsEnabled()) {
+        if (ConfigHelper.isSoundsEnabled()) {
             if (goalSelector.getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof GolemFleeGoal))
                 return GOLEM_SCARED;
             else if (holdingFullBlock()) return GOLEM_STRAINED;
@@ -88,12 +82,12 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     protected SoundEvent getHurtSound(@Nonnull DamageSource damageSourceIn) {
-        return StrawgolemConfig.isSoundsEnabled() ? GOLEM_HURT : null;
+        return ConfigHelper.isSoundsEnabled() ? GOLEM_HURT : null;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return StrawgolemConfig.isSoundsEnabled() ? GOLEM_DEATH : null;
+        return ConfigHelper.isSoundsEnabled() ? GOLEM_DEATH : null;
     }
 
     @Override
@@ -126,11 +120,11 @@ public class EntityStrawGolem extends GolemEntity {
         super.baseTick();
         if (!world.isRemote) {
             lifespan.update();
-            if (holdingFullBlock() && StrawgolemConfig.isLifespanPenalty("heavy")) lifespan.update();
+            if (holdingFullBlock() && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
             if (world.isRainingAt(getPosition())
                     && world.canSeeSky(getPosition())
-                    && StrawgolemConfig.isLifespanPenalty("heavy")) lifespan.update();
-            if (world.hasWater(getPosition()) && StrawgolemConfig.isLifespanPenalty("heavy")) lifespan.update();
+                    && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
+            if (world.hasWater(getPosition()) && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
             if (lifespan.get() % 300 == 0 && lifespan.get() != 0)
                 PacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new MessageLifespan(this));
             if (lifespan.isOver())
@@ -169,6 +163,11 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     /* Miscellaneous */
+
+    @Override
+    public boolean canPickUpLoot() {
+        return false;
+    }
 
     @Override
     public boolean canDespawn(double distanceToClosestPlayer) {
@@ -214,7 +213,7 @@ public class EntityStrawGolem extends GolemEntity {
      * @return whether golem is hurt
      */
     private boolean isGolemHurt() {
-        return getHealth() != getMaxHealth() || getCurrentLifespan() < StrawgolemConfig.getLifespan() * 0.9;
+        return getHealth() != getMaxHealth() || getCurrentLifespan() < ConfigHelper.getLifespan() * 0.9;
     }
 
     /**
@@ -264,7 +263,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     public boolean shouldHarvestBlock(IWorldReader worldIn, BlockPos pos) {
         BlockState state = worldIn.getBlockState(pos);
-        if (StrawgolemConfig.blockHarvestAllowed(state.getBlock())) {
+        if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
             if (state.getBlock() instanceof CropsBlock)
                 return ((CropsBlock) state.getBlock()).isMaxAge(state) && canSeeBlock(worldIn, pos);
             else if (state.getBlock() instanceof StemGrownBlock)
@@ -287,8 +286,8 @@ public class EntityStrawGolem extends GolemEntity {
      */
     public boolean canSeeBlock(IWorldReader worldIn, BlockPos pos) {
         Vec3d golemPos = new Vec3d(getPosition().up());
-        if (getPositionVec().y % 1 != 0) golemPos.add(0, 0.5, 0);
-        RayTraceContext ctx = new RayTraceContext(new Vec3d(pos), getPositionVec().add(0, 1, 0), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this);
+        if (getPositionVec().y % 1F != 0) golemPos.add(0, 0.5, 0);
+        RayTraceContext ctx = new RayTraceContext(new Vec3d(pos), golemPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this);
         return worldIn.rayTraceBlocks(ctx).getPos().withinDistance(getPositionVec(), 2.0D);
     }
 
