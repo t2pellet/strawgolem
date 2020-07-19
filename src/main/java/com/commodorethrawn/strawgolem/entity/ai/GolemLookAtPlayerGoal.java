@@ -6,7 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public class GolemLookAtPlayerGoal extends LookAtGoal {
 
-    private EntityStrawGolem strawGolem;
+    private final EntityStrawGolem strawGolem;
 
     public GolemLookAtPlayerGoal(EntityStrawGolem entityIn, float maxDistance) {
         super(entityIn, PlayerEntity.class, maxDistance);

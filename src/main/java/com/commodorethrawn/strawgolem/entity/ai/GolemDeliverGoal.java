@@ -2,6 +2,7 @@ package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -12,6 +13,8 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+
+import javax.annotation.Nonnull;
 
 public class GolemDeliverGoal extends MoveToBlockGoal {
     private final EntityStrawGolem strawGolem;
@@ -48,16 +51,17 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
         if (strawGolem.getMemory().getPriorityChest().equals(pos))
             strawGolem.getMemory().setPriorityChest(BlockPos.ZERO);
         strawGolem.getMemory().removePosition(pos);
-        return super.searchForDestination();
+        return (super.searchForDestination() && strawGolem.canSeeBlock(strawGolem.world, destinationBlock));
     }
 
     @Override
-    protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
+    protected boolean shouldMoveTo(IWorldReader worldIn, @Nonnull BlockPos pos) {
         if (worldIn.getTileEntity(pos) != null
-            && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()
-            && strawGolem.canSeeBlock(worldIn, pos)) {
-                strawGolem.getMemory().addPosition(pos);
-                return true;
+                && worldIn.getBlockState(pos).getBlock() != Blocks.AIR
+                && worldIn.getTileEntity(pos) != null
+                && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()) {
+            strawGolem.getMemory().addPosition(pos);
+            return true;
         }
         return false;
     }
@@ -91,7 +95,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     private void doDeposit() {
         ServerWorld worldIn = (ServerWorld) this.strawGolem.world;
         BlockPos pos = this.destinationBlock;
-        IItemHandler chestInv =  worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+        IItemHandler chestInv = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
                 .orElseThrow(() -> new NullPointerException("Chest IItemhandler cannot be null"));
         ItemStack insertStack = this.strawGolem.inventory.extractItem(0, 64, false);
         for (int i = 0; i < chestInv.getSlots(); ++i) {

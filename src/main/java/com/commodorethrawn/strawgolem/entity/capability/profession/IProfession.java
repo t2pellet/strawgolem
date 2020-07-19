@@ -13,7 +13,7 @@ public interface IProfession {
     /**
      * Sets the golem's profession to 'profession'
      *
-     * @param profession
+     * @param profession the desired profession
      */
     void setProfession(GolemProfession profession);
 
@@ -31,14 +31,14 @@ public interface IProfession {
 
         public final int Value;
 
-        private GolemProfession(int value) {
+        GolemProfession(int value) {
             Value = value;
         }
 
         /**
          * Get the profession corresponding to that integer
          *
-         * @param i
+         * @param i the integer value of the profession
          * @return the profession
          */
         public static GolemProfession valueOf(int i) {

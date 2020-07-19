@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.entity.layers.HeldItemLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 
+import javax.annotation.Nonnull;
+
 public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGolem> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(Strawgolem.MODID, "textures/entity/straw_golem.png");
@@ -21,7 +23,8 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     }
 
     @Override
-    public void render(EntityStrawGolem entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+    public void render(EntityStrawGolem entityIn, float entityYaw, float partialTicks, @Nonnull MatrixStack matrixStackIn,
+                       @Nonnull IRenderTypeBuffer bufferIn, int packedLightIn) {
         ModelStrawGolem golem = this.getEntityModel();
         golem.holdingItem = !entityIn.isHandEmpty();
         golem.holdingBlock = entityIn.holdingFullBlock();
@@ -29,7 +32,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         Biome b = entityIn.world.getBiome(entityIn.getPosition());
         if (ConfigHelper.isShiverEnabled() &&
                 (b.getTempCategory() == Biome.TempCategory.COLD ||
-                (b.getTempCategory() == Biome.TempCategory.MEDIUM && entityIn.getPosY() > 100))) {
+                        (b.getTempCategory() == Biome.TempCategory.MEDIUM && entityIn.getPosY() > 100))) {
             double offX = entityIn.getRNG().nextDouble() / 32 - 1 / 64F;
             double offZ = entityIn.getRNG().nextDouble() / 32 - 1 / 64F;
             matrixStackIn.translate(offX, 0, offZ);
@@ -37,6 +40,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
+    @Nonnull
     @Override
     public ResourceLocation getEntityTexture(EntityStrawGolem golem) {
         if (golem.getCurrentLifespan() < ConfigHelper.getLifespan() / 2) {

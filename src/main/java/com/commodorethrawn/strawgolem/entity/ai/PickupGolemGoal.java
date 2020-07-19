@@ -27,7 +27,7 @@ public class PickupGolemGoal extends Goal {
     @Override
     public boolean shouldExecute() {
         if (this.ironGolem.world.isDaytime()
-                && this.ironGolem.getRNG().nextInt(8000) == 0
+                && this.ironGolem.getRNG().nextInt(6000) == 0
                 && this.ironGolem.getPassengers().size() == 0) {
             strawGolem = ironGolem.world.getClosestEntityWithinAABB(EntityStrawGolem.class, predicate, this.ironGolem, this.ironGolem.getPosX(), this.ironGolem.getPosY(), this.ironGolem.getPosZ(), this.ironGolem.getBoundingBox().grow(7.5D, 2.0D, 7.5D));
             return strawGolem != null && strawGolem.isHandEmpty() && !strawGolem.isPassenger();

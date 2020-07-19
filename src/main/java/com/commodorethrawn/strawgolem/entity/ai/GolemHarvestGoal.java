@@ -22,6 +22,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class GolemHarvestGoal extends MoveToBlockGoal {
@@ -39,7 +40,6 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
             destinationBlock = strawgolem.getHarvestPos();
             this.runDelay = getRunDelay(this.creature);
             strawgolem.clearHarvestPos();
-            System.out.println("CHECKING FOR HARVEST: " + destinationBlock);
             return strawgolem.shouldHarvestBlock(strawgolem.world, destinationBlock);
         }
         /* Based off the vanilla code of shouldExecute, with additional check to ensure the golems hand is empty */
@@ -53,7 +53,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     }
 
     @Override
-    protected int getRunDelay(CreatureEntity creatureIn) {
+    protected int getRunDelay(@Nonnull CreatureEntity creatureIn) {
         return 300;
     }
 
@@ -93,7 +93,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     }
 
     @Override
-    protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
+    protected boolean shouldMoveTo(@Nonnull IWorldReader worldIn, @Nonnull BlockPos pos) {
         return strawgolem.shouldHarvestBlock(worldIn, pos) && strawgolem.isHandEmpty();
     }
 
@@ -111,6 +111,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
             worldIn.playSound(null, pos, SoundEvents.BLOCK_CROP_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
             if (ConfigHelper.isDeliveryEnabled()) {
                 if (block instanceof StemGrownBlock) {
+                    strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
                     strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
                 } else if (block instanceof CropsBlock || block instanceof NetherWartBlock) {
                     List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getTileEntity(pos));
@@ -130,7 +131,8 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                             strawgolem.inventory.insertItem(0, item.getItem(), false);
                             item.remove();
                         }
-                    } catch (NullPointerException ignored) {};
+                    } catch (NullPointerException ignored) {
+                    }
                     fake.remove(false);
                 }
             }

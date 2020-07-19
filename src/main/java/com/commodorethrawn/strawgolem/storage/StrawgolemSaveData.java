@@ -15,6 +15,7 @@ import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 public class StrawgolemSaveData extends WorldSavedData {
@@ -44,17 +45,18 @@ public class StrawgolemSaveData extends WorldSavedData {
                 pos = NBTUtil.readBlockPos(entryTag.getCompound("pos"));
             }
             if (entryTag.get("world") != null) {
-                world = ServerLifecycleHooks.getCurrentServer().getWorld(DimensionType.getById(entryTag.getInt("world")));
+                DimensionType dimension = DimensionType.getById(entryTag.getInt("world"));
+                if (dimension != null) world = ServerLifecycleHooks.getCurrentServer().getWorld(dimension);
             }
             if (world != null && pos != null) {
-                System.out.println("Reading");
                 CropGrowthHandler.cropQueue.add(new CropGrowthHandler.CropQueueEntry(pos, world));
             }
         }
     }
 
+    @Nonnull
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT write(@Nonnull CompoundNBT compound) {
         Iterator<CropGrowthHandler.CropQueueEntry> cropIterator = CropGrowthHandler.cropQueue.iterator();
         ListNBT listTag = new ListNBT();
         while (cropIterator.hasNext()) {

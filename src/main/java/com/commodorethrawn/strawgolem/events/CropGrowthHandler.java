@@ -12,13 +12,14 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Handles how golems tend to harvest crops
@@ -64,11 +65,6 @@ public class CropGrowthHandler {
     }
 
     @SubscribeEvent
-    public static void test(PlayerInteractEvent.RightClickBlock event) {
-        System.out.println("RIGHT CLICK BLOCK");
-    }
-
-    @SubscribeEvent
     public static void onCropGrowth(BlockEvent.CropGrowEvent.Post event) {
         CropQueueEntry entry = new CropQueueEntry(event.getPos(), event.getWorld());
         if (!event.getWorld().isRemote() && isFullyGrown(entry)) {
@@ -98,7 +94,8 @@ public class CropGrowthHandler {
 
     /**
      * Returns the first golem nearby that has path to the crop, or null if there are none
-     * @param crop
+     *
+     * @param crop the cropqueueentry
      * @return applicable golem or null if none apply
      */
     private static EntityStrawGolem getCropGolem(CropQueueEntry crop) {
@@ -119,7 +116,8 @@ public class CropGrowthHandler {
 
     /**
      * Returns true if the crop is applicable and fully grown, false otherwise
-     * @param entry
+     *
+     * @param entry the cropqueueentry
      * @return whether the block is fully grown
      */
     private static boolean isFullyGrown(CropQueueEntry entry) {
@@ -144,7 +142,8 @@ public class CropGrowthHandler {
     /**
      * Returns true if the crop is applicable and almost fully grown, false otherwise
      * Used for bone meal event
-     * @param entry
+     *
+     * @param entry the CropQueueEntry
      * @return whether the crop is nearly fully grown
      */
     private static boolean isNearlyGrown(CropQueueEntry entry) {

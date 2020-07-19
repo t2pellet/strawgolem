@@ -8,7 +8,7 @@ import net.minecraft.item.crafting.Ingredient;
 
 public class GolemTemptGoal extends TemptGoal {
 
-    private EntityStrawGolem strawGolem;
+    private final EntityStrawGolem strawGolem;
 
     public GolemTemptGoal(EntityStrawGolem creatureIn) {
         super(creatureIn, 0.7D, false, Ingredient.fromItems(Items.APPLE));
@@ -18,6 +18,6 @@ public class GolemTemptGoal extends TemptGoal {
     @Override
     public void startExecuting() {
         super.startExecuting();
-        if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(strawGolem.GOLEM_INTERESTED, 1.0F, 1.0F);
+        if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_INTERESTED, 1.0F, 1.0F);
     }
 }

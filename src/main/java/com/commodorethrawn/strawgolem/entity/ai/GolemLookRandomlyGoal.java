@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class GolemLookRandomlyGoal extends LookRandomlyGoal {
 
-    private EntityStrawGolem strawGolem;
+    private final EntityStrawGolem strawGolem;
 
     public GolemLookRandomlyGoal(EntityStrawGolem entitylivingIn) {
         super(entitylivingIn);

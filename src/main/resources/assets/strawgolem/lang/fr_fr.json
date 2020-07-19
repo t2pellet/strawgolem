@@ -1,0 +1,10 @@
+{
+  "entity.strawgolem.strawgolem": "Golem de Paille",
+  "strawgolem.subtitle.golemAmbient": "Golem de Paille Ambiante",
+  "strawgolem.subtitle.golemHurt": "Golem de Paille Blessé",
+  "strawgolem.subtitle.golemDeath": "Golem de Paille Mort",
+  "strawgolem.subtitle.golemHeal": "Golem de Paille Soigner",
+  "strawgolem.subtitle.golemScared": "Golem de Paille Épeuré",
+  "strawgolem.subtitle.golemInterested": "Golem de Paille Intéressé",
+  "strawgolem.lifespan": "Vie restante: %s jours"
+}

@@ -23,7 +23,7 @@ public class GolemCreationHandler {
     /**
      * Handles golem building based on block placement
      *
-     * @param event
+     * @param event the placement event
      */
     @SubscribeEvent
     public static void onGolemBuilt(BlockEvent.EntityPlaceEvent event) {
@@ -47,7 +47,7 @@ public class GolemCreationHandler {
     /**
      * Handles golem building based on shearing the pumpkin
      *
-     * @param event
+     * @param event the right click block event
      */
     @SubscribeEvent
     public static void onGolemBuiltAlternate(PlayerInteractEvent.RightClickBlock event) {
@@ -62,15 +62,20 @@ public class GolemCreationHandler {
         }
     }
 
-
+    /**
+     * Spawns the strawgolem in the given world if theres a hay block at pos hay and pumpkin block at pos pumpkin
+     *
+     * @param worldIn the world
+     * @param hay     position of hay
+     * @param pumpkin position of pumpkin
+     */
     private static void spawnGolem(World worldIn, BlockPos hay, BlockPos pumpkin) {
         if (worldIn.getBlockState(hay).getBlock() == Blocks.HAY_BLOCK
                 && worldIn.getBlockState(pumpkin).getBlock() == Blocks.CARVED_PUMPKIN) {
-            BlockPos pos = hay;
             worldIn.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
             worldIn.setBlockState(hay, Blocks.AIR.getDefaultState());
             EntityStrawGolem strawGolem = new EntityStrawGolem(Registry.STRAW_GOLEM_TYPE, worldIn);
-            strawGolem.setPosition(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+            strawGolem.setPosition(hay.getX() + 0.5D, hay.getY(), hay.getZ() + 0.5D);
             worldIn.addEntity(strawGolem);
         }
     }

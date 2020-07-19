@@ -48,10 +48,10 @@ public class EntityStrawGolem extends GolemEntity {
     public static final SoundEvent GOLEM_SCARED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_scared"));
     public static final SoundEvent GOLEM_INTERESTED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_interested"));
     private static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
-    public IItemHandler inventory;
     private final ILifespan lifespan;
     private final IMemory memory;
     private final IProfession profession;
+    public IItemHandler inventory;
     private BlockPos harvestPos;
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
@@ -146,7 +146,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Nonnull
     @Override
-    public ItemStack getHeldItem(Hand hand) {
+    public ItemStack getHeldItem(@Nonnull Hand hand) {
         if (hand == Hand.MAIN_HAND) {
             return inventory.getStackInSlot(0);
         }
@@ -176,7 +176,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     //Drops held item
     @Override
-    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
+    protected void dropSpecialItems(@Nonnull DamageSource source, int looting, boolean recentlyHitIn) {
         super.dropSpecialItems(source, looting, recentlyHitIn);
         if (EffectiveSide.get().isServer()) {
             entityDropItem(inventory.getStackInSlot(0).copy());
@@ -210,6 +210,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Returns whether the golem is in an imperfect state (i.e. lifespan is below 90% or it has taken damage)
+     *
      * @return whether golem is hurt
      */
     private boolean isGolemHurt() {
@@ -259,8 +260,13 @@ public class EntityStrawGolem extends GolemEntity {
         }
     }
 
-    /* Helps with harvesting goal */
-
+    /**
+     * Determines whether or not the block at position pos in world worldIn should be harvested
+     *
+     * @param worldIn the world
+     * @param pos     the position
+     * @return whether the golem should harvest the block
+     */
     public boolean shouldHarvestBlock(IWorldReader worldIn, BlockPos pos) {
         BlockState state = worldIn.getBlockState(pos);
         if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
@@ -280,8 +286,9 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Checks if golem has line of sight on the block
+     *
      * @param worldIn the world
-     * @param pos the position
+     * @param pos     the position
      * @return whether the golem has line of sight
      */
     public boolean canSeeBlock(IWorldReader worldIn, BlockPos pos) {
