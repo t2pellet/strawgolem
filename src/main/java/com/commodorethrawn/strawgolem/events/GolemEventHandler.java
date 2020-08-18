@@ -26,9 +26,11 @@ public class GolemEventHandler {
     @SubscribeEvent
     public static void playerJoin(EntityJoinWorldEvent event) {
         if (!event.getWorld().isRemote && event.getEntity() instanceof PlayerEntity) {
+            System.out.println("Player joining");
             ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
             List<EntityStrawGolem> golems = player.world.getEntitiesWithinAABB(EntityStrawGolem.class, player.getBoundingBox().grow(25));
             for (EntityStrawGolem golem : golems) {
+                System.out.println("Sending packet..");
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageLifespan(golem));
             }
         }

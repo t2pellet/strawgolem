@@ -16,6 +16,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
@@ -88,7 +89,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
             }
         } else {
             --this.timeoutCounter;
-            doHarvest();
+            harvestCrop();
         }
     }
 
@@ -101,7 +102,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
      * Handles the harvesting logic
      * Destroys the target crop, picking it up if delivery is enabled, replanting if enabled
      */
-    private void doHarvest() {
+    private void harvestCrop() {
         ServerWorld worldIn = (ServerWorld) this.strawgolem.world;
         BlockPos pos = this.destinationBlock;
         BlockState state = worldIn.getBlockState(pos);
@@ -109,47 +110,76 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         /* If its the right block to harvest */
         if (shouldMoveTo(worldIn, pos)) {
             worldIn.playSound(null, pos, SoundEvents.BLOCK_CROP_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
-            if (ConfigHelper.isDeliveryEnabled()) {
-                if (block instanceof StemGrownBlock) {
-                    strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
-                    strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
-                } else if (block instanceof CropsBlock || block instanceof NetherWartBlock) {
-                    List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getTileEntity(pos));
-                    for (ItemStack drop : drops) {
-                        if (!(drop.getItem() instanceof BlockItem) || drop.getUseAction() == UseAction.EAT || drop.getItem() == Items.NETHER_WART) {
-                            strawgolem.inventory.insertItem(0, drop, false);
-                        }
+            doPickup(worldIn, pos, state, block);
+            doReplant(worldIn, pos, state, block);
+        }
+    }
+
+    /**
+     * Handles the logic for picking up the harvests
+     * @param worldIn : the world
+     * @param pos : the position of the crop
+     * @param state : the BlockState of the crop
+     * @param block : the Block of the crop
+     */
+    private void doPickup(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
+        if (ConfigHelper.isDeliveryEnabled()) {
+            if (block instanceof StemGrownBlock) {
+                strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
+                strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
+            } else if (block instanceof CropsBlock || block instanceof NetherWartBlock) {
+                List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getTileEntity(pos));
+                for (ItemStack drop : drops) {
+                    if (!(drop.getItem() instanceof BlockItem)
+                            || drop.getUseAction() == UseAction.EAT
+                            || drop.getItem() == Items.NETHER_WART) {
+                        strawgolem.inventory.insertItem(0, drop, false);
                     }
-                } else { // Bushes
-                    PlayerEntity fake = FakePlayerFactory.get(worldIn, new GameProfile(null, "golem"));
-                    BlockRayTraceResult result = new BlockRayTraceResult(strawgolem.getPositionVec(), strawgolem.getHorizontalFacing().getOpposite(), pos, false);
-                    try {
-                        state.onBlockActivated(worldIn, fake, Hand.MAIN_HAND, result);
-                        MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickBlock(fake, Hand.MAIN_HAND, pos, strawgolem.getHorizontalFacing().getOpposite()));
-                        List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2));
-                        for (ItemEntity item : itemList) {
-                            strawgolem.inventory.insertItem(0, item.getItem(), false);
-                            item.remove();
-                        }
-                    } catch (NullPointerException ignored) {
-                    }
-                    fake.remove(false);
                 }
+            } else { // Bushes
+                PlayerEntity fake = FakePlayerFactory.get(worldIn, new GameProfile(null, "golem"));
+                BlockRayTraceResult result = new BlockRayTraceResult(strawgolem.getPositionVec(),
+                                                                     strawgolem.getHorizontalFacing().getOpposite(),
+                                                                     pos,
+                                                             false);
+                try {
+                    state.onBlockActivated(worldIn, fake, Hand.MAIN_HAND, result);
+                    MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickBlock(fake,
+                                                  Hand.MAIN_HAND,
+                                                  pos,
+                                                  strawgolem.getHorizontalFacing().getOpposite()));
+                    List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2));
+                    for (ItemEntity item : itemList) {
+                        strawgolem.inventory.insertItem(0, item.getItem(), false);
+                        item.remove();
+                    }
+                } catch (NullPointerException ignored) {}
+                fake.remove(false);
             }
-            if (ConfigHelper.isReplantEnabled()) {
-                if (block instanceof CropsBlock) {
-                    CropsBlock crop = (CropsBlock) block;
-                    worldIn.setBlockState(pos, crop.getDefaultState());
-                } else if (block instanceof NetherWartBlock) {
-                    worldIn.setBlockState(pos, block.getDefaultState().with(NetherWartBlock.AGE, 0));
-                } else if (state.has(BlockStateProperties.AGE_0_3) && block instanceof BushBlock) { // Bushes
-                    worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
-                } else {
-                    worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
-                }
+        }
+    }
+
+    /**
+     * Handles the replanting logic
+     * @param worldIn : the world
+     * @param pos : the position of the crop
+     * @param state : the BlockState of the crop
+     * @param block : the Block of the crop
+     */
+    private void doReplant(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
+        if (ConfigHelper.isReplantEnabled()) {
+            if (block instanceof CropsBlock) {
+                CropsBlock crop = (CropsBlock) block;
+                worldIn.setBlockState(pos, crop.getDefaultState());
+            } else if (block instanceof NetherWartBlock) {
+                worldIn.setBlockState(pos, block.getDefaultState().with(NetherWartBlock.AGE, 0));
+            } else if (state.has(BlockStateProperties.AGE_0_3) && block instanceof BushBlock) { // Bushes
+                worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
             } else {
                 worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
             }
+        } else {
+            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
     }
 

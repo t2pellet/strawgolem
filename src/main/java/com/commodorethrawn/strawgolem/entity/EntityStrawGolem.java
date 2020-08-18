@@ -3,6 +3,7 @@ package com.commodorethrawn.strawgolem.entity;
 import com.commodorethrawn.strawgolem.Registry;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.ai.*;
 import com.commodorethrawn.strawgolem.entity.capability.InventoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
