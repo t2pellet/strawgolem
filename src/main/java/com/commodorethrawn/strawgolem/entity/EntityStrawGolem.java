@@ -1,5 +1,6 @@
 package com.commodorethrawn.strawgolem.entity;
 
+import com.commodorethrawn.strawgolem.Registry;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.ai.*;
@@ -125,12 +126,14 @@ public class EntityStrawGolem extends GolemEntity {
                     && world.canSeeSky(getPosition())
                     && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
             if (world.hasWater(getPosition()) && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
-            if (lifespan.get() % 300 == 0 && lifespan.get() != 0)
+            if (rand.nextInt(40) == 0) {
                 PacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new MessageLifespan(this));
-            if (lifespan.isOver())
-                attackEntityFrom(DamageSource.MAGIC, getMaxHealth() * 100);
+            }
+            if (lifespan.isOver()) attackEntityFrom(DamageSource.MAGIC, getMaxHealth() * 100);
+        } else if (lifespan.get() * 4 < ConfigHelper.getLifespan() && rand.nextInt(80) == 0) {
+            world.addParticle(Registry.FLY_PARTICLE, lastTickPosX, lastTickPosY, lastTickPosZ,
+                    0, 0, 0);
         }
-
     }
 
     /* Handle inventory */

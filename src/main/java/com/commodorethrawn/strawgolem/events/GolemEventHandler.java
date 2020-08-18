@@ -66,7 +66,7 @@ public class GolemEventHandler {
                 EntityStrawGolem golem = (EntityStrawGolem) event.getWorld().getEntityByID(player.getPersistentData().getInt("golemId"));
                 if (golem != null) {
                     golem.getMemory().setPriorityChest(event.getPos());
-                    golem.getMemory().addPosition(event.getPos());
+                    golem.getMemory().addPosition(event.getWorld(), event.getPos());
                     event.getPlayer().sendMessage(golem.getDisplayName().appendText(" will now deliver to this chest"));
                 }
             }

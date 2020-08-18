@@ -4,6 +4,7 @@ import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.SoundCategory;
@@ -43,24 +44,22 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean searchForDestination() {
-        BlockPos pos = strawGolem.getMemory().getDeliveryChest(strawGolem.getPosition());
+        BlockPos pos = strawGolem.getMemory().getDeliveryChest(strawGolem.getEntityWorld(), strawGolem.getPosition());
         if (shouldMoveTo(strawGolem.world, pos)) {
             this.destinationBlock = pos;
             return true;
         }
         if (strawGolem.getMemory().getPriorityChest().equals(pos))
             strawGolem.getMemory().setPriorityChest(BlockPos.ZERO);
-        strawGolem.getMemory().removePosition(pos);
+        strawGolem.getMemory().removePosition(strawGolem.world, pos);
         return (super.searchForDestination() && strawGolem.canSeeBlock(strawGolem.world, destinationBlock));
     }
 
     @Override
     protected boolean shouldMoveTo(IWorldReader worldIn, @Nonnull BlockPos pos) {
-        if (worldIn.getTileEntity(pos) != null
-                && worldIn.getBlockState(pos).getBlock() != Blocks.AIR
+        if (worldIn.getBlockState(pos).getBlock() != Blocks.AIR
                 && worldIn.getTileEntity(pos) != null
                 && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()) {
-            strawGolem.getMemory().addPosition(pos);
             return true;
         }
         return false;
@@ -93,17 +92,25 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
      * Finds first empty/compatible slot in the chest and puts the golem's held item there
      */
     private void doDeposit() {
+        strawGolem.getMemory().addPosition(strawGolem.world, destinationBlock);
         ServerWorld worldIn = (ServerWorld) this.strawGolem.world;
         BlockPos pos = this.destinationBlock;
         IItemHandler chestInv = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
                 .orElseThrow(() -> new NullPointerException("Chest IItemhandler cannot be null"));
         ItemStack insertStack = this.strawGolem.inventory.extractItem(0, 64, false);
+        boolean chestFull = true;
         for (int i = 0; i < chestInv.getSlots(); ++i) {
             if (chestInv.getStackInSlot(i).getItem() == Items.AIR
                     || (chestInv.getStackInSlot(i).getItem() == insertStack.getItem() && chestInv.getStackInSlot(i).getCount() < chestInv.getSlotLimit(0))) {
                 chestInv.insertItem(i, insertStack, false);
+                chestFull = false;
                 break;
             }
+        }
+        if (chestFull) {
+            ItemEntity item = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ());
+            item.setItem(insertStack);
+            worldIn.addEntity(item);
         }
         worldIn.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 1.0F, 1.0F);
         strawGolem.getNavigator().clearPath();
