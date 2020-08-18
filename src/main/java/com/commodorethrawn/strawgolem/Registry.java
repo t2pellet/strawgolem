@@ -5,7 +5,13 @@ import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
+import net.minecraft.particles.BasicParticleType;
+import net.minecraft.particles.ParticleType;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -45,6 +51,20 @@ public class Registry {
                 EntityStrawGolem.GOLEM_SCARED.setRegistryName(Strawgolem.MODID, "golem_scared"),
                 EntityStrawGolem.GOLEM_INTERESTED.setRegistryName(Strawgolem.MODID, "golem_interested")
         );
+    }
+
+    public static final BasicParticleType FLY_PARTICLE = new BasicParticleType(true);
+
+    @SubscribeEvent
+    public static void registerParticle(final RegistryEvent.Register<ParticleType<?>> event) {
+        FLY_PARTICLE.setRegistryName(Strawgolem.MODID, "fly");
+        event.getRegistry().register(FLY_PARTICLE);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public static void registerParticleFactory(ParticleFactoryRegisterEvent event) {
+        Minecraft.getInstance().particles.registerFactory(FLY_PARTICLE.getType(), FlyParticle.Factory::new);
     }
 
 }

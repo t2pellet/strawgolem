@@ -18,6 +18,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(Strawgolem.MODID, "textures/entity/straw_golem.png");
     private static final ResourceLocation TEXTURE_OLD = new ResourceLocation(Strawgolem.MODID, "textures/entity/old_straw_golem.png");
+    private static final ResourceLocation TEXTURE_DYING = new ResourceLocation(Strawgolem.MODID, "textures/entity/dying_straw_golem.png");
 
     public RenderStrawGolem(EntityRendererManager rendermanagerIn) {
         super(rendermanagerIn, new ModelStrawGolem(), 0.5f);
@@ -45,7 +46,9 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     @Nonnull
     @Override
     public ResourceLocation getEntityTexture(EntityStrawGolem golem) {
-        if (golem.getCurrentLifespan() < ConfigHelper.getLifespan() / 2) {
+        if (golem.getCurrentLifespan()  * 4 < ConfigHelper.getLifespan()) {
+            return TEXTURE_DYING;
+        } else if (golem.getCurrentLifespan() * 2 < ConfigHelper.getLifespan()) {
             return TEXTURE_OLD;
         }
         return TEXTURE;
