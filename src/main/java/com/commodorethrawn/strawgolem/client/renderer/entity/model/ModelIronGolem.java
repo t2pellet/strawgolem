@@ -1,6 +1,6 @@
-package com.commodorethrawn.strawgolem.entity.irongolem;
+package com.commodorethrawn.strawgolem.client.renderer.entity.model;
 
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.entity.model.SegmentedModel;
 import net.minecraft.client.renderer.model.ModelRenderer;

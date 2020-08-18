@@ -1,7 +1,7 @@
-package com.commodorethrawn.strawgolem.compat;
+package com.commodorethrawn.strawgolem.client.compat;
 
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

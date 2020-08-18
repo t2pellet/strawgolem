@@ -49,7 +49,7 @@ public class StrawgolemSaveData extends WorldSavedData {
                 if (dimension != null) world = ServerLifecycleHooks.getCurrentServer().getWorld(dimension);
             }
             if (world != null && pos != null) {
-                CropGrowthHandler.cropQueue.add(new CropGrowthHandler.CropQueueEntry(pos, world));
+                CropGrowthHandler.scheduleCrop(world, pos, 3);
             }
         }
     }
@@ -57,7 +57,7 @@ public class StrawgolemSaveData extends WorldSavedData {
     @Nonnull
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
-        Iterator<CropGrowthHandler.CropQueueEntry> cropIterator = CropGrowthHandler.cropQueue.iterator();
+        Iterator<CropGrowthHandler.CropQueueEntry> cropIterator = CropGrowthHandler.queue.iterator();
         ListNBT listTag = new ListNBT();
         while (cropIterator.hasNext()) {
             CompoundNBT entryTag = new CompoundNBT();

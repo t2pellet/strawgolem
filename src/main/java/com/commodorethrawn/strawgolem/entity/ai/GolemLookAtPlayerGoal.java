@@ -1,6 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.player.PlayerEntity;
 

@@ -66,7 +66,7 @@ public class StrawgolemConfig {
             blacklist = builder.comment("Blacklist Filter").defineList("blacklist", Collections.emptyList(), o -> o instanceof String);
             builder.pop();
             builder.push("Lifespan");
-            lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -1, Integer.MAX_VALUE);
+            lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -2, Integer.MAX_VALUE);
             heavyPenalty = builder.comment("Enable lifespan penalty for carrying a heavy item").define("penaltyHeavy", true);
             rainPenalty = builder.comment("Enable lifespan penalty for being in the rain").define("penaltyRain", true);
             waterPenalty = builder.comment("Enable lifespan penalty for being in the water").define("penaltyWater", true);

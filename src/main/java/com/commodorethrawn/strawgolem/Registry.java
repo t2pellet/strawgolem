@@ -1,6 +1,8 @@
 package com.commodorethrawn.strawgolem;
 
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.client.particle.FlyParticle;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.SoundEvent;

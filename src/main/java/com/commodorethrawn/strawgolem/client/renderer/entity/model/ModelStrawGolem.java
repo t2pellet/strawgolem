@@ -1,5 +1,6 @@
-package com.commodorethrawn.strawgolem.entity.strawgolem;
+package com.commodorethrawn.strawgolem.client.renderer.entity.model;
 
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.Vector3f;

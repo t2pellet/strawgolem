@@ -1,6 +1,8 @@
 package com.commodorethrawn.strawgolem;
 
-import com.commodorethrawn.strawgolem.compat.CompatHwyla;
+import com.commodorethrawn.strawgolem.client.compat.CompatHwyla;
+import com.commodorethrawn.strawgolem.client.renderer.entity.RenderIronGolem;
+import com.commodorethrawn.strawgolem.client.renderer.entity.RenderStrawGolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.config.ConfigHolder;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
@@ -12,8 +14,6 @@ import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryStorage;
 import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.Profession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionStorage;
-import com.commodorethrawn.strawgolem.entity.irongolem.RenderIronGolem;
-import com.commodorethrawn.strawgolem.entity.strawgolem.RenderStrawGolem;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,8 +32,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(Strawgolem.MODID)
 public class Strawgolem {
     public static final String MODID = "strawgolem";
-    public static Logger logger = LogManager.getLogger(MODID);
-
+    public static final Logger logger = LogManager.getLogger(MODID);
 
     public Strawgolem() {
         logger.info("Initializing strawgolem");

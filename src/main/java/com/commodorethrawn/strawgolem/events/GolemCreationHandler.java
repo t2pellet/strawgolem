@@ -2,7 +2,7 @@ package com.commodorethrawn.strawgolem.events;
 
 import com.commodorethrawn.strawgolem.Registry;
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalBlock;

@@ -1,5 +1,6 @@
-package com.commodorethrawn.strawgolem.entity.irongolem;
+package com.commodorethrawn.strawgolem.client.renderer.entity.layers;
 
+import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelIronGolem;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;

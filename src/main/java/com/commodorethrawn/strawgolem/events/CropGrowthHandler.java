@@ -2,7 +2,7 @@ package com.commodorethrawn.strawgolem.events;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
 import net.minecraft.block.*;
 import net.minecraft.state.properties.BlockStateProperties;

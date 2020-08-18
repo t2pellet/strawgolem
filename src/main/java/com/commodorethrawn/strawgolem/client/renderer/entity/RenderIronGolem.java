@@ -1,5 +1,8 @@
-package com.commodorethrawn.strawgolem.entity.irongolem;
+package com.commodorethrawn.strawgolem.client.renderer.entity;
 
+import com.commodorethrawn.strawgolem.client.renderer.entity.layers.IronGolemCracksLayer;
+import com.commodorethrawn.strawgolem.client.renderer.entity.layers.IronGolemFlowerLayer;
+import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelIronGolem;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.entity.passive.IronGolemEntity;

@@ -1,7 +1,9 @@
-package com.commodorethrawn.strawgolem.entity.strawgolem;
+package com.commodorethrawn.strawgolem.client.renderer.entity;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelStrawGolem;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

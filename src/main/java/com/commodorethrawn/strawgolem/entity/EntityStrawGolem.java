@@ -1,4 +1,4 @@
-package com.commodorethrawn.strawgolem.entity.strawgolem;
+package com.commodorethrawn.strawgolem.entity;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;

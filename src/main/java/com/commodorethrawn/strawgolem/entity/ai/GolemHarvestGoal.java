@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
 import net.minecraft.entity.CreatureEntity;

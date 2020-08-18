@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.events;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.network.MessageLifespan;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.entity.player.PlayerEntity;

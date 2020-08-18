@@ -4,7 +4,7 @@ import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanProvider;
 import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionProvider;
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.AttachCapabilitiesEvent;

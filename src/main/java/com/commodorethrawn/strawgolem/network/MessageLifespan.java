@@ -2,7 +2,7 @@ package com.commodorethrawn.strawgolem.network;
 
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanProvider;
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;

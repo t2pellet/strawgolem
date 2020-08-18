@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
-import com.commodorethrawn.strawgolem.entity.strawgolem.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.item.ItemStack;
