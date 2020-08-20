@@ -139,7 +139,7 @@ public class EntityStrawGolem extends GolemEntity {
      *
      * @return true if the golem is in rain, false otherwise
      */
-    private boolean isInRain() {
+    public boolean isInRain() {
         return world.isRainingAt(getPosition())
                 && world.canSeeSky(getPosition())
                 && ConfigHelper.isLifespanPenalty("rain");
