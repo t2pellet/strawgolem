@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -30,7 +31,7 @@ import java.util.PriorityQueue;
 @Mod.EventBusSubscriber(modid = Strawgolem.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CropGrowthHandler {
 
-    public static final PriorityQueue<CropQueueEntry> queue = new PriorityQueue<>();
+    protected static final PriorityQueue<CropQueueEntry> queue = new PriorityQueue<>();
     private static final int HARVEST_DELAY = 100;
     static StrawgolemSaveData data;
 
@@ -153,11 +154,22 @@ public class CropGrowthHandler {
         return false;
     }
 
+    /**
+     * Schedules a crop to be harvested
+     *
+     * @param world    the world the crop is in
+     * @param pos      the position of the crop
+     * @param runsLeft the amount of times left to reschedule this crop to be harvested
+     */
     public static void scheduleCrop(IWorld world, BlockPos pos, int runsLeft) {
         if (runsLeft <= 0) return;
         int executeTick = ticks + HARVEST_DELAY;
         queue.add(new CropQueueEntry(pos, world, executeTick, runsLeft));
         if (data != null) data.markDirty();
+    }
+
+    public static Iterator<CropQueueEntry> getCrops() {
+        return queue.iterator();
     }
 
     public static class CropQueueEntry implements Comparable<CropQueueEntry> {
@@ -166,8 +178,13 @@ public class CropGrowthHandler {
         private final int tick;
         private int count;
 
-        public BlockPos getPos() { return pos; }
-        public IWorld getWorld() { return world; }
+        public BlockPos getPos() {
+            return pos;
+        }
+
+        public IWorld getWorld() {
+            return world;
+        }
 
         public CropQueueEntry(BlockPos pos, IWorld world, int tick, int count) {
             this.pos = pos;

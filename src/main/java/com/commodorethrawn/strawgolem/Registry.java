@@ -7,7 +7,6 @@ import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleType;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -19,12 +18,13 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Strawgolem.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Registry {
 
+    private Registry() {
+    }
+
     public static EntityType<EntityStrawGolem> STRAW_GOLEM_TYPE;
 
     /**
      * Registers the entities of the mod
-     *
-     * @param event
      */
     @SubscribeEvent
     public static void registerEntity(final RegistryEvent.Register<EntityType<?>> event) {
@@ -37,8 +37,6 @@ public class Registry {
 
     /**
      * Registers the sounds of the mod
-     *
-     * @param event
      */
     @SubscribeEvent
     public static void registerSound(final RegistryEvent.Register<SoundEvent> event) {

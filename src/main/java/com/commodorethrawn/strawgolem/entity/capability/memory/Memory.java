@@ -3,8 +3,6 @@ package com.commodorethrawn.strawgolem.entity.capability.memory;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.HashSet;
 import java.util.Set;

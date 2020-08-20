@@ -20,6 +20,10 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = Strawgolem.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GolemCreationHandler {
+
+    private GolemCreationHandler() {
+    }
+
     /**
      * Handles golem building based on block placement
      *

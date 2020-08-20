@@ -8,14 +8,14 @@ public interface IProfession {
     /**
      * @return the golems profession
      */
-    GolemProfession getProfession();
+    GolemProfession get();
 
     /**
      * Sets the golem's profession to 'profession'
      *
      * @param profession the desired profession
      */
-    void setProfession(GolemProfession profession);
+    void set(GolemProfession profession);
 
     enum GolemProfession {
         FARMER(0),
@@ -26,13 +26,13 @@ public interface IProfession {
 
         static {
             for (GolemProfession profession : GolemProfession.values())
-                _professionMap.put(profession.Value, profession);
+                _professionMap.put(profession.value, profession);
         }
 
-        public final int Value;
+        public final int value;
 
         GolemProfession(int value) {
-            Value = value;
+            this.value = value;
         }
 
         /**

@@ -11,6 +11,9 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 @EventBusSubscriber(modid = Strawgolem.MODID, bus = EventBusSubscriber.Bus.FORGE)
 public class IronGolemHandler {
 
+    private IronGolemHandler() {
+    }
+
     @SubscribeEvent
     public static void ironGolemSpawn(EntityJoinWorldEvent event) {
         if (!event.getWorld().isRemote

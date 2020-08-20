@@ -7,6 +7,10 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class CompatHwyla {
+
+    private CompatHwyla() {
+    }
+
     @SubscribeEvent
     public static void onTooltip(WailaTooltipEvent event) {
         if (event.getAccessor().getEntity() instanceof EntityStrawGolem && ConfigHelper.isEnableHwyla()) {

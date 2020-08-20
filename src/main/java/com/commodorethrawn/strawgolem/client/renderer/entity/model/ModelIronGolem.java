@@ -6,6 +6,9 @@ import net.minecraft.client.renderer.entity.model.SegmentedModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.entity.passive.IronGolemEntity;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
  * Replacement for vanilla golem model
  *
@@ -43,11 +46,13 @@ public class ModelIronGolem<T extends IronGolemEntity> extends SegmentedModel<T>
         this.ironGolemRightLeg.addBox(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F, 0.0F);
     }
 
+    @Nonnull
     @Override
     public Iterable<ModelRenderer> getParts() {
         return ImmutableList.of(this.ironGolemHead, this.ironGolemBody, this.ironGolemLeftLeg, this.ironGolemRightLeg, this.ironGolemRightArm, this.ironGolemLeftArm);
     }
 
+    @ParametersAreNonnullByDefault
     @Override
     public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.ironGolemHead.rotateAngleY = netHeadYaw * ((float) Math.PI / 180F);
@@ -60,11 +65,6 @@ public class ModelIronGolem<T extends IronGolemEntity> extends SegmentedModel<T>
 
     /**
      * Same as original, except when holding a straw golem
-     *
-     * @param entityIn
-     * @param limbSwing
-     * @param limbSwingAmount
-     * @param partialTick
      */
     @Override
     public void setLivingAnimations(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
@@ -90,8 +90,8 @@ public class ModelIronGolem<T extends IronGolemEntity> extends SegmentedModel<T>
 
     }
 
-    private float triangleWave(float p_78172_1_, float p_78172_2_) {
-        return (Math.abs(p_78172_1_ % p_78172_2_ - p_78172_2_ * 0.5F) - p_78172_2_ * 0.25F) / (p_78172_2_ * 0.25F);
+    private float triangleWave(float f1, float f2) {
+        return (Math.abs(f1 % f2 - f2 * 0.5F) - f2 * 0.25F) / (f2 * 0.25F);
     }
 
     public ModelRenderer getArmHoldingRose() {

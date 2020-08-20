@@ -3,7 +3,6 @@ package com.commodorethrawn.strawgolem.entity;
 import com.commodorethrawn.strawgolem.Registry;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
-import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.ai.*;
 import com.commodorethrawn.strawgolem.entity.capability.InventoryProvider;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
@@ -23,6 +22,7 @@ import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particles.ParticleTypes;
@@ -39,7 +39,6 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
-import java.util.Random;
 
 public class EntityStrawGolem extends GolemEntity {
     public static final SoundEvent GOLEM_AMBIENT = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_ambient"));
@@ -53,15 +52,15 @@ public class EntityStrawGolem extends GolemEntity {
     private final ILifespan lifespan;
     private final IMemory memory;
     private final IProfession profession;
-    public IItemHandler inventory;
+    private static final String BAD_CAP = "Can't be empty";
     private BlockPos harvestPos;
-
+    private final IItemHandler inventory;
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
         super(type, worldIn);
-        inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-        profession = getCapability(ProfessionProvider.PROFESSION_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-        lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
-        memory = getCapability(MemoryProvider.MEMORY_CAP, null).orElseThrow(() -> new IllegalArgumentException("cant be empty"));
+        inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException(BAD_CAP));
+        profession = getCapability(ProfessionProvider.PROFESSION_CAP, null).orElseThrow(() -> new IllegalArgumentException(BAD_CAP));
+        lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException(BAD_CAP));
+        memory = getCapability(MemoryProvider.MEMORY_CAP, null).orElseThrow(() -> new IllegalArgumentException(BAD_CAP));
         harvestPos = BlockPos.ZERO;
     }
 
@@ -123,10 +122,8 @@ public class EntityStrawGolem extends GolemEntity {
         if (!world.isRemote) {
             lifespan.update();
             if (holdingFullBlock() && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
-            if (world.isRainingAt(getPosition())
-                    && world.canSeeSky(getPosition())
-                    && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
-            if (world.hasWater(getPosition()) && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
+            if (isInRain()) lifespan.update();
+            if (world.hasWater(getPosition()) && ConfigHelper.isLifespanPenalty("water")) lifespan.update();
             if (rand.nextInt(40) == 0) {
                 PacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new MessageLifespan(this));
             }
@@ -135,6 +132,17 @@ public class EntityStrawGolem extends GolemEntity {
             world.addParticle(Registry.FLY_PARTICLE, lastTickPosX, lastTickPosY, lastTickPosZ,
                     0, 0, 0);
         }
+    }
+
+    /**
+     * Determines if the golem is in the rain
+     *
+     * @return true if the golem is in rain, false otherwise
+     */
+    private boolean isInRain() {
+        return world.isRainingAt(getPosition())
+                && world.canSeeSky(getPosition())
+                && ConfigHelper.isLifespanPenalty("rain");
     }
 
     /* Handle inventory */
@@ -163,7 +171,12 @@ public class EntityStrawGolem extends GolemEntity {
      * @return whether the golem is holding a gourd block
      */
     public boolean holdingFullBlock() {
-        return Block.getBlockFromItem(inventory.getStackInSlot(0).getItem()) instanceof StemGrownBlock;
+        ItemStack item = inventory.getStackInSlot(0);
+        if (!(item.getItem() instanceof BlockItem)) return false;
+        BlockItem blockItem = (BlockItem) item.getItem();
+        return blockItem != Items.AIR
+                && blockItem.getBlock().getDefaultState().isSolid()
+                && blockItem.getBlock().asItem() == blockItem;
     }
 
     /* Miscellaneous */
@@ -214,7 +227,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Returns whether the golem is in an imperfect state (i.e. lifespan is below 90% or it has taken damage)
-     *
      * @return whether golem is hurt
      */
     private boolean isGolemHurt() {
@@ -223,13 +235,11 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Spawns the heal particles based on location x, y, z
-     *
      * @param x coordiante
      * @param y coordinate
      * @param z coordinate
      */
     private void spawnHealParticles(double x, double y, double z) {
-        Random rand = new Random();
         world.addParticle(ParticleTypes.HEART, x + rand.nextDouble() - 0.5, y + 0.4D, z + rand.nextDouble() - 0.5, this.getMotion().x, this.getMotion().y, this.getMotion().z);
     }
 
@@ -303,6 +313,10 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     /* Handles capabilities */
+
+    public IItemHandler getInventory() {
+        return inventory;
+    }
 
     /**
      * Returnns the memory, capability, used to store and retrieve chest positions

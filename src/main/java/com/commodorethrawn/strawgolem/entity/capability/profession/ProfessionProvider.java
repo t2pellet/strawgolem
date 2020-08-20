@@ -15,7 +15,7 @@ public class ProfessionProvider implements ICapabilitySerializable<INBT> {
     @CapabilityInject(IProfession.class)
     public static final Capability<IProfession> PROFESSION_CAP = null;
 
-    private final LazyOptional<IProfession> professionInstance = LazyOptional.of(() -> PROFESSION_CAP.getDefaultInstance());
+    private final LazyOptional<IProfession> professionInstance = LazyOptional.of(PROFESSION_CAP::getDefaultInstance);
 
     @Nonnull
     @Override

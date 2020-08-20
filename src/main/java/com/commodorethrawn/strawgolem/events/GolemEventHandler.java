@@ -23,17 +23,9 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = Strawgolem.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GolemEventHandler {
 
-    @SubscribeEvent
-    public static void playerJoin(EntityJoinWorldEvent event) {
-        if (!event.getWorld().isRemote && event.getEntity() instanceof PlayerEntity) {
-            System.out.println("Player joining");
-            ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
-            List<EntityStrawGolem> golems = player.world.getEntitiesWithinAABB(EntityStrawGolem.class, player.getBoundingBox().grow(25));
-            for (EntityStrawGolem golem : golems) {
-                System.out.println("Sending packet..");
-                PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageLifespan(golem));
-            }
-        }
+    private static final String GOLEM = "golemId";
+
+    private GolemEventHandler() {
     }
 
     /**
@@ -51,6 +43,20 @@ public class GolemEventHandler {
     }
 
     /**
+     * Sends the player update packets to properly display all the nearby strawgolems
+     */
+    @SubscribeEvent
+    public static void playerJoin(EntityJoinWorldEvent event) {
+        if (!event.getWorld().isRemote && event.getEntity() instanceof PlayerEntity) {
+            ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+            List<EntityStrawGolem> golems = player.world.getEntitiesWithinAABB(EntityStrawGolem.class, player.getBoundingBox().grow(25));
+            for (EntityStrawGolem golem : golems) {
+                PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageLifespan(golem));
+            }
+        }
+    }
+
+    /**
      * Sets the chest that golem will always prioritize going to deliver
      *
      * @param event the right click block event
@@ -61,15 +67,16 @@ public class GolemEventHandler {
             TileEntity tileEntity = event.getWorld().getTileEntity(event.getPos());
             PlayerEntity player = event.getPlayer();
             if (tileEntity != null
-                    && tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()
-                    && player.getPersistentData().contains("golemId")
                     && event.getHand() == Hand.MAIN_HAND
-                    && player.getHeldItemMainhand().getItem() == Items.WHEAT) {
-                EntityStrawGolem golem = (EntityStrawGolem) event.getWorld().getEntityByID(player.getPersistentData().getInt("golemId"));
+                    && player.getHeldItemMainhand().getItem() == Items.WHEAT
+                    && tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()
+                    && player.getPersistentData().contains(GOLEM)) {
+                EntityStrawGolem golem = (EntityStrawGolem) event.getWorld().getEntityByID(player.getPersistentData().getInt(GOLEM));
                 if (golem != null) {
                     golem.getMemory().setPriorityChest(event.getPos());
                     golem.getMemory().addPosition(event.getWorld(), event.getPos());
                     event.getPlayer().sendMessage(golem.getDisplayName().appendText(" will now deliver to this chest"));
+                    player.getPersistentData().remove(GOLEM);
                 }
             }
         }

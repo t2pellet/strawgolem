@@ -1,5 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
+import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.mojang.authlib.GameProfile;
@@ -16,7 +17,6 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
@@ -61,12 +61,6 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     @Override
     public boolean shouldContinueExecuting() {
         return super.shouldContinueExecuting() && !strawgolem.isPassenger();
-    }
-
-    /* Needed to flag the golem as executing when *it* finds the crop via searchForDestination */
-    @Override
-    public void startExecuting() {
-        super.startExecuting();
     }
 
     /* Almost copied from the vanilla tick() method, just calling doHarvest when it gets to the block and some tweaks for different kinds of blocks */
@@ -126,36 +120,19 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         if (ConfigHelper.isDeliveryEnabled()) {
             if (block instanceof StemGrownBlock) {
                 strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
-                strawgolem.inventory.insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
+                strawgolem.getInventory().insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
             } else if (block instanceof CropsBlock || block instanceof NetherWartBlock) {
                 List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getTileEntity(pos));
                 for (ItemStack drop : drops) {
-                    if (!(drop.getItem() instanceof BlockItem)
-                            || drop.getUseAction() == UseAction.EAT
-                            || drop.getItem() == Items.NETHER_WART) {
-                        strawgolem.inventory.insertItem(0, drop, false);
+                    if (isCropDrop(drop)) {
+                        strawgolem.getInventory().insertItem(0, drop, false);
+                    } else if (drop.getItem() instanceof BlockItem && !(drop.getItem() instanceof BlockNamedItem)) {
+                        strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
+                        strawgolem.getInventory().insertItem(0, drop, false);
+                        break;
                     }
                 }
-            } else { // Bushes
-                PlayerEntity fake = FakePlayerFactory.get(worldIn, new GameProfile(null, "golem"));
-                BlockRayTraceResult result = new BlockRayTraceResult(strawgolem.getPositionVec(),
-                                                                     strawgolem.getHorizontalFacing().getOpposite(),
-                                                                     pos,
-                                                             false);
-                try {
-                    state.onBlockActivated(worldIn, fake, Hand.MAIN_HAND, result);
-                    MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickBlock(fake,
-                                                  Hand.MAIN_HAND,
-                                                  pos,
-                                                  strawgolem.getHorizontalFacing().getOpposite()));
-                    List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2));
-                    for (ItemEntity item : itemList) {
-                        strawgolem.inventory.insertItem(0, item.getItem(), false);
-                        item.remove();
-                    }
-                } catch (NullPointerException ignored) {}
-                fake.remove(false);
-            }
+            } else fakeRightClick(worldIn, pos, state); //Bushes
         }
     }
 
@@ -181,6 +158,50 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         } else {
             worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
+        worldIn.notifyBlockUpdate(pos.up(), state, worldIn.getBlockState(pos), 3);
+    }
+
+    /**
+     * Performs a simulated player right click on the given block at position pos, with BlockState state,
+     * in the world worldIn
+     *
+     * @param worldIn the world
+     * @param pos     the position
+     * @param state   the BlockState
+     */
+    private void fakeRightClick(ServerWorld worldIn, BlockPos pos, BlockState state) {
+        PlayerEntity fake = FakePlayerFactory.get(worldIn, new GameProfile(null, "golem"));
+        BlockRayTraceResult result = new BlockRayTraceResult(strawgolem.getPositionVec(),
+                strawgolem.getHorizontalFacing().getOpposite(),
+                pos,
+                false);
+        try {
+            state.onBlockActivated(worldIn, fake, Hand.MAIN_HAND, result);
+            MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickBlock(fake,
+                    Hand.MAIN_HAND,
+                    pos,
+                    strawgolem.getHorizontalFacing().getOpposite()));
+            List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2.5F));
+            for (ItemEntity item : itemList) {
+                strawgolem.getInventory().insertItem(0, item.getItem(), false);
+                item.remove();
+            }
+        } catch (NullPointerException ex) {
+            Strawgolem.logger.info(String.format("Golem could not harvest block at: %s", pos));
+        }
+        fake.remove(false);
+    }
+
+    /**
+     * Determines whether the given drop is a normal crop to be picked up
+     *
+     * @param drop : the drop in question
+     * @return if the drop is a normal crop to pick up
+     */
+    private boolean isCropDrop(ItemStack drop) {
+        return !(drop.getItem() instanceof BlockItem)
+                || drop.getUseAction() == UseAction.EAT
+                || drop.getItem() == Items.NETHER_WART;
     }
 
 }

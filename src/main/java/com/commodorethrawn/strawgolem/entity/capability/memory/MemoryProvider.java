@@ -15,7 +15,7 @@ public class MemoryProvider implements ICapabilitySerializable<INBT> {
     @CapabilityInject(IMemory.class)
     public static final Capability<IMemory> MEMORY_CAP = null;
 
-    private final LazyOptional<IMemory> memoryInstance = LazyOptional.of(() -> MEMORY_CAP.getDefaultInstance());
+    private final LazyOptional<IMemory> memoryInstance = LazyOptional.of(MEMORY_CAP::getDefaultInstance);
 
     @Nonnull
     @Override

@@ -2,19 +2,19 @@ package com.commodorethrawn.strawgolem.entity.capability.profession;
 
 public class Profession implements IProfession {
 
-    private GolemProfession profession;
+    private GolemProfession golemProfession;
 
     public Profession() {
-        profession = GolemProfession.FARMER;
+        golemProfession = GolemProfession.FARMER;
     }
 
     @Override
-    public GolemProfession getProfession() {
-        return profession;
+    public GolemProfession get() {
+        return golemProfession;
     }
 
     @Override
-    public void setProfession(GolemProfession profession) {
-        this.profession = profession;
+    public void set(GolemProfession profession) {
+        golemProfession = profession;
     }
 }

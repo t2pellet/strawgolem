@@ -1,9 +1,9 @@
 package com.commodorethrawn.strawgolem.client.renderer.entity;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
+import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelStrawGolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
-import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelStrawGolem;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -29,8 +29,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     public void render(EntityStrawGolem entityIn, float entityYaw, float partialTicks, @Nonnull MatrixStack matrixStackIn,
                        @Nonnull IRenderTypeBuffer bufferIn, int packedLightIn) {
         ModelStrawGolem golem = this.getEntityModel();
-        golem.holdingItem = !entityIn.isHandEmpty();
-        golem.holdingBlock = entityIn.holdingFullBlock();
+        golem.setStatus(!entityIn.isHandEmpty(), entityIn.holdingFullBlock());
         // Shivering movement
         Biome b = entityIn.world.getBiome(entityIn.getPosition());
         if (ConfigHelper.isShiverEnabled() &&

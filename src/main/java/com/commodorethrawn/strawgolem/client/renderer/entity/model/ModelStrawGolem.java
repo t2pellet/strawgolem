@@ -10,18 +10,19 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 // Made using Blockbench 3.5.3 by the talented Fr3nderman
 // Exported for Minecraft version 1.15
 public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IHasArm {
-    private final ModelRenderer Head;
-    private final ModelRenderer Body;
+    private final ModelRenderer head;
+    private final ModelRenderer body;
     private final ModelRenderer rightleg;
     private final ModelRenderer leftleg;
     private final ModelRenderer rightArm;
     private final ModelRenderer leftArm;
-
-    public boolean holdingItem;
-    public boolean holdingBlock;
+    private boolean holdingItem;
+    private boolean holdingBlock;
 
     public ModelStrawGolem() {
         holdingItem = false;
@@ -29,14 +30,14 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
         textureWidth = 48;
         textureHeight = 48;
 
-        Head = new ModelRenderer(this);
-        Head.setRotationPoint(0.0F, 11.0F, 0.0F);
-        Head.setTextureOffset(26, 24).addBox(-2.0F, -4.0F, -2.0F, 4.0F, 4.0F, 4.0F, 0.0F, false);
-        Head.setTextureOffset(11, 32).addBox(-2.0F, -5.0F, -2.0F, 4.0F, 1.0F, 4.0F, 0.0F, false);
+        head = new ModelRenderer(this);
+        head.setRotationPoint(0.0F, 11.0F, 0.0F);
+        head.setTextureOffset(26, 24).addBox(-2.0F, -4.0F, -2.0F, 4.0F, 4.0F, 4.0F, 0.0F, false);
+        head.setTextureOffset(11, 32).addBox(-2.0F, -5.0F, -2.0F, 4.0F, 1.0F, 4.0F, 0.0F, false);
 
-        Body = new ModelRenderer(this);
-        Body.setRotationPoint(0.0F, 24.0F, 0.0F);
-        Body.setTextureOffset(20, 32).addBox(-4.0F, -13.0F, -3.0F, 8.0F, 10.0F, 6.0F, 0.0F, false);
+        body = new ModelRenderer(this);
+        body.setRotationPoint(0.0F, 24.0F, 0.0F);
+        body.setTextureOffset(20, 32).addBox(-4.0F, -13.0F, -3.0F, 8.0F, 10.0F, 6.0F, 0.0F, false);
 
         rightleg = new ModelRenderer(this);
         rightleg.setRotationPoint(-2.0F, 21.0F, 0.0F);
@@ -55,12 +56,13 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
         leftArm.setTextureOffset(4, 39).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F, 0.0F, false);
     }
 
+    @ParametersAreNonnullByDefault
     @Override
     public void setRotationAngles(EntityStrawGolem entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        this.Head.rotateAngleY = netHeadYaw * 0.017453292F;
-        this.Head.rotateAngleX = headPitch * 0.017453292F;
+        this.head.rotateAngleY = netHeadYaw * 0.017453292F;
+        this.head.rotateAngleX = headPitch * 0.017453292F;
 
-        this.Body.rotateAngleY = 0.0F;
+        this.body.rotateAngleY = 0.0F;
 
         float auxLimbSwing = limbSwing * 5.0F * 0.6662F;
 
@@ -85,7 +87,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
 
         this.rightArm.rotateAngleY = 0.0F;
 
-        this.Body.rotateAngleX = 0.0F;
+        this.body.rotateAngleX = 0.0F;
 
         // Arms idle movement
         if (holdingBlock) {
@@ -106,16 +108,18 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
         }
     }
 
+    @ParametersAreNonnullByDefault
     @Override
     public void render(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        Head.render(matrixStack, buffer, packedLight, packedOverlay);
-        Body.render(matrixStack, buffer, packedLight, packedOverlay);
+        head.render(matrixStack, buffer, packedLight, packedOverlay);
+        body.render(matrixStack, buffer, packedLight, packedOverlay);
         rightleg.render(matrixStack, buffer, packedLight, packedOverlay);
         leftleg.render(matrixStack, buffer, packedLight, packedOverlay);
         rightArm.render(matrixStack, buffer, packedLight, packedOverlay);
         leftArm.render(matrixStack, buffer, packedLight, packedOverlay);
     }
 
+    @ParametersAreNonnullByDefault
     @Override
     public void translateHand(HandSide sideIn, MatrixStack matrixStackIn) {
         if (holdingBlock) {
@@ -126,5 +130,16 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements IH
             matrixStackIn.translate(0.05F, 1.3F, 0.23F);
             matrixStackIn.rotate(Vector3f.XN.rotationDegrees(90.0F));
         }
+    }
+
+    /**
+     * Updates the holdingItem and holdingBlock properties of this model
+     *
+     * @param holdingItem  : the new value of this.holdingItem
+     * @param holdingBlock : the new value of this.holdingBlock
+     */
+    public void setStatus(boolean holdingItem, boolean holdingBlock) {
+        this.holdingItem = holdingItem;
+        this.holdingBlock = holdingBlock;
     }
 }

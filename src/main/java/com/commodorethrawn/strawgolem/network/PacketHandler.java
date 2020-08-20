@@ -6,12 +6,16 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class PacketHandler {
+
     private static final String PROTOCOL_VERSION = "1";
-    public static SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Strawgolem.MODID, "main"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals);
+
+    private PacketHandler() {
+    }
 
     public static void register() {
         int id = 0;

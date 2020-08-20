@@ -12,13 +12,13 @@ public class ProfessionStorage implements Capability.IStorage<IProfession> {
     @Override
     public INBT writeNBT(Capability<IProfession> capability, IProfession instance, Direction side) {
         CompoundNBT tag = new CompoundNBT();
-        tag.putInt("profession", instance.getProfession().Value);
+        tag.putInt("profession", instance.get().value);
         return tag;
     }
 
     @Override
     public void readNBT(Capability<IProfession> capability, IProfession instance, Direction side, INBT nbt) {
         CompoundNBT tag = (CompoundNBT) nbt;
-        instance.setProfession(IProfession.GolemProfession.valueOf(tag.getInt("profession")));
+        instance.set(IProfession.GolemProfession.valueOf(tag.getInt("profession")));
     }
 }

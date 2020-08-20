@@ -34,6 +34,9 @@ public class StrawgolemSaveData extends WorldSavedData {
         return storage.getOrCreate(StrawgolemSaveData::new, Strawgolem.MODID);
     }
 
+    private static final String WORLD = "world";
+    private static final String POS = "pos";
+
     @Override
     public void read(CompoundNBT nbt) {
         ListNBT listTag = nbt.getList("listTag", Constants.NBT.TAG_COMPOUND);
@@ -41,11 +44,11 @@ public class StrawgolemSaveData extends WorldSavedData {
             CompoundNBT entryTag = (CompoundNBT) tag;
             BlockPos pos = null;
             IWorld world = null;
-            if (entryTag.get("pos") != null) {
-                pos = NBTUtil.readBlockPos(entryTag.getCompound("pos"));
+            if (entryTag.get(POS) != null) {
+                pos = NBTUtil.readBlockPos(entryTag.getCompound(POS));
             }
-            if (entryTag.get("world") != null) {
-                DimensionType dimension = DimensionType.getById(entryTag.getInt("world"));
+            if (entryTag.get(WORLD) != null) {
+                DimensionType dimension = DimensionType.getById(entryTag.getInt(WORLD));
                 if (dimension != null) world = ServerLifecycleHooks.getCurrentServer().getWorld(dimension);
             }
             if (world != null && pos != null) {
@@ -57,13 +60,13 @@ public class StrawgolemSaveData extends WorldSavedData {
     @Nonnull
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
-        Iterator<CropGrowthHandler.CropQueueEntry> cropIterator = CropGrowthHandler.queue.iterator();
+        Iterator<CropGrowthHandler.CropQueueEntry> cropIterator = CropGrowthHandler.getCrops();
         ListNBT listTag = new ListNBT();
         while (cropIterator.hasNext()) {
             CompoundNBT entryTag = new CompoundNBT();
             CropGrowthHandler.CropQueueEntry entry = cropIterator.next();
-            entryTag.put("pos", NBTUtil.writeBlockPos(entry.getPos()));
-            entryTag.putInt("world", entry.getWorld().getDimension().getType().getId());
+            entryTag.put(POS, NBTUtil.writeBlockPos(entry.getPos()));
+            entryTag.putInt(WORLD, entry.getWorld().getDimension().getType().getId());
             listTag.add(entryTag);
         }
         compound.put("listTag", listTag);

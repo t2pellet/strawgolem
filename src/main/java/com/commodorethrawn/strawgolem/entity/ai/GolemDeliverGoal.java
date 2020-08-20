@@ -33,11 +33,6 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     }
 
     @Override
-    public void startExecuting() {
-        super.startExecuting();
-    }
-
-    @Override
     public boolean shouldContinueExecuting() {
         return !strawGolem.isHandEmpty() && super.shouldContinueExecuting();
     }
@@ -57,12 +52,9 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean shouldMoveTo(IWorldReader worldIn, @Nonnull BlockPos pos) {
-        if (worldIn.getBlockState(pos).getBlock() != Blocks.AIR
+        return (worldIn.getBlockState(pos).getBlock() != Blocks.AIR
                 && worldIn.getTileEntity(pos) != null
-                && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()) {
-            return true;
-        }
-        return false;
+                && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent());
     }
 
     @Override
@@ -97,7 +89,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
         BlockPos pos = this.destinationBlock;
         IItemHandler chestInv = worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
                 .orElseThrow(() -> new NullPointerException("Chest IItemhandler cannot be null"));
-        ItemStack insertStack = this.strawGolem.inventory.extractItem(0, 64, false);
+        ItemStack insertStack = this.strawGolem.getInventory().extractItem(0, 64, false);
         boolean chestFull = true;
         for (int i = 0; i < chestInv.getSlots(); ++i) {
             if (chestInv.getStackInSlot(i).getItem() == Items.AIR

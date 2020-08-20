@@ -19,9 +19,4 @@ public class GolemFleeGoal extends AvoidEntityGoal<MonsterEntity> {
         super.startExecuting();
         if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
     }
-
-    @Override
-    public boolean shouldContinueExecuting() {
-        return super.shouldContinueExecuting();
-    }
 }
