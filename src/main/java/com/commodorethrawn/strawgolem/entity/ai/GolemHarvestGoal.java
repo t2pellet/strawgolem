@@ -18,7 +18,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -42,7 +41,8 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
             destinationBlock = strawgolem.getHarvestPos();
             this.runDelay = getRunDelay(this.creature);
             strawgolem.clearHarvestPos();
-            return strawgolem.shouldHarvestBlock(strawgolem.world, destinationBlock);
+            return strawgolem.shouldHarvestBlock(strawgolem.world, destinationBlock)
+                    && strawgolem.canSeeBlock(strawgolem.world, destinationBlock);
         }
         /* Based off the vanilla code of shouldExecute, with additional check to ensure the golems hand is empty */
         if (this.runDelay > 0) {
@@ -50,13 +50,14 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
             return false;
         } else {
             this.runDelay = getRunDelay(this.creature);
-            return strawgolem.isHandEmpty() && this.searchForDestination();
+            return strawgolem.isHandEmpty() && this.searchForDestination()
+                    && strawgolem.canSeeBlock(strawgolem.world, destinationBlock);
         }
     }
 
     @Override
     protected int getRunDelay(@Nonnull CreatureEntity creatureIn) {
-        return 300;
+        return 360;
     }
 
     @Override

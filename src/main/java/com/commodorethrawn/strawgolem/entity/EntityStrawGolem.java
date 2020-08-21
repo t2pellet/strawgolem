@@ -33,7 +33,6 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
@@ -301,15 +300,14 @@ public class EntityStrawGolem extends GolemEntity {
         BlockState state = worldIn.getBlockState(pos);
         if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
             if (state.getBlock() instanceof CropsBlock)
-                return ((CropsBlock) state.getBlock()).isMaxAge(state) && canSeeBlock(worldIn, pos);
+                return ((CropsBlock) state.getBlock()).isMaxAge(state);
             else if (state.getBlock() instanceof StemGrownBlock)
-                return canSeeBlock(worldIn, pos);
+                return true;
             else if (state.getBlock() instanceof NetherWartBlock)
-                return state.get(NetherWartBlock.AGE) == 3 && canSeeBlock(worldIn, pos);
+                return state.get(NetherWartBlock.AGE) == 3;
             else if (state.getBlock() instanceof BushBlock && state.getBlock() instanceof IGrowable)
                 return state.func_235901_b_(BlockStateProperties.AGE_0_3)
-                        && state.get(BlockStateProperties.AGE_0_3) == 3
-                        && canSeeBlock(worldIn, pos);
+                        && state.get(BlockStateProperties.AGE_0_3) == 3;
         }
         return false;
     }
@@ -322,11 +320,11 @@ public class EntityStrawGolem extends GolemEntity {
      * @return whether the golem has line of sight
      */
     public boolean canSeeBlock(IWorldReader worldIn, BlockPos pos) {
-        Vector3d golemPos = getPositionVec().add(0, 1.25, 0);
-        if (getPositionVec().y % 1F != 0) golemPos.add(0, 0.5, 0);
-        Vector3d blockPos = new Vector3d(pos.getX() + 0.5, pos.getY() + 0.75, pos.getZ() + 0.5);
-        RayTraceContext ctx = new RayTraceContext(blockPos, golemPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this);
-        return worldIn.rayTraceBlocks(ctx).getPos().withinDistance(getPositionVec(), 2.5D);
+        Vector3d golemPos = getPositionVec().add(0, 0.75, 0);
+        if (getPositionVec().y % 1F != 0) golemPos = golemPos.add(0, 0.5, 0);
+        Vector3d blockPos = new Vector3d(pos.getX(), pos.getY() + 0.5, pos.getZ());
+        RayTraceContext ctx = new RayTraceContext(golemPos, blockPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this);
+        return worldIn.rayTraceBlocks(ctx).getPos().withinDistance(blockPos, 2.5D);
     }
 
     /* Handles capabilities */

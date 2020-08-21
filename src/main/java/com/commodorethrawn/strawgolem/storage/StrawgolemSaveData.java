@@ -48,9 +48,8 @@ public class StrawgolemSaveData extends WorldSavedData {
                 pos = NBTUtil.readBlockPos(entryTag.getCompound(POS));
             }
             if (entryTag.get(WORLD) != null) {
-                RegistryKey<World> dim = DimensionType.func_236025_a_(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt.get("dimension"))).result().orElseThrow(() -> {
-                    return new IllegalArgumentException("Invalid map dimension: " + nbt.get("dimension"));
-                });
+                RegistryKey<World> dim = DimensionType.func_236025_a_(new Dynamic<>(NBTDynamicOps.INSTANCE, entryTag.get(WORLD)))
+                        .result().orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + entryTag.get(WORLD)));
                 if (dim != null) world = ServerLifecycleHooks.getCurrentServer().getWorld(dim);
             }
             if (world != null && pos != null) {
