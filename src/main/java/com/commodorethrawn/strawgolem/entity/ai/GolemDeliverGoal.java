@@ -11,6 +11,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -51,7 +52,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     }
 
     @Override
-    protected boolean shouldMoveTo(IWorldReader worldIn, @Nonnull BlockPos pos) {
+    protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
         return (worldIn.getBlockState(pos).getBlock() != Blocks.AIR
                 && worldIn.getTileEntity(pos) != null
                 && worldIn.getTileEntity(pos).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent());

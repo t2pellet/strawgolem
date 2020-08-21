@@ -1,6 +1,7 @@
 package com.commodorethrawn.strawgolem.client.particle;
 
 import net.minecraft.client.particle.*;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particles.BasicParticleType;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,7 +15,8 @@ public class FlyParticle extends SpriteTexturedParticle {
     private float thetaHoriz;
     private float thetaVert;
 
-    protected FlyParticle(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeed, double ySpeed, double zSpeed) {
+    protected FlyParticle(ClientWorld worldIn, double xCoordIn, double yCoordIn, double zCoordIn,
+                          double xSpeed, double ySpeed, double zSpeed) {
         super(worldIn, xCoordIn, yCoordIn + 0.4F, zCoordIn);
         posX += rand.nextFloat() - 0.5F;
         posZ += rand.nextFloat() - 0.5F;
@@ -56,11 +58,12 @@ public class FlyParticle extends SpriteTexturedParticle {
 
         @Nullable
         @Override
-        public Particle makeParticle(BasicParticleType typeIn, World worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle makeParticle(BasicParticleType typeIn, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             FlyParticle flyParticle = new FlyParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
             flyParticle.setColor(1.0F, 1.0F, 1.0F);
             flyParticle.selectSpriteRandomly(spriteSet);
             return flyParticle;
         }
+
     }
 }

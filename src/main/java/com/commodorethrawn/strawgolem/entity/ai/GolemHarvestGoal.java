@@ -18,6 +18,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -150,7 +151,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                 worldIn.setBlockState(pos, crop.getDefaultState());
             } else if (block instanceof NetherWartBlock) {
                 worldIn.setBlockState(pos, block.getDefaultState().with(NetherWartBlock.AGE, 0));
-            } else if (state.has(BlockStateProperties.AGE_0_3) && block instanceof BushBlock) { // Bushes
+            } else if (state.func_235901_b_(BlockStateProperties.AGE_0_3) && block instanceof BushBlock) { // Bushes
                 worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
             } else {
                 worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());

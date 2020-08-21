@@ -5,6 +5,8 @@ import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleType;
 import net.minecraft.util.SoundEvent;
@@ -32,6 +34,7 @@ public class Registry {
                 .setTrackingRange(48).setUpdateInterval(3).size(0.6F, 0.9F)
                 .build("strawgolem");
         STRAW_GOLEM_TYPE.setRegistryName(Strawgolem.MODID, "strawgolem");
+        GlobalEntityTypeAttributes.put(STRAW_GOLEM_TYPE, EntityStrawGolem.registerAttributes().func_233813_a_());
         event.getRegistry().register(STRAW_GOLEM_TYPE);
     }
 

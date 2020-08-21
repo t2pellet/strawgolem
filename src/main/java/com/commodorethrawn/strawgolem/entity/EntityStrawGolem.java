@@ -16,7 +16,9 @@ import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -30,7 +32,8 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
@@ -39,6 +42,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class EntityStrawGolem extends GolemEntity {
     public static final SoundEvent GOLEM_AMBIENT = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_ambient"));
@@ -96,11 +100,11 @@ public class EntityStrawGolem extends GolemEntity {
         return holdingFullBlock() ? 60 : 120;
     }
 
-    @Override
-    protected void registerAttributes() {
-        super.registerAttributes();
-        this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(3.0D);
-        this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
+
+    public static AttributeModifierMap.MutableAttribute registerAttributes() {
+        return MobEntity.func_233666_p_()
+                .func_233815_a_(Attributes.field_233818_a_, 3.0D)
+                .func_233815_a_(Attributes.field_233821_d_, 0.25D);
     }
 
     @Override
@@ -136,13 +140,20 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Determines if the golem is in the rain
-     *
      * @return true if the golem is in rain, false otherwise
      */
     public boolean isInRain() {
         return world.isRainingAt(getPosition())
                 && world.canSeeSky(getPosition())
                 && ConfigHelper.isLifespanPenalty("rain");
+    }
+
+    /**
+     * Determines if the golem is in the cold
+     * @return true if the golem is in the cold, false otherwise
+     */
+    public boolean isInCold() {
+        return world.getBiome(getPosition()).getTemperature(getPosition()) < 0.15F;
     }
 
     /* Handle inventory */
@@ -201,13 +212,14 @@ public class EntityStrawGolem extends GolemEntity {
         }
     }
 
-    // Handle setting priority chest & healing
+    @ParametersAreNonnullByDefault
     @Override
-    protected boolean processInteract(PlayerEntity player, @Nonnull Hand hand) {
+    public @Nonnull ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d vec, Hand hand) {
         if (player.getHeldItem(hand).getItem() == Items.WHEAT) {
             if (EffectiveSide.get().isServer()) {
-                if (player.isShiftKeyDown()) {
-                    player.sendMessage(new StringTextComponent("Ordering: ").appendSibling(getDisplayName()));
+                if (player.isSneaking()) {
+                    StringTextComponent message = new StringTextComponent("Ordering: " + getDisplayName().getString());
+                    player.sendMessage(message, Util.field_240973_b_);
                     player.getPersistentData().putInt("golemId", getEntityId());
                 } else if (isGolemHurt()) {
                     setHealth(getMaxHealth());
@@ -218,11 +230,11 @@ public class EntityStrawGolem extends GolemEntity {
                     PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new MessageLifespan(this));
                 }
             }
-            if (!player.isShiftKeyDown() && isGolemHurt()) {
+            if (!player.isSneaking() && isGolemHurt()) {
                 spawnHealParticles(lastTickPosX, lastTickPosY, lastTickPosZ);
             }
         }
-        return false; //I dont want that right click animation
+        return ActionResultType.FAIL;
     }
 
     /**
@@ -241,6 +253,10 @@ public class EntityStrawGolem extends GolemEntity {
      */
     private void spawnHealParticles(double x, double y, double z) {
         world.addParticle(ParticleTypes.HEART, x + rand.nextDouble() - 0.5, y + 0.4D, z + rand.nextDouble() - 0.5, this.getMotion().x, this.getMotion().y, this.getMotion().z);
+    }
+
+    public BlockPos getPosition() {
+        return new BlockPos(getPositionVec());
     }
 
     /* Handles being picked up by iron golem */
@@ -291,7 +307,7 @@ public class EntityStrawGolem extends GolemEntity {
             else if (state.getBlock() instanceof NetherWartBlock)
                 return state.get(NetherWartBlock.AGE) == 3 && canSeeBlock(worldIn, pos);
             else if (state.getBlock() instanceof BushBlock && state.getBlock() instanceof IGrowable)
-                return state.has(BlockStateProperties.AGE_0_3)
+                return state.func_235901_b_(BlockStateProperties.AGE_0_3)
                         && state.get(BlockStateProperties.AGE_0_3) == 3
                         && canSeeBlock(worldIn, pos);
         }
@@ -306,10 +322,11 @@ public class EntityStrawGolem extends GolemEntity {
      * @return whether the golem has line of sight
      */
     public boolean canSeeBlock(IWorldReader worldIn, BlockPos pos) {
-        Vec3d golemPos = new Vec3d(getPosition().up());
+        Vector3d golemPos = getPositionVec().add(0, 1.25, 0);
         if (getPositionVec().y % 1F != 0) golemPos.add(0, 0.5, 0);
-        RayTraceContext ctx = new RayTraceContext(new Vec3d(pos), golemPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this);
-        return worldIn.rayTraceBlocks(ctx).getPos().withinDistance(getPositionVec(), 2.0D);
+        Vector3d blockPos = new Vector3d(pos.getX() + 0.5, pos.getY() + 0.75, pos.getZ() + 0.5);
+        RayTraceContext ctx = new RayTraceContext(blockPos, golemPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this);
+        return worldIn.rayTraceBlocks(ctx).getPos().withinDistance(getPositionVec(), 2.5D);
     }
 
     /* Handles capabilities */

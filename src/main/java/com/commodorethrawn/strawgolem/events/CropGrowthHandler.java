@@ -9,7 +9,8 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -40,7 +41,9 @@ public class CropGrowthHandler {
     @SubscribeEvent
     public static void serverStart(FMLServerStartingEvent event) {
         Strawgolem.logger.info("Strawgolem: Server Starting");
-        data = StrawgolemSaveData.get(event.getServer().getWorld(DimensionType.OVERWORLD));
+        ServerWorld world = event.getServer().getWorld(World.field_234918_g_);
+        if (world == null) return;
+        data = StrawgolemSaveData.get(world); // Need overworld
     }
 
     private static int ticks = 0;
@@ -62,7 +65,7 @@ public class CropGrowthHandler {
             if (golem != null) {
                 golem.setHarvesting(event.getPos());
             } else {
-                scheduleCrop(event.getWorld(), event.getPos(), 12);
+                scheduleCrop((World) event.getWorld(), event.getPos(), 12);
             }
         }
     }
@@ -93,7 +96,7 @@ public class CropGrowthHandler {
         List<EntityStrawGolem> golemList = world.getEntitiesWithinAABB(EntityStrawGolem.class, golemAABB);
         for (EntityStrawGolem golem : golemList) {
             if (golem.getHarvestPos().equals(BlockPos.ZERO)
-                    && golem.canSeeBlock(world, pos)
+                    && golem.canSeeBlock((World) world, pos)
                     && golem.isHandEmpty()) {
                 return golem;
             }
@@ -120,7 +123,7 @@ public class CropGrowthHandler {
                 return state.get(NetherWartBlock.AGE) == 3;
             } else if (state.getBlock() instanceof BushBlock
                     && state.getBlock() instanceof IGrowable
-                    && state.has(BlockStateProperties.AGE_0_3)) {
+                    && state.func_235901_b_(BlockStateProperties.AGE_0_3)) {
                 return state.get(BlockStateProperties.AGE_0_3) == 3;
             }
         }
@@ -147,7 +150,7 @@ public class CropGrowthHandler {
                 return state.get(NetherWartBlock.AGE) == 2;
             } else if (state.getBlock() instanceof BushBlock
                     && state.getBlock() instanceof IGrowable
-                    && state.has(BlockStateProperties.AGE_0_3)) {
+                    && state.func_235901_b_(BlockStateProperties.AGE_0_3)) {
                 return state.get(BlockStateProperties.AGE_0_3) == 2;
             }
         }
@@ -161,7 +164,7 @@ public class CropGrowthHandler {
      * @param pos      the position of the crop
      * @param runsLeft the amount of times left to reschedule this crop to be harvested
      */
-    public static void scheduleCrop(IWorld world, BlockPos pos, int runsLeft) {
+    public static void scheduleCrop(World world, BlockPos pos, int runsLeft) {
         if (runsLeft <= 0) return;
         int executeTick = ticks + HARVEST_DELAY;
         queue.add(new CropQueueEntry(pos, world, executeTick, runsLeft));
@@ -174,7 +177,7 @@ public class CropGrowthHandler {
 
     public static class CropQueueEntry implements Comparable<CropQueueEntry> {
         private final BlockPos pos;
-        private final IWorld world;
+        private final World world;
         private final int tick;
         private int count;
 
@@ -182,11 +185,11 @@ public class CropGrowthHandler {
             return pos;
         }
 
-        public IWorld getWorld() {
+        public World getWorld() {
             return world;
         }
 
-        public CropQueueEntry(BlockPos pos, IWorld world, int tick, int count) {
+        public CropQueueEntry(BlockPos pos, World world, int tick, int count) {
             this.pos = pos;
             this.world = world;
             this.tick = tick;

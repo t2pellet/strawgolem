@@ -3,12 +3,12 @@ package com.commodorethrawn.strawgolem.client.renderer.entity.model;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.IHasArm;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3f;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

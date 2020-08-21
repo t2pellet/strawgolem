@@ -2,13 +2,13 @@ package com.commodorethrawn.strawgolem.storage;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.events.CropGrowthHandler;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
+import com.mojang.serialization.Dynamic;
+import net.minecraft.nbt.*;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraft.world.storage.WorldSavedData;
@@ -43,13 +43,15 @@ public class StrawgolemSaveData extends WorldSavedData {
         for (INBT tag : listTag) {
             CompoundNBT entryTag = (CompoundNBT) tag;
             BlockPos pos = null;
-            IWorld world = null;
+            World world = null;
             if (entryTag.get(POS) != null) {
                 pos = NBTUtil.readBlockPos(entryTag.getCompound(POS));
             }
             if (entryTag.get(WORLD) != null) {
-                DimensionType dimension = DimensionType.getById(entryTag.getInt(WORLD));
-                if (dimension != null) world = ServerLifecycleHooks.getCurrentServer().getWorld(dimension);
+                RegistryKey<World> dim = DimensionType.func_236025_a_(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt.get("dimension"))).result().orElseThrow(() -> {
+                    return new IllegalArgumentException("Invalid map dimension: " + nbt.get("dimension"));
+                });
+                if (dim != null) world = ServerLifecycleHooks.getCurrentServer().getWorld(dim);
             }
             if (world != null && pos != null) {
                 CropGrowthHandler.scheduleCrop(world, pos, 3);
@@ -66,7 +68,8 @@ public class StrawgolemSaveData extends WorldSavedData {
             CompoundNBT entryTag = new CompoundNBT();
             CropGrowthHandler.CropQueueEntry entry = cropIterator.next();
             entryTag.put(POS, NBTUtil.writeBlockPos(entry.getPos()));
-            entryTag.putInt(WORLD, entry.getWorld().getDimension().getType().getId());
+            ResourceLocation.field_240908_a_.encodeStart(NBTDynamicOps.INSTANCE, entry.getWorld().func_234923_W_().func_240901_a_())
+                    .result().ifPresent(dim -> entryTag.put(WORLD, dim));
             listTag.add(entryTag);
         }
         compound.put("listTag", listTag);

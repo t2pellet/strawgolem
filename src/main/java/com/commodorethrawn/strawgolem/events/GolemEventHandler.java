@@ -10,6 +10,8 @@ import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -75,7 +77,8 @@ public class GolemEventHandler {
                 if (golem != null) {
                     golem.getMemory().setPriorityChest(event.getPos());
                     golem.getMemory().addPosition(event.getWorld(), event.getPos());
-                    event.getPlayer().sendMessage(golem.getDisplayName().appendText(" will now deliver to this chest"));
+                    StringTextComponent message = new StringTextComponent(golem.getDisplayName().getString() + " will now deliver to this chest");
+                    event.getPlayer().sendMessage(message, Util.field_240973_b_);
                     player.getPersistentData().remove(GOLEM);
                 }
             }
