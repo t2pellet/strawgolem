@@ -126,7 +126,7 @@ public class EntityStrawGolem extends GolemEntity {
             lifespan.update();
             if (holdingFullBlock() && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
             if (isInRain()) lifespan.update();
-            if (world.hasWater(getPosition()) && ConfigHelper.isLifespanPenalty("water")) lifespan.update();
+            if (isInWater() && ConfigHelper.isLifespanPenalty("water")) lifespan.update();
             if (rand.nextInt(40) == 0) {
                 PacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new MessageLifespan(this));
             }

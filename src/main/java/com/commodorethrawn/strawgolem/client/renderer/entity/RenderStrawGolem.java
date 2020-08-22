@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.HeldItemLayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.biome.Biome;
 
 import javax.annotation.Nonnull;
 
@@ -33,7 +32,8 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         // Shivering movement
         if (ConfigHelper.isShiverEnabled() &&
                 (entityIn.isInCold()
-                        || entityIn.isInRain())) {
+                        || entityIn.isInRain()
+                        || entityIn.isInWater())) {
             double offX = entityIn.getRNG().nextDouble() / 32 - 1 / 64F;
             double offZ = entityIn.getRNG().nextDouble() / 32 - 1 / 64F;
             matrixStackIn.translate(offX, 0, offZ);

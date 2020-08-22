@@ -33,6 +33,7 @@ import java.util.PriorityQueue;
 @Mod.EventBusSubscriber(modid = Strawgolem.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CropGrowthHandler {
 
+    private static boolean isLoaded = false;
     protected static final PriorityQueue<CropQueueEntry> queue = new PriorityQueue<>();
     private static final int HARVEST_DELAY = 100;
     static StrawgolemSaveData data;
@@ -45,12 +46,14 @@ public class CropGrowthHandler {
         ServerWorld world = event.getServer().getWorld(World.field_234918_g_);
         if (world == null) return;
         data = StrawgolemSaveData.get(world); // Need overworld
+        isLoaded = true;
     }
 
     private static int ticks = 0;
+
     @SubscribeEvent
-    public static void tick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && EffectiveSide.get().isServer()) {
+    public static void tick(TickEvent.WorldTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && EffectiveSide.get().isServer() && isLoaded) {
             while (!queue.isEmpty() && ticks == queue.peek().tick) {
                 queue.remove().execute();
                 data.markDirty();
