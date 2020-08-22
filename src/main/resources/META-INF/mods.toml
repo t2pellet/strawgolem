@@ -4,7 +4,7 @@ license="MIT License"
 issueTrackerURL="https://github.com/daPoseidonGuy/strawgolem"
 [[mods]]
     modId="strawgolem"
-    version="1.16.2-1.9"
+    version="1.16.2-1.9-beta-2"
     displayName="Straw Golem"
     credits="nivoridocs, for making the original mod\nFrenderman, for making the updated golem model, testing and design ideas"
     authors="CommodoreThrawn"
