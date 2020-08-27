@@ -277,9 +277,9 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     public void stopRiding() {
-        LivingEntity ridingEntity = (LivingEntity) getRidingEntity();
         super.stopRiding();
-        if (ridingEntity instanceof IronGolemEntity) {
+        if (getRidingEntity() instanceof IronGolemEntity) {
+            LivingEntity ridingEntity = (LivingEntity) getRidingEntity();
             double lookX = ridingEntity.getLookVec().x;
             double lookZ = ridingEntity.getLookVec().z;
             double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
