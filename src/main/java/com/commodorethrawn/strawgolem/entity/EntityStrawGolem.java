@@ -114,6 +114,7 @@ public class EntityStrawGolem extends GolemEntity {
         this.goalSelector.addGoal(++priority, new GolemTemptGoal(this));
         this.goalSelector.addGoal(++priority, new GolemHarvestGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new GolemDeliverGoal(this, 0.6D));
+        this.goalSelector.addGoal(++priority, new GolemTetherGoal(this, 0.9D)); // tether is fast
         this.goalSelector.addGoal(++priority, new GolemWanderGoal(this, 0.6D));
         this.goalSelector.addGoal(++priority, new GolemLookAtPlayerGoal(this, 5.0F));
         this.goalSelector.addGoal(++priority, new GolemLookRandomlyGoal(this));

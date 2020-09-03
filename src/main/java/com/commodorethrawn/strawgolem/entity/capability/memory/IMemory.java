@@ -10,7 +10,6 @@ import net.minecraft.world.World;
 import java.util.Set;
 
 public interface IMemory {
-
     /**
      * Returns the set of all remembered chest positions
      * @return the positions
@@ -42,10 +41,20 @@ public interface IMemory {
      */
     BlockPos getPriorityChest();
 
-
     /**
      * Sets the priority chest to pos
      * @param pos
      */
     void setPriorityChest(BlockPos pos);
+
+    /**
+     * @return the anchor location
+     */
+    BlockPos getAnchorPos();
+
+    /**
+     * Sets the anchor position
+     * @param pos
+     */
+    void setAnchorPos(BlockPos pos);
 }
