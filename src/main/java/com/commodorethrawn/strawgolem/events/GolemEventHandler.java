@@ -2,6 +2,7 @@ package com.commodorethrawn.strawgolem.events;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.ai.GolemTetherGoal;
 import com.commodorethrawn.strawgolem.network.MessageLifespan;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,6 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -80,6 +82,14 @@ public class GolemEventHandler {
                     StringTextComponent message = new StringTextComponent(golem.getDisplayName().getString() + " will now deliver to this chest");
                     event.getPlayer().sendMessage(message, Util.field_240973_b_);
                     player.getPersistentData().remove(GOLEM);
+
+                    // update the golem's anchor if it is very far from the chest
+                    BlockPos golemPos = golem.getPosition();
+                    BlockPos anchorPos = event.getPos();
+                    if (golemPos.manhattanDistance(anchorPos) > GolemTetherGoal.TETHER_MIN_RANGE ) {
+                        Strawgolem.logger.debug(golem.getEntityId() + " setting new anchor " + anchorPos);
+                        golem.getMemory().setAnchorPos(anchorPos);
+                    }
                 }
             }
         }
