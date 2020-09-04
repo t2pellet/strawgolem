@@ -29,6 +29,12 @@ public class ConfigHelper {
         return StrawgolemConfig.golemInteract;
     }
 
+    public static boolean isTetherEnabled() { return StrawgolemConfig.tetherEnabled; }
+    public static boolean doesTemptResetTether() { return StrawgolemConfig.temptResetsTether; }
+
+    public static int getTetherMinRange() { return StrawgolemConfig.tetherMinRange; }
+    public static int getTetherMaxRange() { return StrawgolemConfig.tetherMaxRange; }
+
     public static int getSearchRangeHorizontal() {
         return StrawgolemConfig.searchRangeHorizontal;
     }

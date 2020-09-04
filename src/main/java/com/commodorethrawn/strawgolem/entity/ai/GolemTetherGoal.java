@@ -14,10 +14,6 @@ import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.IWorldReader;
 
 public class GolemTetherGoal extends MoveToBlockGoal {
-    // TODO: populate these from config
-    public static final double TETHER_MAX_RANGE = 24.0;
-    public static final double TETHER_MIN_RANGE = 4.0;
-
     private final EntityStrawGolem strawGolem;
 
     public GolemTetherGoal(EntityStrawGolem strawGolem, double speedIn) {
@@ -29,7 +25,7 @@ public class GolemTetherGoal extends MoveToBlockGoal {
         final BlockPos anchor = strawGolem.getMemory().getAnchorPos();
         final BlockPos golemPos = strawGolem.getPosition();
         if (anchor == BlockPos.ZERO) {
-            // if anchor is unset, set it
+            // if anchor is unset, this is a new golem, set it
             Strawgolem.logger.debug( strawGolem.getEntityId() + " has no anchor, setting " + golemPos );
             strawGolem.getMemory().setAnchorPos( golemPos );
             return 0.0;
@@ -40,7 +36,6 @@ public class GolemTetherGoal extends MoveToBlockGoal {
 
     @Override
     public void startExecuting() {
-        //Strawgolem.logger.debug( strawGolem.getEntityId() + " is starting to run home");
         if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
         super.startExecuting();
     }
@@ -48,9 +43,8 @@ public class GolemTetherGoal extends MoveToBlockGoal {
     @Override
     public boolean shouldExecute() {
         final double d = getTetherDistance();
-        if( d > TETHER_MAX_RANGE
+        if( d > ConfigHelper.getTetherMaxRange()
                 && super.shouldExecute() ) {
-            //Strawgolem.logger.debug( strawGolem.getEntityId() + " is "+d+" > "+TETHER_MAX_RANGE+", tethering");
             this.destinationBlock = strawGolem.getMemory().getAnchorPos();
             return true;
         }
@@ -60,12 +54,8 @@ public class GolemTetherGoal extends MoveToBlockGoal {
     @Override
     public boolean shouldContinueExecuting() {
         final double d = getTetherDistance();
-        if ( d < TETHER_MIN_RANGE ) {
-            //Strawgolem.logger.debug( strawGolem.getEntityId() + " is "+d+" < "+TETHER_MIN_RANGE+", stopped tethering");
-            return false;
-        } else {
-            return super.shouldContinueExecuting();
-        }
+        return d < ConfigHelper.getTetherMinRange()
+                && super.shouldContinueExecuting();
     }
 
     @Override

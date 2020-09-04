@@ -29,6 +29,11 @@ public class ConfigHandler {
             StrawgolemConfig.shiverEnabled = ConfigHolder.COMMON_CONFIG.shiverEnabled.get();
             StrawgolemConfig.golemInteract = ConfigHolder.COMMON_CONFIG.golemInteract.get();
             StrawgolemConfig.enableHwyla = ConfigHolder.COMMON_CONFIG.enableHwyla.get();
+
+            StrawgolemConfig.tetherEnabled = ConfigHolder.COMMON_CONFIG.tetherEnabled.get();
+            StrawgolemConfig.temptResetsTether = ConfigHolder.COMMON_CONFIG.tetherToTemptEnabled.get();
+            StrawgolemConfig.tetherMinRange = ConfigHolder.COMMON_CONFIG.tetherRangeMin.get();
+            StrawgolemConfig.tetherMaxRange = ConfigHolder.COMMON_CONFIG.tetherRangeMax.get();
         }
     }
 }

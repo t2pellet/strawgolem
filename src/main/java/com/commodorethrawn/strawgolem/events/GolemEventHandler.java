@@ -1,6 +1,7 @@
 package com.commodorethrawn.strawgolem.events;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.entity.ai.GolemTetherGoal;
 import com.commodorethrawn.strawgolem.network.MessageLifespan;
@@ -84,11 +85,13 @@ public class GolemEventHandler {
                     player.getPersistentData().remove(GOLEM);
 
                     // update the golem's anchor if it is very far from the chest
-                    BlockPos golemPos = golem.getPosition();
-                    BlockPos anchorPos = event.getPos();
-                    if (golemPos.manhattanDistance(anchorPos) > GolemTetherGoal.TETHER_MIN_RANGE ) {
-                        Strawgolem.logger.debug(golem.getEntityId() + " setting new anchor " + anchorPos);
-                        golem.getMemory().setAnchorPos(anchorPos);
+                    if (ConfigHelper.isTetherEnabled()) {
+                        BlockPos golemPos = golem.getPosition();
+                        BlockPos anchorPos = event.getPos();
+                        if (golemPos.manhattanDistance(anchorPos) > ConfigHelper.getTetherMinRange()) {
+                            Strawgolem.logger.debug(golem.getEntityId() + " setting new anchor " + anchorPos);
+                            golem.getMemory().setAnchorPos(anchorPos);
+                        }
                     }
                 }
             }
