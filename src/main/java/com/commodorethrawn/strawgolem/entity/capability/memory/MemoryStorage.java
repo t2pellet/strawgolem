@@ -34,6 +34,7 @@ public class MemoryStorage implements Capability.IStorage<IMemory> {
         }
         tag.put("positions", tagList);
         tag.put("priority", NBTUtil.writeBlockPos(instance.getPriorityChest()));
+        tag.put("anchor", NBTUtil.writeBlockPos(instance.getAnchorPos()));
         return tag;
     }
 
@@ -53,6 +54,10 @@ public class MemoryStorage implements Capability.IStorage<IMemory> {
         INBT posTag = tag.get("priority");
         if (posTag instanceof CompoundNBT) {
             instance.setPriorityChest(NBTUtil.readBlockPos((CompoundNBT) posTag));
+        }
+        INBT anchorTag = tag.get("anchor");
+        if (anchorTag instanceof CompoundNBT) {
+            instance.setAnchorPos(NBTUtil.readBlockPos((CompoundNBT) anchorTag));
         }
     }
 }
