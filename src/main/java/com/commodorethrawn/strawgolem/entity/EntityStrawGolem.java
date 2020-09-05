@@ -76,7 +76,8 @@ public class EntityStrawGolem extends GolemEntity {
     @Override
     protected SoundEvent getAmbientSound() {
         if (ConfigHelper.isSoundsEnabled()) {
-            if (goalSelector.getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof GolemFleeGoal))
+            if (goalSelector.getRunningGoals().anyMatch(
+                    goal -> goal.getGoal() instanceof GolemFleeGoal || goal.getGoal() instanceof GolemTetherGoal))
                 return GOLEM_SCARED;
             else if (holdingFullBlock()) return GOLEM_STRAINED;
             return GOLEM_AMBIENT;
