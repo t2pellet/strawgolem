@@ -1,0 +1,10 @@
+{
+  "entity.strawgolem.strawgolem": "Golem Di Paglia",
+  "strawgolem.subtitle.golemAmbient": "Golem Di Paglia Ridacchia",
+  "strawgolem.subtitle.golemHurt": "Golem Di Paglia Ha subito Danno",
+  "strawgolem.subtitle.golemDeath": "Golem Di Paglia Si É Decomposto",
+  "strawgolem.subtitle.golemHeal": "Dolem Di Paglia É Stato Curato",
+  "strawgolem.subtitle.golemScared": "Golem Di Paglia É Interessato",
+  "strawgolem.subtitle.golemInterested": "Golem Di Paglia É Interessato",
+  "strawgolem.lifespan": "Vita rimanente: %s giorni"
+}
