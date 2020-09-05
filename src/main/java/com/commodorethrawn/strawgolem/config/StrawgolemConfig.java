@@ -25,6 +25,11 @@ public class StrawgolemConfig {
     static boolean shiverEnabled;
     static boolean golemInteract;
     static boolean enableHwyla;
+    /* Tethering */
+    static boolean tetherEnabled;
+    static boolean temptResetsTether;
+    static int tetherMinRange;
+    static int tetherMaxRange;
     /* Lifespan */
     static int lifespan;
     static boolean rainPenalty;
@@ -46,6 +51,8 @@ public class StrawgolemConfig {
         final ForgeConfigSpec.BooleanValue soundsEnabled, golemInteract, shiverEnabled;
         final ForgeConfigSpec.BooleanValue enableHwyla;
         final ForgeConfigSpec.BooleanValue waterPenalty, rainPenalty, heavyPenalty;
+        final ForgeConfigSpec.BooleanValue tetherEnabled, tetherToTemptEnabled;
+        final ForgeConfigSpec.IntValue tetherRangeMin, tetherRangeMax;
 
         CommonConfig(final ForgeConfigSpec.Builder builder) {
             builder.push("Harvesting");
@@ -70,6 +77,12 @@ public class StrawgolemConfig {
             heavyPenalty = builder.comment("Enable lifespan penalty for carrying a heavy item").define("penaltyHeavy", true);
             rainPenalty = builder.comment("Enable lifespan penalty for being in the rain").define("penaltyRain", true);
             waterPenalty = builder.comment("Enable lifespan penalty for being in the water").define("penaltyWater", true);
+            builder.pop();
+            builder.push("Tether");
+            tetherEnabled = builder.comment("Anchor golems to a spot so they don't wander very far.").define("tetherEnabled", true);
+            tetherToTemptEnabled = builder.comment("Tempting golems with an apple updates their tether location if pulled too far").define("temptResetsTether", false);
+            tetherRangeMin = builder.comment("Range that golems will consider within their tether location").defineInRange("tetherMinRange", 4, 1, 16);
+            tetherRangeMax = builder.comment("Range from tether that will cause golems to turn and run back").defineInRange("tetherMaxRange", 16, 1, 32);
             builder.pop();
             builder.push("Miscellaneous");
             soundsEnabled = builder.comment("Enable/disable golem sounds").define("soundsEnabled", true);
