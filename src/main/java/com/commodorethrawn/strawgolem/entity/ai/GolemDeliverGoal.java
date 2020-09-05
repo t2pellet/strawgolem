@@ -11,12 +11,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-
-import javax.annotation.Nonnull;
 
 public class GolemDeliverGoal extends MoveToBlockGoal {
     private final EntityStrawGolem strawGolem;
@@ -111,6 +108,6 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     public double getTargetDistanceSq() {
-        return super.getTargetDistanceSq() + 0.3D;
+        return super.getTargetDistanceSq() + 0.5D;
     }
 }
