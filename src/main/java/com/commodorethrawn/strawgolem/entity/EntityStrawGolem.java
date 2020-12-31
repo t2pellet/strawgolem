@@ -135,7 +135,7 @@ public class EntityStrawGolem extends GolemEntity {
                 PacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new MessageLifespan(this));
             }
             if (lifespan.isOver()) attackEntityFrom(DamageSource.MAGIC, getMaxHealth() * 100);
-        } else if (lifespan.get() * 4 < ConfigHelper.getLifespan() && rand.nextInt(80) == 0) {
+        } else if (lifespan.get() * 4 < ConfigHelper.getLifespan() && lifespan.get() >= 0 && rand.nextInt(80) == 0) {
             world.addParticle(Registry.FLY_PARTICLE, lastTickPosX, lastTickPosY, lastTickPosZ,
                     0, 0, 0);
         }

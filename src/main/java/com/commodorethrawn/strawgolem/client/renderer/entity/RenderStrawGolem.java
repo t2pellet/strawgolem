@@ -79,12 +79,13 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     public ResourceLocation getEntityTexture(EntityStrawGolem golem) {
         int lifespan = golem.getCurrentLifespan();
         int maxLifespan = ConfigHelper.getLifespan();
-        if (lifespan * 4 < maxLifespan) return TEXTURE_DYING;
+        if (lifespan * 4 < maxLifespan && lifespan >= 0) return TEXTURE_DYING;
         if (golem.hasCustomName()) {
             String name = golem.getDisplayName().getString().toLowerCase();
             if (TEXTURE_MAP.containsKey(name)) return TEXTURE_MAP.get(name);
         }
         if (IS_DECEMBER) return TEXTURE_WINTER;
+        if (lifespan < 0) return TEXTURE_DEFAULT;
         return lifespan * 2 < maxLifespan ? TEXTURE_OLD : TEXTURE_DEFAULT;
     }
 

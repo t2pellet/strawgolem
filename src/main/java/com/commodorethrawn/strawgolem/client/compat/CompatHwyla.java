@@ -18,6 +18,8 @@ public class CompatHwyla {
             float daysLeft = golem.getCurrentLifespan() / 24000F;
             if (daysLeft >= 1) {
                 event.getCurrentTip().add(new TranslationTextComponent("strawgolem.lifespan", Math.round(daysLeft)));
+            } else if (golem.getCurrentLifespan() < 0) {
+                event.getCurrentTip().add(new TranslationTextComponent("strawgolem.lifespan", '\u221e'));
             } else {
                 event.getCurrentTip().add(new TranslationTextComponent("strawgolem.lifespan", "<1"));
             }
