@@ -1,14 +1,11 @@
 package com.commodorethrawn.strawgolem.entity.capability.tether;
 
+import com.commodorethrawn.strawgolem.entity.capability.Capability;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
-public interface Tether {
-
-    public static Tether create() {
-        return new TetherImpl();
-    }
+public interface Tether extends Capability {
 
     public void set(World world, BlockPos pos);
 
