@@ -1,24 +1,48 @@
 package com.commodorethrawn.strawgolem.network;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
+
+import java.util.List;
 
 public class PacketHandler {
 
-    private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(Strawgolem.MODID, "main"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals);
+    public static final Identifier LIFESPAN_PACKET = new Identifier(Strawgolem.MODID, "message_lifespan");
+    public static final Identifier HOLDING_PACKET = new Identifier(Strawgolem.MODID, "message_item");
 
-    private PacketHandler() {
+    @Environment(EnvType.CLIENT)
+    public static void register() {
+        ClientSidePacketRegistry.INSTANCE.register(LIFESPAN_PACKET, LifespanPacket::execute);
+        ClientSidePacketRegistry.INSTANCE.register(HOLDING_PACKET, HoldingPacket::execute);
     }
 
-    public static void register() {
-        int id = 0;
-        INSTANCE.registerMessage(id, MessageLifespan.class, MessageLifespan::encode, MessageLifespan::new, MessageLifespan::onMessage);
+    public static void sendLifespanPacket(EntityStrawGolem golem) {
+        sendPacket(LIFESPAN_PACKET, new int[]{golem.getLifespan().get(), golem.getEntityId()}, golem);
+    }
+
+    public static void sendHoldingPacket(EntityStrawGolem golem) {
+        ItemStack stack = golem.getMainHandStack();
+        int itemID = Item.getRawId(stack.getItem());
+        int itemCount = stack.getCount();
+        sendPacket(HOLDING_PACKET, new int[]{itemID, itemCount, golem.getEntityId()}, golem);
+    }
+
+    public static void sendPacket(Identifier packetID, int[] packetData, EntityStrawGolem golem) {
+        List<PlayerEntity> nearbyPlayers = golem.world.getEntitiesByClass(PlayerEntity.class, golem.getBoundingBox().expand(40), e -> true);
+        PacketByteBuf data = new PacketByteBuf(Unpooled.buffer());
+        data.writeIntArray(packetData);
+        for (PlayerEntity nearbyPlayer : nearbyPlayers) {
+            ServerSidePacketRegistry.INSTANCE.sendToPlayer(nearbyPlayer, packetID, data);
+        }
     }
 }
