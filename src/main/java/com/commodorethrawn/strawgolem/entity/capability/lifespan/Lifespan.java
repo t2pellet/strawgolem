@@ -1,33 +1,31 @@
 package com.commodorethrawn.strawgolem.entity.capability.lifespan;
 
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+public interface Lifespan {
 
-public class Lifespan implements ILifespan {
-    private int tickLeft;
-
-    public Lifespan() {
-        this.tickLeft = ConfigHelper.getLifespan();
+    public static Lifespan create() {
+        return new LifespanImpl();
     }
 
-    @Override
-    public void update() {
-        if (tickLeft > 0)
-            tickLeft--;
-    }
+    /**
+     * Updates the lifespan
+     */
+    void update();
 
-    @Override
-    public boolean isOver() {
-        return tickLeft == 0;
-    }
+    /**
+     * @return whether the golem's lifespan is over
+     */
+    boolean isOver();
 
-    @Override
-    public int get() {
-        return tickLeft;
-    }
+    /**
+     * @return the current lifespan
+     */
+    int get();
 
-    @Override
-    public void set(int tickLeft) {
-        this.tickLeft = tickLeft;
-    }
+    /**
+     * Sets the current lifespan to tickLeft
+     *
+     * @param tickLeft
+     */
+    void set(int tickLeft);
 
 }

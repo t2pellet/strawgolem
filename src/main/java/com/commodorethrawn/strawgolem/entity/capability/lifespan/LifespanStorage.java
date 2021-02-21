@@ -1,24 +1,17 @@
 package com.commodorethrawn.strawgolem.entity.capability.lifespan;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.Tag;
 
-public class LifespanStorage implements IStorage<ILifespan> {
+public class LifespanStorage {
 
-    @Override
-    public INBT writeNBT(Capability<ILifespan> capability, ILifespan instance, Direction side) {
-        CompoundNBT tag = new CompoundNBT();
-        tag.putInt("life", instance.get());
-        return tag;
+    public static Tag writeNBT(Lifespan instance) {
+        return IntTag.of(instance.get());
     }
 
-    @Override
-    public void readNBT(Capability<ILifespan> capability, ILifespan instance, Direction side, INBT nbt) {
-        CompoundNBT tag = (CompoundNBT) nbt;
-        instance.set(tag.getInt("life"));
+    public static void readNBT(Lifespan instance, Tag tag) {
+        IntTag intTag = (IntTag) tag;
+        instance.set(intTag.getInt());
     }
 
 }
