@@ -24,6 +24,8 @@ public interface IniFile {
 
         public void add(String key, Object value);
 
+        public void comment(String key, String comment);
+
         public <T> T get(String key, Class<T> clazz);
 
         public List<String> getAll(String key);
