@@ -2,7 +2,6 @@ package com.commodorethrawn.strawgolem.config;
 
 import net.minecraft.block.Block;
 
-import java.io.IOException;
 import java.util.List;
 
 public class ConfigHelper {
@@ -34,6 +33,7 @@ public class ConfigHelper {
     public static boolean isTetherEnabled() {
         return StrawgolemConfig.tether.get("tetherEnabled", Boolean.class);
     }
+
     public static boolean doesTemptResetTether() {
         return StrawgolemConfig.tether.get("temptResetsTether", Boolean.class);
     }
@@ -47,17 +47,21 @@ public class ConfigHelper {
     }
 
     public static int getLifespan() {
-        return StrawgolemConfig.lifespan.get("lifespan", Integer.class);
+        return StrawgolemConfig.health.get("lifespan", Integer.class);
+    }
+
+    public static int getHunger() {
+        return StrawgolemConfig.health.get("hunger", Integer.class);
     }
 
     public static boolean isLifespanPenalty(String penalty) {
         switch (penalty) {
             case "rain":
-                return StrawgolemConfig.lifespan.get("rainPenalty", Boolean.class);
+                return StrawgolemConfig.health.get("rainPenalty", Boolean.class);
             case "water":
-                return StrawgolemConfig.lifespan.get("waterPenalty", Boolean.class);
+                return StrawgolemConfig.health.get("waterPenalty", Boolean.class);
             case "heavy":
-                return StrawgolemConfig.lifespan.get("heavyPenalty", Boolean.class);
+                return StrawgolemConfig.health.get("heavyPenalty", Boolean.class);
             default:
                 return false;
         }
