@@ -2,30 +2,32 @@ package com.commodorethrawn.strawgolem.client.renderer.entity.layers;
 
 import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelIronGolem;
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.IEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.feature.FeatureRenderer;
+import net.minecraft.client.render.entity.feature.FeatureRendererContext;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 
-public class IronGolemCracksLayer extends LayerRenderer<IronGolemEntity, ModelIronGolem<IronGolemEntity>> {
-    private static final Map<IronGolemEntity.Cracks, ResourceLocation> field_229134_a_ = ImmutableMap.of(IronGolemEntity.Cracks.LOW, new ResourceLocation("textures/entity/iron_golem/iron_golem_crackiness_low.png"), IronGolemEntity.Cracks.MEDIUM, new ResourceLocation("textures/entity/iron_golem/iron_golem_crackiness_medium.png"), IronGolemEntity.Cracks.HIGH, new ResourceLocation("textures/entity/iron_golem/iron_golem_crackiness_high.png"));
+public class IronGolemCracksLayer extends FeatureRenderer<IronGolemEntity, ModelIronGolem<IronGolemEntity>> {
+    private static final Map<IronGolemEntity.Crack, Identifier> field_229134_a_ = ImmutableMap.of(
+            IronGolemEntity.Crack.LOW, new Identifier("textures/entity/iron_golem/iron_golem_crackiness_low.png"),
+            IronGolemEntity.Crack.MEDIUM, new Identifier("textures/entity/iron_golem/iron_golem_crackiness_medium.png"),
+            IronGolemEntity.Crack.HIGH, new Identifier("textures/entity/iron_golem/iron_golem_crackiness_high.png"));
 
-    public IronGolemCracksLayer(IEntityRenderer<IronGolemEntity, ModelIronGolem<IronGolemEntity>> renderer) {
+    public IronGolemCracksLayer(FeatureRendererContext<IronGolemEntity, ModelIronGolem<IronGolemEntity>> renderer) {
         super(renderer);
     }
 
-    @ParametersAreNonnullByDefault
-    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, IronGolemEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (!entitylivingbaseIn.isInvisible()) {
-            IronGolemEntity.Cracks cracks = entitylivingbaseIn.func_226512_l_();
-            if (cracks != IronGolemEntity.Cracks.NONE) {
-                ResourceLocation resourcelocation = field_229134_a_.get(cracks);
-                renderCutoutModel(this.getEntityModel(), resourcelocation, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, 1.0F, 1.0F, 1.0F);
+    @Override
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, IronGolemEntity entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        if (!entity.isInvisible()) {
+            IronGolemEntity.Crack cracks = entity.getCrack();
+            if (cracks != IronGolemEntity.Crack.NONE) {
+                Identifier Identifier = field_229134_a_.get(cracks);
+                renderModel(this.getContextModel(), Identifier, matrices, vertexConsumers, light, entity, 1.0F, 1.0F, 1.0F);
             }
         }
     }

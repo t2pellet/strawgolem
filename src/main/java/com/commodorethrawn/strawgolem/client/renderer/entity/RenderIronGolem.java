@@ -3,24 +3,23 @@ package com.commodorethrawn.strawgolem.client.renderer.entity;
 import com.commodorethrawn.strawgolem.client.renderer.entity.layers.IronGolemCracksLayer;
 import com.commodorethrawn.strawgolem.client.renderer.entity.layers.IronGolemFlowerLayer;
 import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelIronGolem;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
-public class RenderIronGolem extends MobRenderer<IronGolemEntity, ModelIronGolem<IronGolemEntity>> {
+public class RenderIronGolem extends MobEntityRenderer<IronGolemEntity, ModelIronGolem<IronGolemEntity>> {
 
-    private static final ResourceLocation IRON_GOLEM_TEXTURES = new ResourceLocation("textures/entity/iron_golem/iron_golem.png");
+    private static final Identifier IRON_GOLEM_TEXTURES = new Identifier("textures/entity/iron_golem/iron_golem.png");
 
-    public RenderIronGolem(EntityRendererManager rendermanagerIn) {
+    public RenderIronGolem(EntityRenderDispatcher rendermanagerIn) {
         super(rendermanagerIn, new ModelIronGolem<>(), 0.5f);
-        this.addLayer(new IronGolemCracksLayer(this));
-        this.addLayer(new IronGolemFlowerLayer(this));
+        this.addFeature(new IronGolemCracksLayer(this));
+        this.addFeature(new IronGolemFlowerLayer(this));
     }
 
     @Override
-    public ResourceLocation getEntityTexture(IronGolemEntity entity) {
+    public Identifier getTexture(IronGolemEntity entity) {
         return IRON_GOLEM_TEXTURES;
     }
-
 }

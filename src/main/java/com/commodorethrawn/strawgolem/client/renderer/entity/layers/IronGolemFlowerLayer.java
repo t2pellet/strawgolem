@@ -1,38 +1,37 @@
 package com.commodorethrawn.strawgolem.client.renderer.entity.layers;
 
 import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelIronGolem;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.IEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.feature.FeatureRenderer;
+import net.minecraft.client.render.entity.feature.FeatureRendererContext;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.util.math.vector.Vector3f;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+public class IronGolemFlowerLayer extends FeatureRenderer<IronGolemEntity, ModelIronGolem<IronGolemEntity>> {
 
-public class IronGolemFlowerLayer extends LayerRenderer<IronGolemEntity, ModelIronGolem<IronGolemEntity>> {
-
-    public IronGolemFlowerLayer(IEntityRenderer<IronGolemEntity, ModelIronGolem<IronGolemEntity>> renderer) {
+    public IronGolemFlowerLayer(FeatureRendererContext<IronGolemEntity, ModelIronGolem<IronGolemEntity>> renderer) {
         super(renderer);
     }
 
-    @ParametersAreNonnullByDefault
-    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, IronGolemEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (entitylivingbaseIn.getHoldRoseTick() != 0) {
-            matrixStackIn.push();
-            ModelRenderer modelrenderer = this.getEntityModel().getArmHoldingRose();
-            modelrenderer.translateRotate(matrixStackIn);
-            matrixStackIn.translate(-1.1875D, 1.0625D, -0.9375D);
-            matrixStackIn.translate(0.5D, 0.5D, 0.5D);
-            matrixStackIn.scale(0.5F, 0.5F, 0.5F);
-            matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-90.0F));
-            matrixStackIn.translate(-0.5D, -0.5D, -0.5D);
-            Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(Blocks.POPPY.getDefaultState(), matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY);
-            matrixStackIn.pop();
+    @Override
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, IronGolemEntity entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        if (entity.getLookingAtVillagerTicks() != 0) {
+            matrices.push();
+            ModelPart armHoldingRose = this.getContextModel().getArmHoldingRose();
+            armHoldingRose.rotate(matrices);
+            matrices.translate(-1.1875D, 1.0625D, -0.9375D);
+            matrices.translate(0.5D, 0.5D, 0.5D);
+            matrices.scale(0.5F, 0.5F, 0.5F);
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+            matrices.translate(-0.5D, -0.5D, -0.5D);
+            MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(Blocks.POPPY.getDefaultState(), matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+            matrices.pop();
         }
     }
+
 }
