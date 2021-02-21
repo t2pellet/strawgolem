@@ -1,17 +1,14 @@
 package com.commodorethrawn.strawgolem.util;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 class IniFileImpl implements IniFile {
 
     private Pattern sectionPattern = Pattern.compile("^\\[.*\\]$");
     private Pattern valuePattern = Pattern.compile(".* = .*");
-    private Map<String, Section> sections = new HashMap<>();
+    private Map<String, Section> sections = new LinkedHashMap<>();
 
     public void load(File file) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
@@ -36,10 +33,12 @@ class IniFileImpl implements IniFile {
     public void store(File file) throws IOException {
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
         for (Section value : sections.values()) {
-            bufferedWriter.write("[" + value.name + "]" + "\n");
+            bufferedWriter.write("[" + value.name + "]" + '\n');
             value.keyValueMap.forEach((key, val) -> {
                 try {
-                    bufferedWriter.write(key + " = " + val + "\n");
+                    String comment = value.keyCommentMap.get(key);
+                    if (comment != null) bufferedWriter.write("#" + comment + '\n');
+                    bufferedWriter.write(key + " = " + val + '\n');
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -60,13 +59,14 @@ class IniFileImpl implements IniFile {
     }
 
     public void clear() {
-        sections = new HashMap<>();
+        sections.clear();
     }
 
     public static class Section implements IniFile.Section {
 
         private final String name;
-        private final Map<String, String> keyValueMap = new HashMap<>();
+        private final Map<String, String> keyValueMap = new LinkedHashMap<>();
+        private final Map<String, String> keyCommentMap = new HashMap<>();
 
         private Section(String name) {
             this.name = name;
@@ -74,6 +74,10 @@ class IniFileImpl implements IniFile {
 
         public void add(String key, Object val) {
             keyValueMap.put(key, String.valueOf(val));
+        }
+
+        public void comment(String key, String comment) {
+            keyCommentMap.put(key, comment);
         }
 
         public <T> T get(String key, Class<T> clazz) {
@@ -87,6 +91,7 @@ class IniFileImpl implements IniFile {
 
         public void clear() {
             keyValueMap.clear();
+            keyCommentMap.clear();
         }
 
     }
