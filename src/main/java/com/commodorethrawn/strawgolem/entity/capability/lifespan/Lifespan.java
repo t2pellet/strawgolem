@@ -1,10 +1,12 @@
 package com.commodorethrawn.strawgolem.entity.capability.lifespan;
 
 import com.commodorethrawn.strawgolem.entity.capability.Capability;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.MinecraftServer;
 
 public interface Lifespan extends Capability {
+
+    static Lifespan getInstance() {
+        return new LifespanImpl();
+    }
 
     /**
      * Updates the lifespan

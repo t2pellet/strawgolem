@@ -7,21 +7,25 @@ import net.minecraft.world.World;
 
 public interface Tether extends Capability {
 
-    public void set(World world, BlockPos pos);
+    static Tether getInstance() {
+        return new TetherImpl();
+    }
 
-    public void set(RegistryKey<World> world, BlockPos pos);
+    void set(World world, BlockPos pos);
 
-    public TetherPos get();
+    void set(RegistryKey<World> world, BlockPos pos);
 
-    public int distanceTo(World world, BlockPos pos);
+    TetherPos get();
 
-    public interface TetherPos {
+    int distanceTo(World world, BlockPos pos);
 
-        public static TetherPos ORIGIN = new TetherImpl.TetherPosImpl(World.OVERWORLD, BlockPos.ORIGIN);
+    interface TetherPos {
 
-        public RegistryKey<World> getWorld();
+        TetherPos ORIGIN = new TetherImpl.TetherPosImpl(World.OVERWORLD, BlockPos.ORIGIN);
 
-        public BlockPos getPos();
+        RegistryKey<World> getWorld();
+
+        BlockPos getPos();
 
     }
 }

@@ -10,6 +10,10 @@ import java.util.Set;
 
 public interface Memory extends Capability {
 
+    static Memory getInstance() {
+        return new MemoryImpl();
+    }
+
     /**
      * Returns the set of all remembered chest positions
      * @return the positions
