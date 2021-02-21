@@ -9,6 +9,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Items;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -45,7 +46,7 @@ public class GolemChestHandler {
                 if (golem != null) {
                     golem.getMemory().setPriorityChest(blockHitResult.getBlockPos());
                     golem.getMemory().addPosition(world, blockHitResult.getBlockPos());
-                    Text text = new LiteralText(golem.getDisplayName().getString() + " will now deliver to this chest");
+                    Text text = new TranslatableText("strawgolem.deliver", golem.getDisplayName().getString());
                     playerEntity.sendMessage(text, true);
                     playerToGolemMap.remove(playerEntity.getUuid());
                     // Tether to the priority chest

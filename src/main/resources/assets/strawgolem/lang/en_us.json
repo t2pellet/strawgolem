@@ -6,6 +6,8 @@
   "strawgolem.subtitle.golemHeal": "Straw Golem Healed",
   "strawgolem.subtitle.golemScared": "Straw Golem Scared",
   "strawgolem.subtitle.golemInterested": "Straw Golem Interested",
-  "strawgolem.lifespan": "Life remaining: %s days",
+  "strawgolem.lifespan": "Lifespan: %s days",
+  "strawgolem.hunger": "Hunger Level: %s",
+  "strawgolem.deliver": "%s will now deliver to this container",
   "strawgolem.order": "Ordering: %s"
 }
