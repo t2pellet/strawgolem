@@ -3,23 +3,21 @@ package com.commodorethrawn.strawgolem.events;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.ai.GolemHarvestGoal;
+import com.commodorethrawn.strawgolem.mixin.GoalSelectorAccessor;
 import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
 import net.minecraft.block.*;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.BonemealEvent;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraft.world.WorldAccess;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -30,54 +28,33 @@ import java.util.PriorityQueue;
  * Every 100 ticks, it goes through the queue checking for golems to harvest, skipping through already harvested blocks
  * and breaking when it cannot find a golem to harvest
  */
-@Mod.EventBusSubscriber(modid = Strawgolem.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CropGrowthHandler {
 
-    private static boolean isLoaded = false;
     protected static final PriorityQueue<CropQueueEntry> queue = new PriorityQueue<>();
     private static final int HARVEST_DELAY = 100;
-    static StrawgolemSaveData data;
 
     private CropGrowthHandler() {}
 
-    @SubscribeEvent
-    public static void serverStart(FMLServerStartingEvent event) {
-        Strawgolem.logger.info("Strawgolem: Server Starting");
-        ServerWorld world = event.getServer().getWorld(World.field_234918_g_);
-        if (world == null) return;
-        data = StrawgolemSaveData.get(world); // Need overworld
-        isLoaded = true;
-    }
-
     private static int ticks = 0;
 
-    @SubscribeEvent
-    public static void tick(TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && EffectiveSide.get().isServer() && isLoaded) {
+    public static void tick(ServerWorld world) {
+        if (!world.isClient && Strawgolem.getSaveData() != null) {
             while (!queue.isEmpty() && ticks == queue.peek().tick) {
                 queue.remove().execute();
-                data.markDirty();
+                try {
+                    Strawgolem.getSaveData().saveData();
+                } catch (IOException ex) { ex.printStackTrace(); }
             }
             ++ticks;
         }
     }
 
-    @SubscribeEvent
-    public static void onCropGrowth(BlockEvent.CropGrowEvent.Post event) {
-        onCropGrowth((World) event.getWorld(), event.getPos());
-    }
-
-    @SubscribeEvent
-    public static void onCropGrowth(BonemealEvent event) {
-        onCropGrowth(event.getWorld(), event.getPos());
-    }
-
-    private static void onCropGrowth(World world, BlockPos pos) {
-        if (!world.isRemote) {
+    public static void onCropGrowth(WorldAccess world, BlockPos pos) {
+        if (!world.isClient()) {
             BlockPos cropPos = pos;
             if (world.getBlockState(cropPos).getBlock() instanceof AttachedStemBlock) {
                 Direction facing = world.getBlockState(cropPos).get(AttachedStemBlock.FACING);
-                cropPos = cropPos.add(facing.getDirectionVec());
+                cropPos = cropPos.add(facing.getUnitVector().getX(), facing.getUnitVector().getX(), facing.getUnitVector().getZ());
             }
             if (isFullyGrown(world, cropPos)) {
                 EntityStrawGolem golem = getCropGolem(world, cropPos);
@@ -97,43 +74,40 @@ public class CropGrowthHandler {
      * @param pos   the position
      * @return applicable golem or null if none apply
      */
-    private static EntityStrawGolem getCropGolem(IWorld world, BlockPos pos) {
-        AxisAlignedBB golemAABB = new AxisAlignedBB(pos).grow(
+    private static EntityStrawGolem getCropGolem(WorldAccess world, BlockPos pos) {
+        Box golemAABB = new Box(pos).expand(
                 ConfigHelper.getSearchRangeHorizontal(),
                 ConfigHelper.getSearchRangeVertical(),
                 ConfigHelper.getSearchRangeHorizontal());
-        List<EntityStrawGolem> golemList = world.getEntitiesWithinAABB(EntityStrawGolem.class, golemAABB);
-        for (EntityStrawGolem golem : golemList) {
-            if (golem.getHarvestPos().equals(BlockPos.ZERO)
-                    && golem.canSeeBlock(world, pos)
-                    && golem.isHandEmpty()) {
-                return golem;
-            }
-        }
-        return null;
+        return world.getEntitiesIncludingUngeneratedChunks(EntityStrawGolem.class, golemAABB).stream()
+                .filter(golem -> {
+                    GoalSelector goalSelector = ((GoalSelectorAccessor) golem).goalSelector();
+                    boolean notHarvesting = goalSelector.getRunningGoals().noneMatch(goal -> goal.getGoal() instanceof GolemHarvestGoal);
+                    return notHarvesting && golem.canSeeBlock(world, pos) && golem.isHandEmpty();
+                })
+                .findFirst().orElse(null);
     }
 
     /**
      * Returns true if the crop is applicable and fully grown, false otherwise
-     *
      * @param world the world
      * @param pos the position
      * @return whether the block is fully grown
      */
-    private static boolean isFullyGrown(IWorld world, BlockPos pos) {
+    private static boolean isFullyGrown(WorldAccess world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
         if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
-            if (state.getBlock() instanceof CropsBlock) {
-                CropsBlock crop = (CropsBlock) state.getBlock();
-                return crop.isMaxAge(state);
-            } else if (state.getBlock() instanceof StemGrownBlock) {
+            if (state.getBlock() instanceof CropBlock) {
+                CropBlock crop = (CropBlock) state.getBlock();
+                return crop.isMature(state);
+            } else if (state.getBlock() instanceof GourdBlock) {
                 return true;
             } else if (state.getBlock() instanceof NetherWartBlock) {
                 return state.get(NetherWartBlock.AGE) == 3;
-            } else if (state.getBlock() instanceof BushBlock
-                    && state.getBlock() instanceof IGrowable
-                    && state.func_235901_b_(BlockStateProperties.AGE_0_3)) {
-                return state.get(BlockStateProperties.AGE_0_3) == 3;
+            } else if (state.getBlock() instanceof PlantBlock
+                    && state.getBlock() instanceof Fertilizable
+                    && state.contains(Properties.AGE_3)) {
+                return state.get(Properties.AGE_3) == 3;
             }
         }
         return false;
@@ -141,16 +115,19 @@ public class CropGrowthHandler {
 
     /**
      * Schedules a crop to be harvested
-     *
      * @param world    the world the crop is in
      * @param pos      the position of the crop
      * @param runsLeft the amount of times left to reschedule this crop to be harvested
      */
-    public static void scheduleCrop(World world, BlockPos pos, int runsLeft) {
+    public static void scheduleCrop(WorldAccess world, BlockPos pos, int runsLeft) {
         if (runsLeft <= 0) return;
         int executeTick = ticks + HARVEST_DELAY;
-        queue.add(new CropQueueEntry(pos, world, executeTick, runsLeft));
-        if (data != null) data.markDirty();
+        queue.add(new CropQueueEntry(pos, (World) world, executeTick, runsLeft));
+        if (Strawgolem.getSaveData() != null) {
+            try {
+                Strawgolem.getSaveData().saveData();
+            } catch (IOException ex) { ex.printStackTrace(); }
+        }
     }
 
     public static Iterator<CropQueueEntry> getCrops() {
@@ -179,7 +156,7 @@ public class CropGrowthHandler {
         }
 
         public void execute() {
-            if (world.isBlockLoaded(pos)) {
+            if (world.isChunkLoaded(pos)) {
                 if (isFullyGrown(world, pos)) {
                     EntityStrawGolem golem = getCropGolem(world, pos);
                     if (golem != null) {
