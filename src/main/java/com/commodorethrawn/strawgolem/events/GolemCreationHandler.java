@@ -1,24 +1,31 @@
 package com.commodorethrawn.strawgolem.events;
 
-import com.commodorethrawn.strawgolem.Registry;
+import com.commodorethrawn.strawgolem.registry.CommonRegistry;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.HorizontalBlock;
+import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.util.Direction;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = Strawgolem.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+import java.util.Objects;
+
 public class GolemCreationHandler {
 
     private GolemCreationHandler() {
@@ -26,44 +33,41 @@ public class GolemCreationHandler {
 
     /**
      * Handles golem building based on block placement
-     *
-     * @param event the placement event
      */
-    @SubscribeEvent
-    public static void onGolemBuilt(BlockEvent.EntityPlaceEvent event) {
-        World worldIn = (World) event.getWorld();
-        BlockPos pos = event.getPos();
-        Block block = event.getState().getBlock();
-
-        BlockPos pumpkin;
-        BlockPos hay;
-
-        if (block == Blocks.CARVED_PUMPKIN) {
-            pumpkin = pos;
-            hay = pos.down();
-        } else if (block == Blocks.HAY_BLOCK) {
-            pumpkin = pos.up();
-            hay = pos;
-        } else return;
-        spawnGolem(worldIn, hay, pumpkin);
+    public static ActionResult onGolemBuilt(PlayerEntity player, World worldIn, Hand hand, BlockHitResult result) {
+        BlockPos pos = result.getBlockPos();
+        Item heldItem = player.getMainHandStack().getItem();
+        if (heldItem instanceof BlockItem) {
+            Block heldBlock = ((BlockItem) heldItem).getBlock();
+            Vector3f direction = result.getSide().getUnitVector();
+            BlockPos placementPos = pos.add(direction.getX(), direction.getY(), direction.getZ());
+            System.out.println("Held Block: " + heldBlock);
+            if (heldBlock == Blocks.CARVED_PUMPKIN) {
+                BlockPos hayPos = placementPos.down();
+                if (worldIn.getBlockState(hayPos).getBlock() == Blocks.HAY_BLOCK) spawnGolem(worldIn, hayPos, placementPos, result.getSide());
+            } else if (heldBlock == Blocks.HAY_BLOCK) {
+                BlockPos pumpkinPos = placementPos.up();
+                if (worldIn.getBlockState(pumpkinPos).getBlock() == Blocks.CARVED_PUMPKIN) spawnGolem(worldIn, placementPos, pumpkinPos, result.getSide());
+            }
+        }
+        return ActionResult.PASS;
     }
 
     /**
      * Handles golem building based on shearing the pumpkin
-     *
-     * @param event the right click block event
      */
-    @SubscribeEvent
-    public static void onGolemBuiltAlternate(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getPlayer().getHeldItemMainhand().getItem() == Items.SHEARS
-                && event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.PUMPKIN) {
-            Direction facing = event.getPlayer().getHorizontalFacing().getOpposite();
-            event.getWorld().setBlockState(event.getPos(), Blocks.CARVED_PUMPKIN.getDefaultState().with(HorizontalBlock.HORIZONTAL_FACING, facing));
-            event.setCanceled(true);
-            event.getWorld().playSound(event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F, true);
-            event.getPlayer().getHeldItemMainhand().damageItem(1, event.getPlayer(), p -> p.sendBreakAnimation(Hand.MAIN_HAND));
-            spawnGolem(event.getWorld(), event.getPos().down(), event.getPos());
+    public static ActionResult onGolemBuiltAlternate(PlayerEntity player, World worldIn, Hand hand, BlockHitResult result) {
+        BlockPos pos = result.getBlockPos();
+        if (player.getMainHandStack().getItem() == Items.SHEARS
+                && worldIn.getBlockState(pos).getBlock() == Blocks.PUMPKIN
+                && worldIn.getBlockState(pos.down()).getBlock() == Blocks.HAY_BLOCK) {
+            Direction facing = result.getSide();
+            worldIn.setBlockState(result.getBlockPos(), Blocks.CARVED_PUMPKIN.getDefaultState().with(HorizontalFacingBlock.FACING, facing));
+            worldIn.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F, true);
+            player.getMainHandStack().damage(1, player, p -> p.sendToolBreakStatus(Hand.MAIN_HAND));
+            return spawnGolem(worldIn, pos.down(), pos, result.getSide());
         }
+        return ActionResult.PASS;
     }
 
     /**
@@ -73,14 +77,16 @@ public class GolemCreationHandler {
      * @param hay     position of hay
      * @param pumpkin position of pumpkin
      */
-    private static void spawnGolem(World worldIn, BlockPos hay, BlockPos pumpkin) {
-        if (worldIn.getBlockState(hay).getBlock() == Blocks.HAY_BLOCK
-                && worldIn.getBlockState(pumpkin).getBlock() == Blocks.CARVED_PUMPKIN) {
-            worldIn.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
-            worldIn.setBlockState(hay, Blocks.AIR.getDefaultState());
-            EntityStrawGolem strawGolem = new EntityStrawGolem(Registry.STRAW_GOLEM_TYPE, worldIn);
-            strawGolem.setPosition(hay.getX() + 0.5D, hay.getY(), hay.getZ() + 0.5D);
-            worldIn.addEntity(strawGolem);
+    private static ActionResult spawnGolem(World worldIn, BlockPos hay, BlockPos pumpkin, Direction facing) {
+        if (!worldIn.isClient) {
+            ServerWorld world = (ServerWorld) worldIn;
+            world.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
+            world.setBlockState(hay, Blocks.AIR.getDefaultState());
+            EntityStrawGolem strawGolem = CommonRegistry.strawGolemEntityType().create(world);
+            strawGolem.refreshPositionAndAngles(hay, facing.getHorizontal(), 0.0F);
+            world.spawnEntity(strawGolem);
+            return ActionResult.SUCCESS;
         }
+        return ActionResult.PASS;
     }
 }
