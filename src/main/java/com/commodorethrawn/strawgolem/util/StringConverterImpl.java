@@ -7,6 +7,7 @@ class StringConverterImpl implements StringConverter{
     private static final String BOOLEAN = "java.lang.Boolean";
     private static final String DOUBLE = "java.lang.Double";
     private static final String FLOAT = "java.lang.Float";
+    private static final String STRING = "java.lang.String";
 
     private String value;
 
@@ -25,6 +26,8 @@ class StringConverterImpl implements StringConverter{
                 return (T) (Object) Float.parseFloat(value);
             case DOUBLE:
                 return (T) (Object) Double.parseDouble(value);
+            case STRING:
+                return (T) value;
             default:
                 throw new IllegalArgumentException("Invalid type: " + clazz.getTypeName());
         }
