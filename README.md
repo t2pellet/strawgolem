@@ -1,7 +1,9 @@
-# Straw Golem
-This is a fork of Niv_Oridoc's original Straw Golem mod.
-This mod adds a spawnable straw golem. It's a very weak golem and flees whenever hostile mobs come nearby.
-It can harvest and deliver crops to a nearby chest
+# Fabric Example Mod
 
-## Downloads
-<a href="https://www.curseforge.com/minecraft/mc-mods/strawgolem-reborn">Curseforge</a>
+## Setup
+
+For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+
+## License
+
+This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
