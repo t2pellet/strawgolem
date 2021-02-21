@@ -20,7 +20,7 @@ public class StrawgolemConfig {
     static final IniFile.Section harvesting;
     static final IniFile.Section miscellaneous;
     static final IniFile.Section tether;
-    static final IniFile.Section lifespan;
+    static final IniFile.Section health;
 
     private static final IniFile.Section version;
     private static final String modVersion;
@@ -41,7 +41,7 @@ public class StrawgolemConfig {
         harvesting = ini.getSection("Harvesting");
         miscellaneous = ini.getSection("Miscellaneous");
         tether = ini.getSection("Tether");
-        lifespan = ini.getSection("Lifespan");
+        health = ini.getSection("Health");
         version = ini.getSection("Version");
         if (!version.get("version", String.class).equals(modVersion)) {
             try {
@@ -61,45 +61,46 @@ public class StrawgolemConfig {
 
         IniFile.Section harvestingSection = ini.addSection("Harvesting");
         harvestingSection.add("replantEnabled", true);
-//        harvestingSection.putComment("replantEnabled", "Enables golems replanting crops");
+        harvestingSection.comment("replantEnabled", "Enables golems replanting crops");
         harvestingSection.add("deliveryEnabled", true);
-//        harvestingSection.putComment("deliveryEnabled", "Enables golems delivering crops to a chest");
+        harvestingSection.comment("deliveryEnabled", "Enables golems delivering crops to a chest");
         harvestingSection.add("searchRangeHorizontal", 24);
-//        harvestingSection.putComment("searchRangeHorizontal", "The horizontal range of crops golems can detect");
+        harvestingSection.comment("searchRangeHorizontal", "The horizontal range of crops golems can detect");
         harvestingSection.add("searchRangeVertical", 4);
-//        harvestingSection.putComment("searchRangeVertical", "The vertical range of crops golems can detect");
+        harvestingSection.comment("searchRangeVertical", "The vertical range of crops golems can detect");
         harvestingSection.add("filterMode", FILTER_MODE_BLACKLIST);
-//        harvestingSection.putComment("filterMode", "The golem filtration mode. Either 'whitelist' or 'blacklist'");
+        harvestingSection.comment("filterMode", "The golem filtration mode. Either 'whitelist' or 'blacklist'");
         harvestingSection.add("whitelist", new ArrayList<String>());
         harvestingSection.add("blacklist", new ArrayList<String>());
 
         IniFile.Section miscSection = ini.addSection("Miscellaneous");
         miscSection.add("soundsEnabled", true);
-//        miscSection.putComment("soundsEnabled", "Enables golem sounds");
+        miscSection.comment("soundsEnabled", "Enables golem sounds");
         miscSection.add("shiverEnabled", true);
-//        miscSection.putComment("shiverEnabled", "Enables golems shivering in the cold or rain");
+        miscSection.comment("shiverEnabled", "Enables golems shivering in the cold or rain");
         miscSection.add("golemInteract", true);
-//        miscSection.putComment("golemInteract", "Enables Iron Golems periodically picking up straw golems");
+        miscSection.comment("golemInteract", "Enables Iron Golems periodically picking up straw golems");
         miscSection.add("enableHwyla", true);
-//        miscSection.putComment("enableHwyla", "Enables HWYLA Compat");
+        miscSection.comment("enableHwyla", "Enables HWYLA Compat");
 
         IniFile.Section tetherSection = ini.addSection("Tether");
         tetherSection.add("tetherEnabled", true);
-////        tetherSection.putComment("tetherEnabled", "Enables tether system, preventing golem from wandering too far");
+        tetherSection.comment("tetherEnabled", "Enables tether system, preventing golem from wandering too far");
         tetherSection.add("temptResetsTether", true);
-////        tetherSection.putComment("temptResetsTether", "Enables whether tempting a golem away with an apple will reset its tether");
+        tetherSection.comment("temptResetsTether", "Enables whether tempting a golem away with an apple will reset its tether");
         tetherSection.add("tetherMaxRange", 24);
-////        tetherSection.putComment("tetherMaxRange", "The maximum range away from its tether the golem should wander");
+        tetherSection.comment("tetherMaxRange", "The maximum range away from its tether the golem should wander");
 
-        IniFile.Section lifespanSection = ini.addSection("Lifespan");
-        lifespanSection.add("lifespan", 168000);
-//        lifespanSection.putComment("lifespan", "Set to -1 for infinite");
-        lifespanSection.add("rainPenalty", true);
-//        lifespanSection.putComment("rainPenalty", "Enables lifespan going down faster in the rain (+1 / tick)");
-        lifespanSection.add("waterPenalty", true);
-//        lifespanSection.putComment("waterPenalty", "Enables lifespan going down faster in water (+1 / tick)");
-        lifespanSection.add("heavyPenalty", true);
-//        lifespanSection.putComment("heavyPenalty", "Enables lifespan going down faster carrying something heavy (+1 / tick)");
+        IniFile.Section healthSection = ini.addSection("Health");
+        healthSection.add("lifespan", 168000);
+        healthSection.comment("lifespan", "Set to -1 for infinite");
+        healthSection.add("hunger", 24000);
+        healthSection.add("rainPenalty", true);
+        healthSection.comment("rainPenalty", "Enables lifespan going down faster in the rain (+1 / tick)");
+        healthSection.add("waterPenalty", true);
+        healthSection.comment("waterPenalty", "Enables lifespan going down faster in water (+1 / tick)");
+        healthSection.add("heavyPenalty", true);
+        healthSection.comment("heavyPenalty", "Enables lifespan going down faster carrying something heavy (+1 / tick)");
 
         IniFile.Section configSection = ini.addSection("Version");
         configSection.add("version", modVersion);
