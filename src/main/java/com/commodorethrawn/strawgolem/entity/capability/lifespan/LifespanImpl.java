@@ -3,7 +3,6 @@ package com.commodorethrawn.strawgolem.entity.capability.lifespan;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.server.MinecraftServer;
 
 class LifespanImpl implements Lifespan {
     private int tickLeft;
