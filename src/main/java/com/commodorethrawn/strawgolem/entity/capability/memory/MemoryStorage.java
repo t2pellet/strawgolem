@@ -30,7 +30,6 @@ public class MemoryStorage {
         }
         tag.put("positions", tagList);
         tag.put("priority", NbtHelper.fromBlockPos(instance.getPriorityChest()));
-        tag.put("anchor", NbtHelper.fromBlockPos(instance.getAnchorPos()));
         return tag;
     }
 
@@ -49,10 +48,6 @@ public class MemoryStorage {
         Tag posTag = tag.get("priority");
         if (posTag instanceof CompoundTag) {
             instance.setPriorityChest(NbtHelper.toBlockPos((CompoundTag) posTag));
-        }
-        Tag anchorTag = tag.get("anchor");
-        if (anchorTag instanceof CompoundTag) {
-            instance.setAnchorPos(NbtHelper.toBlockPos((CompoundTag) anchorTag));
         }
     }
 }

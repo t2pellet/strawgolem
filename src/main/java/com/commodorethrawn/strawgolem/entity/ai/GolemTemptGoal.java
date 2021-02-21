@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class GolemTemptGoal extends TemptGoal {
 
@@ -28,10 +29,11 @@ public class GolemTemptGoal extends TemptGoal {
         super.tick();
         if (ConfigHelper.isTetherEnabled() && ConfigHelper.doesTemptResetTether()) {
             BlockPos golemPos = strawGolem.getBlockPos();
-            double d = golemPos.getManhattanDistance(strawGolem.getMemory().getAnchorPos());
+            World golemWorld = strawGolem.world;
+            double d = strawGolem.getTether().distanceTo(golemWorld, golemPos);
             if (d > ConfigHelper.getTetherMaxRange()) {
                 Strawgolem.logger.debug(strawGolem.getEntityId() + " setting new anchor " + golemPos);
-                strawGolem.getMemory().setAnchorPos(golemPos);
+                strawGolem.getTether().set(golemWorld, golemPos);
             }
         }
     }
