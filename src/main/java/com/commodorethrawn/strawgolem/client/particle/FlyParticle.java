@@ -1,16 +1,14 @@
 package com.commodorethrawn.strawgolem.client.particle;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particles.BasicParticleType;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.particle.DefaultParticleType;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-
-@OnlyIn(Dist.CLIENT)
-public class FlyParticle extends SpriteTexturedParticle {
+@Environment(EnvType.CLIENT)
+public class FlyParticle extends SpriteBillboardParticle {
 
     private float thetaHoriz;
     private float thetaVert;
@@ -18,52 +16,53 @@ public class FlyParticle extends SpriteTexturedParticle {
     protected FlyParticle(ClientWorld worldIn, double xCoordIn, double yCoordIn, double zCoordIn,
                           double xSpeed, double ySpeed, double zSpeed) {
         super(worldIn, xCoordIn, yCoordIn + 0.4F, zCoordIn);
-        posX += rand.nextFloat() - 0.5F;
-        posZ += rand.nextFloat() - 0.5F;
-        setSize(0.02F, 0.02F);
+        x += random.nextFloat() - 0.5F;
+        z += random.nextFloat() - 0.5F;
+        setBoundingBoxSpacing(0.02F, 0.02F);
         maxAge = 60;
-        thetaHoriz = rand.nextFloat() * (float) Math.PI;
+        thetaHoriz = random.nextFloat() * (float) Math.PI;
         thetaVert = 0;
     }
 
     @Override
     public void tick() {
-        this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
+        super.tick();
+        this.prevPosX = this.x;
+        this.prevPosY = this.y;
+        this.prevPosZ = this.z;
         if (this.age++ >= this.maxAge) {
-            this.setExpired();
+            this.markDead();
         } else {
-            this.move(this.motionX, this.motionY, this.motionZ);
+            this.move(this.velocityX, this.velocityY, this.velocityZ);
             thetaHoriz += 0.05;
             thetaVert += 0.05;
-            this.motionX = Math.sin(thetaHoriz) / 14;
-            this.motionZ =  Math.cos(thetaHoriz) / 14;
-            this.motionY = (Math.sin(2 * thetaVert)) / 12 + 0.025;
+            this.velocityX = Math.sin(thetaHoriz) / 14;
+            this.velocityY =  Math.cos(thetaHoriz) / 14;
+            this.velocityZ = (Math.sin(2 * thetaVert)) / 12 + 0.025;
         }
     }
 
     @Override
-    public IParticleRenderType getRenderType() {
-        return IParticleRenderType.PARTICLE_SHEET_OPAQUE;
+    public ParticleTextureSheet getType() {
+        return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static class Factory implements IParticleFactory<BasicParticleType> {
-        private final IAnimatedSprite spriteSet;
 
-        public Factory(IAnimatedSprite sprite) {
+    @Environment(EnvType.CLIENT)
+    public static class Factory implements ParticleFactory<DefaultParticleType> {
+        private final SpriteProvider spriteSet;
+
+        public Factory(SpriteProvider sprite) {
             spriteSet = sprite;
         }
 
         @Nullable
         @Override
-        public Particle makeParticle(BasicParticleType typeIn, ClientWorld worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            FlyParticle flyParticle = new FlyParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
+        public Particle createParticle(DefaultParticleType parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+            FlyParticle flyParticle = new FlyParticle(world, x, y, z, velocityX, velocityY, velocityZ);
             flyParticle.setColor(1.0F, 1.0F, 1.0F);
-            flyParticle.selectSpriteRandomly(spriteSet);
+            flyParticle.setSprite(spriteSet);
             return flyParticle;
         }
-
     }
 }
