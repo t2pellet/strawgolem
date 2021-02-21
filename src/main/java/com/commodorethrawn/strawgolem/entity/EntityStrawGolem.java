@@ -1,6 +1,8 @@
 package com.commodorethrawn.strawgolem.entity;
 
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
+import com.commodorethrawn.strawgolem.entity.capability.tether.Tether;
+import com.commodorethrawn.strawgolem.entity.capability.tether.TetherStorage;
 import com.commodorethrawn.strawgolem.registry.ClientRegistry;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
@@ -40,6 +42,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -53,9 +56,11 @@ public class EntityStrawGolem extends GolemEntity {
     public static final SoundEvent GOLEM_SCARED = StrawgolemSounds.GOLEM_SCARED.getSoundEvent();
     public static final SoundEvent GOLEM_INTERESTED = StrawgolemSounds.GOLEM_INTERESTED.getSoundEvent();
     private static final Identifier LOOT = new Identifier(Strawgolem.MODID, "strawgolem");
+
     private final Lifespan lifespan;
     private final Memory memory;
     private final SimpleInventory inventory;
+    private final Tether tether;
     private BlockPos harvestPos;
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
@@ -63,6 +68,7 @@ public class EntityStrawGolem extends GolemEntity {
         lifespan = Lifespan.create();
         memory = Memory.create();
         inventory = new SimpleInventory(1);
+        tether = Tether.create();
         harvestPos = BlockPos.ORIGIN;
     }
 
@@ -100,7 +106,7 @@ public class EntityStrawGolem extends GolemEntity {
 
     public static DefaultAttributeContainer.Builder createMob() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0D)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 4.0D)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2D);
     }
 
@@ -356,6 +362,14 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     /**
+     * Returns the tether capability, used to prevent the golem from wandering too far
+     * @return the golem's tether capability
+     */
+    public Tether getTether() {
+        return tether;
+    }
+
+    /**
      * Sets the harvest position to pos
      * @param pos new harvest position
      */
@@ -385,6 +399,7 @@ public class EntityStrawGolem extends GolemEntity {
         tag.put("lifespan", LifespanStorage.writeNBT(lifespan));
         tag.put("memory", MemoryStorage.writeNBT(memory));
         tag.put("inventory", inventory.getTags());
+        tag.put("tether", TetherStorage.writeNBT(tether));
         return super.toTag(tag);
     }
 
@@ -393,6 +408,8 @@ public class EntityStrawGolem extends GolemEntity {
         if (tag.contains("lifespan")) LifespanStorage.readNBT(lifespan, tag.get("lifespan"));
         if (tag.contains("memory")) MemoryStorage.readNBT(world.getServer(), memory, tag.get("memory"));
         if (tag.contains("inventory")) inventory.readTags((ListTag) tag.get("inventory"));
+        if (tag.contains("tether")) TetherStorage.readNBT(world.getServer(), tether, tag.get("tether"));
         super.fromTag(tag);
     }
+
 }
