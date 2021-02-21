@@ -3,30 +3,30 @@ package com.commodorethrawn.strawgolem.entity.ai;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.network.PacketHandler;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.ai.goal.MoveToBlockGoal;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.item.*;
-import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerPlayerInteractionManager;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.UseAction;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraft.util.math.Box;
+import net.minecraft.world.WorldView;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.UUID;
 
-public class GolemHarvestGoal extends MoveToBlockGoal {
+public class GolemHarvestGoal extends MoveToTargetPosGoal {
     private final EntityStrawGolem strawgolem;
 
     public GolemHarvestGoal(EntityStrawGolem strawgolem, double speedIn) {
@@ -35,62 +35,62 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canStart() {
         /* Checks for position set by the event handler (set when a block grows nearby) */
         if (strawgolem.isHandEmpty() && !strawgolem.getHarvestPos().equals(BlockPos.ZERO)) {
-            destinationBlock = strawgolem.getHarvestPos();
-            this.runDelay = getRunDelay(this.creature);
+            targetPos = strawgolem.getHarvestPos();
+            this.cooldown = getInterval(this.mob);
             strawgolem.clearHarvestPos();
-            return strawgolem.shouldHarvestBlock(strawgolem.world, destinationBlock)
-                    && strawgolem.canSeeBlock(strawgolem.world, destinationBlock);
+            return strawgolem.shouldHarvestBlock(strawgolem.world, targetPos)
+                    && strawgolem.canSeeBlock(strawgolem.world, targetPos);
         }
         /* Based off the vanilla code of shouldExecute, with additional check to ensure the golems hand is empty */
-        if (this.runDelay > 0) {
-            --this.runDelay;
+        if (this.cooldown > 0) {
+            --this.cooldown;
             return false;
         } else {
-            this.runDelay = getRunDelay(this.creature);
-            return strawgolem.isHandEmpty() && this.searchForDestination()
-                    && strawgolem.canSeeBlock(strawgolem.world, destinationBlock);
+            this.cooldown = getInterval(this.mob);
+            return strawgolem.isHandEmpty() && this.findTargetPos()
+                    && strawgolem.canSeeBlock(strawgolem.world, targetPos);
         }
     }
 
     @Override
-    protected int getRunDelay(@Nonnull CreatureEntity creatureIn) {
+    protected int getInterval(PathAwareEntity mob) {
         return 360;
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
-        return super.shouldContinueExecuting() && !strawgolem.isPassenger();
+    public boolean shouldContinue() {
+        return super.shouldContinue() && !strawgolem.hasVehicle();
     }
 
     /* Almost copied from the vanilla tick() method, just calling doHarvest when it gets to the block and some tweaks for different kinds of blocks */
     @Override
     public void tick() {
-        this.strawgolem.getLookController().setLookPosition(
-                this.destinationBlock.getX() + 0.5D,
-                this.destinationBlock.getY(),
-                this.destinationBlock.getZ() + 0.5D,
+        this.strawgolem.getLookControl().lookAt(
+                this.targetPos.getX() + 0.5D,
+                this.targetPos.getY(),
+                this.targetPos.getZ() + 0.5D,
                 10.0F,
-                this.strawgolem.getVerticalFaceSpeed());
-        double targetDistance = getTargetDistanceSq();
-        Block destinationBlockType = this.strawgolem.world.getBlockState(destinationBlock).getBlock();
-        if (destinationBlockType instanceof StemGrownBlock) targetDistance += 0.2D;
-        if (destinationBlockType instanceof BushBlock) targetDistance += 0.55D;
-        if (!this.destinationBlock.withinDistance(this.creature.getPositionVec(), targetDistance)) {
-            ++this.timeoutCounter;
-            if (this.shouldMove()) {
-                this.creature.getNavigator().tryMoveToXYZ(this.destinationBlock.getX() + 0.5D, this.destinationBlock.getY() + 1D, this.destinationBlock.getZ() + 0.5D, this.movementSpeed);
+                this.strawgolem.getLookPitchSpeed());
+        double targetDistance = getDesiredSquaredDistanceToTarget();
+        Block targetPosType = this.strawgolem.world.getBlockState(targetPos).getBlock();
+        if (targetPosType instanceof GourdBlock) targetDistance += 0.2D;
+        if (targetPosType instanceof PlantBlock) targetDistance += 0.55D;
+        if (!this.targetPos.isWithinDistance(this.mob.getPos(), targetDistance)) {
+            ++this.tryingTime;
+            if (this.shouldResetPath()) {
+                this.mob.getNavigation().startMovingTo(this.targetPos.getX() + 0.5D, this.targetPos.getY() + 1D, this.targetPos.getZ() + 0.5D, this.speed);
             }
         } else {
-            --this.timeoutCounter;
+            --this.tryingTime;
             harvestCrop();
         }
     }
 
     @Override
-    protected boolean shouldMoveTo(@Nonnull IWorldReader worldIn, @Nonnull BlockPos pos) {
+    protected boolean isTargetPos(WorldView worldIn, BlockPos pos) {
         return strawgolem.shouldHarvestBlock(worldIn, pos) && strawgolem.isHandEmpty();
     }
 
@@ -100,11 +100,11 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
      */
     private void harvestCrop() {
         ServerWorld worldIn = (ServerWorld) this.strawgolem.world;
-        BlockPos pos = this.destinationBlock;
+        BlockPos pos = this.targetPos;
         BlockState state = worldIn.getBlockState(pos);
         Block block = state.getBlock();
         /* If its the right block to harvest */
-        if (shouldMoveTo(worldIn, pos)) {
+        if (isTargetPos(worldIn, pos)) {
             worldIn.playSound(null, pos, SoundEvents.BLOCK_CROP_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
             doPickup(worldIn, pos, state, block);
             doReplant(worldIn, pos, state, block);
@@ -120,22 +120,23 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
      */
     private void doPickup(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
         if (ConfigHelper.isDeliveryEnabled()) {
-            if (block instanceof StemGrownBlock) {
+            if (block instanceof GourdBlock) {
                 strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
-                strawgolem.getInventory().insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
-            } else if (block instanceof CropsBlock || block instanceof NetherWartBlock) {
-                List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getTileEntity(pos));
+                strawgolem.getInventory().addStack(new ItemStack(Item.BLOCK_ITEMS.getOrDefault(block, Items.AIR)));
+            } else if (block instanceof CropBlock || block instanceof NetherWartBlock) {
+                List<ItemStack> drops = Block.getDroppedStacks(state, worldIn, pos, worldIn.getBlockEntity(pos));
                 for (ItemStack drop : drops) {
                     if (isCropDrop(drop)) {
-                        strawgolem.getInventory().insertItem(0, drop, false);
-                    } else if (drop.getItem() instanceof BlockItem && !(drop.getItem() instanceof BlockNamedItem)) {
+                        strawgolem.getInventory().addStack(drop);
+                    } else if (drop.getItem() instanceof BlockItem && !(drop.getItem() instanceof AliasedBlockItem)) {
                         strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
-                        strawgolem.getInventory().insertItem(0, drop, false);
+                        strawgolem.getInventory().addStack(drop);
                         break;
                     }
                 }
             } else fakeRightClick(worldIn, pos, state); //Bushes
         }
+        PacketHandler.sendHoldingPacket(strawgolem);
     }
 
     /**
@@ -147,20 +148,21 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
      */
     private void doReplant(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
         if (ConfigHelper.isReplantEnabled()) {
-            if (block instanceof CropsBlock) {
-                CropsBlock crop = (CropsBlock) block;
+            if (block instanceof CropBlock) {
+                CropBlock crop = (CropBlock) block;
                 worldIn.setBlockState(pos, crop.getDefaultState());
             } else if (block instanceof NetherWartBlock) {
                 worldIn.setBlockState(pos, block.getDefaultState().with(NetherWartBlock.AGE, 0));
-            } else if (state.func_235901_b_(BlockStateProperties.AGE_0_3) && block instanceof BushBlock) { // Bushes
-                worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
+            } else if (state.contains(Properties.AGE_3) && block instanceof PlantBlock) { // Bushes
+
+                worldIn.setBlockState(pos, block.getDefaultState().with(Properties.AGE_3, 2));
             } else {
                 worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
             }
         } else {
             worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
-        worldIn.notifyBlockUpdate(pos.up(), state, worldIn.getBlockState(pos), 3);
+        worldIn.updateListeners(pos.up(), state, worldIn.getBlockState(pos), 3);
     }
 
     /**
@@ -172,26 +174,24 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
      * @param state   the BlockState
      */
     private void fakeRightClick(ServerWorld worldIn, BlockPos pos, BlockState state) {
-        PlayerEntity fake = FakePlayerFactory.get(worldIn, new GameProfile(null, "golem"));
-        BlockRayTraceResult result = new BlockRayTraceResult(strawgolem.getPositionVec(),
+        GameProfile fakeProfile = new GameProfile(UUID.randomUUID(), mob.getEntityName());
+        ServerPlayerEntity fake = new ServerPlayerEntity(worldIn.getServer(), worldIn, fakeProfile, new ServerPlayerInteractionManager(worldIn));
+        fake.setPos(mob.getX(), mob.getY(), mob.getZ());
+        BlockHitResult result = new BlockHitResult(strawgolem.getPos(),
                 strawgolem.getHorizontalFacing().getOpposite(),
                 pos,
                 false);
         try {
-            state.onBlockActivated(worldIn, fake, Hand.MAIN_HAND, result);
-            MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickBlock(fake,
-                    Hand.MAIN_HAND,
-                    pos,
-                    strawgolem.getHorizontalFacing().getOpposite()));
-            List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2.5F));
+            state.onUse(worldIn, fake, Hand.MAIN_HAND, result);
+            List<ItemEntity> itemList = worldIn.getEntitiesByClass(ItemEntity.class, new Box(pos).expand(2.5F), e -> true);
             for (ItemEntity item : itemList) {
-                strawgolem.getInventory().insertItem(0, item.getItem(), false);
+                strawgolem.getInventory().addStack(item.getStack());
                 item.remove();
             }
         } catch (NullPointerException ex) {
             Strawgolem.logger.info(String.format("Golem could not harvest block at: %s", pos));
         }
-        fake.remove(false);
+        fake.remove();
     }
 
     /**
