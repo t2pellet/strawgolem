@@ -22,12 +22,12 @@ public class PacketHandler {
 
     @Environment(EnvType.CLIENT)
     public static void register() {
-        ClientSidePacketRegistry.INSTANCE.register(LIFESPAN_PACKET, LifespanPacket::execute);
+        ClientSidePacketRegistry.INSTANCE.register(LIFESPAN_PACKET, HealthPacket::execute);
         ClientSidePacketRegistry.INSTANCE.register(HOLDING_PACKET, HoldingPacket::execute);
     }
 
-    public static void sendLifespanPacket(EntityStrawGolem golem) {
-        sendPacket(LIFESPAN_PACKET, new int[]{golem.getLifespan().get(), golem.getEntityId()}, golem);
+    public static void sendHealthPacket(EntityStrawGolem golem) {
+        sendPacket(LIFESPAN_PACKET, new int[]{golem.getLifespan().get(), golem.getHunger().get(), golem.getEntityId()}, golem);
     }
 
     public static void sendHoldingPacket(EntityStrawGolem golem) {

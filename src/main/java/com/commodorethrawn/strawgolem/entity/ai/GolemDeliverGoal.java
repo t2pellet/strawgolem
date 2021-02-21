@@ -27,8 +27,7 @@ public class GolemDeliverGoal extends MoveToTargetPosGoal {
 
     @Override
     public boolean canStart() {
-        if (!strawGolem.isHandEmpty()) return this.findTargetPos();
-        return false;
+        return !strawGolem.isHandEmpty() && findTargetPos();
     }
 
     @Override

@@ -17,6 +17,7 @@ public class GolemLookRandomlyGoal extends LookAroundGoal {
     public boolean canStart() {
         return !strawGolem.hasVehicle()
                 && strawGolem.getHarvestPos().equals(BlockPos.ZERO)
+                && !strawGolem.getHunger().isHungry()
                 && super.canStart();
     }
 }

@@ -15,6 +15,11 @@ public class GolemFleeGoal extends FleeEntityGoal<HostileEntity> {
     }
 
     @Override
+    public boolean canStart() {
+        return !strawGolem.getHunger().isHungry() && super.canStart();
+    }
+
+    @Override
     public void start() {
         super.start();
         if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);

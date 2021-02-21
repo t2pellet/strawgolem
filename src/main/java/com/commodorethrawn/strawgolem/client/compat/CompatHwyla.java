@@ -10,13 +10,25 @@ public class CompatHwyla {
     public static void patchTooltip(WailaTooltipEvent event) {
         if (event.getAccessor().getEntity() instanceof EntityStrawGolem && ConfigHelper.isEnableHwyla()) {
             EntityStrawGolem golem = (EntityStrawGolem) event.getAccessor().getEntity();
-            float daysLeft = golem.getLifespan().get() / 24000F;
-            if (daysLeft >= 1) {
-                event.getCurrentTip().add(new TranslatableText("strawgolem.lifespan", Math.round(daysLeft)));
+            float daysLeftLife = golem.getLifespan().get() / 24000F;
+            float hungerLeft = golem.getHunger().get();
+            if (daysLeftLife >= 1) {
+                event.getCurrentTip().add(new TranslatableText("strawgolem.lifespan", Math.round(daysLeftLife)));
             } else if (golem.getLifespan().get() < 0) {
                 event.getCurrentTip().add(new TranslatableText("strawgolem.lifespan", '\u221e'));
             } else {
                 event.getCurrentTip().add(new TranslatableText("strawgolem.lifespan", "<1"));
+            }
+            if (hungerLeft >= ConfigHelper.getHunger()) {
+                event.getCurrentTip().add(new TranslatableText("strawgolem.hunger", "Not Hungry"));
+            } else if (hungerLeft >= ConfigHelper.getHunger() / 2F) {
+                event.getCurrentTip().add(new TranslatableText("strawgolem.hunger", "A Bit Hungry"));
+            } else if (hungerLeft >= ConfigHelper.getHunger() / 4F) {
+                event.getCurrentTip().add(new TranslatableText("strawgolem.hunger", "Pretty Hungry"));
+            } else if (hungerLeft > 0) {
+                event.getCurrentTip().add(new TranslatableText("strawgolem.hunger", "Very Hungry"));
+            } else {
+                event.getCurrentTip().add(new TranslatableText("strawgolem.hunger", "Starving"));
             }
         }
     }
