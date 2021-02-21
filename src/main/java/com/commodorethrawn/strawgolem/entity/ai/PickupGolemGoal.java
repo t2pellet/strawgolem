@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
-import net.minecraft.entity.EntityPredicate;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.IronGolemEntity;
 
@@ -12,53 +12,60 @@ import java.util.EnumSet;
  */
 public class PickupGolemGoal extends Goal {
 
-    private static final EntityPredicate predicate = (new EntityPredicate()).setDistance(7.5D).allowFriendlyFire().setLineOfSiteRequired();
+    private static final TargetPredicate predicate = new TargetPredicate().setPredicate(e -> e instanceof EntityStrawGolem).setBaseMaxDistance(7.5D).includeTeammates();
     private final double speed;
     private final IronGolemEntity ironGolem;
     private EntityStrawGolem strawGolem;
     private int pickupTime;
+    private int cooldownTime;
 
     public PickupGolemGoal(IronGolemEntity creature, double speedIn) {
         ironGolem = creature;
         this.speed = speedIn;
-        this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        this.cooldownTime = 0;
+        this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
     }
 
     @Override
-    public boolean shouldExecute() {
-        if (this.ironGolem.world.isDaytime()
-                && this.ironGolem.getRNG().nextInt(6000) == 0
-                && this.ironGolem.getPassengers().isEmpty()) {
-            strawGolem = ironGolem.world.getClosestEntityWithinAABB(EntityStrawGolem.class, predicate, this.ironGolem, this.ironGolem.getPosX(), this.ironGolem.getPosY(), this.ironGolem.getPosZ(), this.ironGolem.getBoundingBox().grow(7.5D, 2.0D, 7.5D));
-            return strawGolem != null && strawGolem.isHandEmpty() && !strawGolem.isPassenger();
+    public boolean canStart() {
+        if (this.ironGolem.world.isDay()
+                && this.ironGolem.getRandom().nextInt(6000) == 0
+                && this.ironGolem.getPassengerList().isEmpty()) {
+            if (cooldownTime > 0) {
+                --cooldownTime;
+                return false;
+            }
+            strawGolem = ironGolem.world.getClosestEntity(EntityStrawGolem.class, predicate, this.ironGolem, this.ironGolem.getX(), this.ironGolem.getY(), this.ironGolem.getZ(), this.ironGolem.getBoundingBox().expand(7.5D, 2.0D, 7.5D));
+            return strawGolem != null && strawGolem.isHandEmpty() && !strawGolem.hasVehicle();
         }
         return false;
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
-        return strawGolem.isAlive() && strawGolem.isHandEmpty() && ironGolem.world.isDaytime() && pickupTime > 0;
+    public boolean shouldContinue() {
+        long attackedDelta = ironGolem.getEntityWorld().getTime() - ironGolem.getLastAttackedTime();
+        if (attackedDelta < 10) return false;
+        return strawGolem.isAlive() && strawGolem.isHandEmpty() && ironGolem.world.isDay() && pickupTime > 0;
     }
 
     @Override
-    public void startExecuting() {
-        pickupTime = ironGolem.getRNG().nextInt(101) + 80;
-
+    public void start() {
+        pickupTime = ironGolem.getRandom().nextInt(101) + 80;
     }
 
     @Override
     public void tick() {
-        if (strawGolem.getRidingEntity() != ironGolem && strawGolem.getDistance(ironGolem) > 2.2D) {
-            strawGolem.getLookController().setLookPositionWithEntity(strawGolem, 0.0F, 0.0F);
-            ironGolem.getNavigator().tryMoveToEntityLiving(strawGolem, speed);
+        if (!strawGolem.hasVehicle() && strawGolem.distanceTo(ironGolem) > 2.2D) {
+            strawGolem.getLookControl().lookAt(strawGolem, 0.0F, 0.0F);
+            ironGolem.getNavigation().startMovingTo(strawGolem, speed);
         } else {
-            if (!strawGolem.isPassenger()) {
+            if (!strawGolem.hasVehicle()) {
                 strawGolem.startRiding(ironGolem);
                 strawGolem.setInvulnerable(true);
             }
-            strawGolem.getLookController().setLookPositionWithEntity(ironGolem, 10.0F, strawGolem.getVerticalFaceSpeed());
-            ironGolem.getNavigator().clearPath();
-            if (pickupTime == 1) {
+            strawGolem.lookAtEntity(ironGolem, 360, 360);
+            ironGolem.getNavigation().recalculatePath();
+            if (pickupTime < 1) {
                 strawGolem.stopRiding();
                 strawGolem.setInvulnerable(false);
             }
@@ -67,7 +74,9 @@ public class PickupGolemGoal extends Goal {
     }
 
     @Override
-    public void resetTask() {
+    public void stop() {
         strawGolem.stopRiding();
+        strawGolem.setInvulnerable(false);
+        this.cooldownTime = 2400;
     }
 }

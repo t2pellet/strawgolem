@@ -1,10 +1,10 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
-import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.player.PlayerEntity;
 
-public class GolemLookAtPlayerGoal extends LookAtGoal {
+public class GolemLookAtPlayerGoal extends LookAtEntityGoal {
 
     private final EntityStrawGolem strawGolem;
 
@@ -14,7 +14,8 @@ public class GolemLookAtPlayerGoal extends LookAtGoal {
     }
 
     @Override
-    public boolean shouldExecute() {
-        return !strawGolem.isPassenger() && super.shouldExecute();
+    public boolean canStart() {
+        return !strawGolem.hasVehicle() && super.canStart();
     }
+
 }
