@@ -1,95 +1,115 @@
 package com.commodorethrawn.strawgolem.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import com.commodorethrawn.strawgolem.Strawgolem;
+import com.commodorethrawn.strawgolem.util.IniFile;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 
-import java.util.Collections;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Optional;
 
-@EventBusSubscriber
 public class StrawgolemConfig {
 
     static final String FILTER_MODE_WHITELIST = "whitelist";
     static final String FILTER_MODE_BLACKLIST = "blacklist";
+    static final File configFile;
+    static final IniFile ini;
+    static final IniFile.Section harvesting;
+    static final IniFile.Section miscellaneous;
+    static final IniFile.Section tether;
+    static final IniFile.Section lifespan;
 
-    /* Harvesting */
-    static boolean replantEnabled;
-    static boolean deliveryEnabled;
-    static int searchRangeHorizontal;
-    static int searchRangeVertical;
-    static String filterMode;
-    static List<? extends String> whitelist;
-    static List<? extends String> blacklist;
-    /* Misc */
-    static boolean soundsEnabled;
-    static boolean shiverEnabled;
-    static boolean golemInteract;
-    static boolean enableHwyla;
-    /* Tethering */
-    static boolean tetherEnabled;
-    static boolean temptResetsTether;
-    static int tetherMinRange;
-    static int tetherMaxRange;
-    /* Lifespan */
-    static int lifespan;
-    static boolean rainPenalty;
-    static boolean waterPenalty;
-    static boolean heavyPenalty;
+    private static final IniFile.Section version;
+    private static final String modVersion;
+
+    static {
+        String configPath = FabricLoader.getInstance().getConfigDir().toString()+ "\\strawgolem.ini";
+        Optional<ModContainer> modContainerOptional = FabricLoader.getInstance().getModContainer(Strawgolem.MODID);
+        if (modContainerOptional.isPresent()) modVersion = modContainerOptional.get().getMetadata().getVersion().getFriendlyString();
+        else modVersion = "1.9";
+        configFile = new File(configPath);
+        ini = IniFile.newInstance();
+        try {
+            if (configFile.createNewFile()) createConfig();
+            else ini.load(configFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        harvesting = ini.getSection("Harvesting");
+        miscellaneous = ini.getSection("Miscellaneous");
+        tether = ini.getSection("Tether");
+        lifespan = ini.getSection("Lifespan");
+        version = ini.getSection("Version");
+        if (!version.get("version", String.class).equals(modVersion)) {
+            try {
+                ini.clear();
+                createConfig();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private static void createConfig() throws IOException {
+        PrintWriter writer = new PrintWriter(configFile);
+        writer.print("");
+        writer.close();
+
+        IniFile.Section harvestingSection = ini.addSection("Harvesting");
+        harvestingSection.add("replantEnabled", true);
+//        harvestingSection.putComment("replantEnabled", "Enables golems replanting crops");
+        harvestingSection.add("deliveryEnabled", true);
+//        harvestingSection.putComment("deliveryEnabled", "Enables golems delivering crops to a chest");
+        harvestingSection.add("searchRangeHorizontal", 24);
+//        harvestingSection.putComment("searchRangeHorizontal", "The horizontal range of crops golems can detect");
+        harvestingSection.add("searchRangeVertical", 4);
+//        harvestingSection.putComment("searchRangeVertical", "The vertical range of crops golems can detect");
+        harvestingSection.add("filterMode", FILTER_MODE_BLACKLIST);
+//        harvestingSection.putComment("filterMode", "The golem filtration mode. Either 'whitelist' or 'blacklist'");
+        harvestingSection.add("whitelist", new ArrayList<String>());
+        harvestingSection.add("blacklist", new ArrayList<String>());
+
+        IniFile.Section miscSection = ini.addSection("Miscellaneous");
+        miscSection.add("soundsEnabled", true);
+//        miscSection.putComment("soundsEnabled", "Enables golem sounds");
+        miscSection.add("shiverEnabled", true);
+//        miscSection.putComment("shiverEnabled", "Enables golems shivering in the cold or rain");
+        miscSection.add("golemInteract", true);
+//        miscSection.putComment("golemInteract", "Enables Iron Golems periodically picking up straw golems");
+        miscSection.add("enableHwyla", true);
+//        miscSection.putComment("enableHwyla", "Enables HWYLA Compat");
+
+        IniFile.Section tetherSection = ini.addSection("Tether");
+        tetherSection.add("tetherEnabled", true);
+////        tetherSection.putComment("tetherEnabled", "Enables tether system, preventing golem from wandering too far");
+        tetherSection.add("temptResetsTether", true);
+////        tetherSection.putComment("temptResetsTether", "Enables whether tempting a golem away with an apple will reset its tether");
+        tetherSection.add("tetherMaxRange", 24);
+////        tetherSection.putComment("tetherMaxRange", "The maximum range away from its tether the golem should wander");
+
+        IniFile.Section lifespanSection = ini.addSection("Lifespan");
+        lifespanSection.add("lifespan", 168000);
+//        lifespanSection.putComment("lifespan", "Set to -1 for infinite");
+        lifespanSection.add("rainPenalty", true);
+//        lifespanSection.putComment("rainPenalty", "Enables lifespan going down faster in the rain (+1 / tick)");
+        lifespanSection.add("waterPenalty", true);
+//        lifespanSection.putComment("waterPenalty", "Enables lifespan going down faster in water (+1 / tick)");
+        lifespanSection.add("heavyPenalty", true);
+//        lifespanSection.putComment("heavyPenalty", "Enables lifespan going down faster carrying something heavy (+1 / tick)");
+
+        IniFile.Section configSection = ini.addSection("Version");
+        configSection.add("version", modVersion);
+
+        ini.store(configFile);
+    }
 
     public enum FilterMatch {
         None,
         Mod,
         Exact,
-    }
-
-    public static class CommonConfig {
-        final ForgeConfigSpec.BooleanValue enableReplant, enableDelivery;
-        final ForgeConfigSpec.IntValue lifespan;
-        final ForgeConfigSpec.ConfigValue<String> filterMode;
-        final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelist, blacklist;
-        final ForgeConfigSpec.IntValue searchRangeHorizontal, searchRangeVertical;
-        final ForgeConfigSpec.BooleanValue soundsEnabled, golemInteract, shiverEnabled;
-        final ForgeConfigSpec.BooleanValue enableHwyla;
-        final ForgeConfigSpec.BooleanValue waterPenalty, rainPenalty, heavyPenalty;
-        final ForgeConfigSpec.BooleanValue tetherEnabled, tetherToTemptEnabled;
-        final ForgeConfigSpec.IntValue tetherRangeMin, tetherRangeMax;
-
-        CommonConfig(final ForgeConfigSpec.Builder builder) {
-            builder.push("Harvesting");
-            enableReplant = builder.comment("Allow the straw golems to replant a crop when they harvest it.").define("enableReplant", true);
-            enableDelivery = builder.comment("Allow the straw golem to deliver a crop (requires replantEnabled = true)").define("enableDelivery", true);
-            searchRangeHorizontal = builder.comment("Horizontal search range for crops and chests").defineInRange("searchRangeHorizontal", 12, 8, 32);
-            searchRangeVertical = builder.comment("Vertical search range for crops and chests").defineInRange("searchRangeVertical", 3, 2, 8);
-            builder.pop();
-            builder.push("Filtration");
-            filterMode = builder.comment(
-                    "Sets the method for applying harvest filters.  Note that only the most specific match will be taken into consideration.",
-                    "If a crop's mod appears in the whitelist, but the crop itself is in the blacklist, the crop will be banned.",
-                    "Likewise if a crop's mod appears in the blacklist, but the crop itself is in the whitelist, the crop will be allowed.",
-                    "\"none\": allow all crops to be harvested (default).",
-                    "\"whitelist\": will deny crops from being harvested unless the most specific match is in the whitelist.",
-                    "\"blacklist\": will allows crops to be harvested unless the most specific match is in the blacklist.").define("filterMode", "none");
-            whitelist = builder.comment("Whitelist Filter").defineList("whitelist", Collections.emptyList(), o -> o instanceof String);
-            blacklist = builder.comment("Blacklist Filter").defineList("blacklist", Collections.emptyList(), o -> o instanceof String);
-            builder.pop();
-            builder.push("Lifespan");
-            lifespan = builder.comment("Set the lifespan, in tick, of new created straw golems. Set -1 for infinite.").defineInRange("lifespan", 168000, -2, Integer.MAX_VALUE);
-            heavyPenalty = builder.comment("Enable lifespan penalty for carrying a heavy item").define("penaltyHeavy", true);
-            rainPenalty = builder.comment("Enable lifespan penalty for being in the rain").define("penaltyRain", true);
-            waterPenalty = builder.comment("Enable lifespan penalty for being in the water").define("penaltyWater", true);
-            builder.pop();
-            builder.push("Tether");
-            tetherEnabled = builder.comment("Anchor golems to a spot so they don't wander very far.").define("tetherEnabled", true);
-            tetherToTemptEnabled = builder.comment("Tempting golems with an apple updates their tether location if pulled too far").define("temptResetsTether", false);
-            tetherRangeMin = builder.comment("Range that golems will consider within their tether location").defineInRange("tetherMinRange", 4, 1, 16);
-            tetherRangeMax = builder.comment("Range from tether that will cause golems to turn and run back").defineInRange("tetherMaxRange", 24, 1, 48);
-            builder.pop();
-            builder.push("Miscellaneous");
-            soundsEnabled = builder.comment("Enable/disable golem sounds").define("soundsEnabled", true);
-            shiverEnabled = builder.comment("Enable/disable golem shivering in cold").define("shiverEnabled", true);
-            golemInteract = builder.comment("Enable iron golems picking up straw golems occasionally").define("golemInteract", true);
-            enableHwyla = builder.comment("Enable HWYLA compatibility").define("enableHwyla", true);
-            builder.pop();
-        }
     }
 }
