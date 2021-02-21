@@ -1,75 +1,73 @@
 package com.commodorethrawn.strawgolem.entity;
 
-import com.commodorethrawn.strawgolem.Registry;
+import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
+import com.commodorethrawn.strawgolem.registry.ClientRegistry;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.ai.*;
-import com.commodorethrawn.strawgolem.entity.capability.InventoryProvider;
-import com.commodorethrawn.strawgolem.entity.capability.lifespan.ILifespan;
-import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanProvider;
-import com.commodorethrawn.strawgolem.entity.capability.memory.IMemory;
-import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryProvider;
-import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
-import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionProvider;
-import com.commodorethrawn.strawgolem.network.MessageLifespan;
+import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanStorage;
+import com.commodorethrawn.strawgolem.entity.capability.memory.Memory;
+import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryStorage;
+import com.commodorethrawn.strawgolem.events.GolemChestHandler;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
+import com.commodorethrawn.strawgolem.registry.StrawgolemSounds;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.items.IItemHandler;
-
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import net.minecraft.world.WorldView;
 
 public class EntityStrawGolem extends GolemEntity {
-    public static final SoundEvent GOLEM_AMBIENT = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_ambient"));
-    public static final SoundEvent GOLEM_STRAINED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_strained"));
-    public static final SoundEvent GOLEM_HURT = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_hurt"));
-    public static final SoundEvent GOLEM_DEATH = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_death"));
-    public static final SoundEvent GOLEM_HEAL = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_heal"));
-    public static final SoundEvent GOLEM_SCARED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_scared"));
-    public static final SoundEvent GOLEM_INTERESTED = new SoundEvent(new ResourceLocation(Strawgolem.MODID, "golem_interested"));
-    private static final ResourceLocation LOOT = new ResourceLocation(Strawgolem.MODID, "strawgolem");
-    private final ILifespan lifespan;
-    private final IMemory memory;
-    private final IProfession profession;
-    private static final String BAD_CAP = "Can't be empty";
+    public static final SoundEvent GOLEM_AMBIENT = StrawgolemSounds.GOLEM_AMBIENT.getSoundEvent();
+    public static final SoundEvent GOLEM_STRAINED = StrawgolemSounds.GOLEM_STRAINED.getSoundEvent();
+    public static final SoundEvent GOLEM_HURT = StrawgolemSounds.GOLEM_HURT.getSoundEvent();
+    public static final SoundEvent GOLEM_DEATH = StrawgolemSounds.GOLEM_DEATH.getSoundEvent();
+    public static final SoundEvent GOLEM_HEAL = StrawgolemSounds.GOLEM_HEAL.getSoundEvent();
+    public static final SoundEvent GOLEM_SCARED = StrawgolemSounds.GOLEM_SCARED.getSoundEvent();
+    public static final SoundEvent GOLEM_INTERESTED = StrawgolemSounds.GOLEM_INTERESTED.getSoundEvent();
+    private static final Identifier LOOT = new Identifier(Strawgolem.MODID, "strawgolem");
+    private final Lifespan lifespan;
+    private final Memory memory;
+    private final SimpleInventory inventory;
     private BlockPos harvestPos;
-    private final IItemHandler inventory;
+
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
         super(type, worldIn);
-        inventory = getCapability(InventoryProvider.CROP_SLOT, null).orElseThrow(() -> new IllegalArgumentException(BAD_CAP));
-        profession = getCapability(ProfessionProvider.PROFESSION_CAP, null).orElseThrow(() -> new IllegalArgumentException(BAD_CAP));
-        lifespan = getCapability(LifespanProvider.LIFESPAN_CAP, null).orElseThrow(() -> new IllegalArgumentException(BAD_CAP));
-        memory = getCapability(MemoryProvider.MEMORY_CAP, null).orElseThrow(() -> new IllegalArgumentException(BAD_CAP));
-        harvestPos = BlockPos.ZERO;
+        lifespan = Lifespan.create();
+        memory = Memory.create();
+        inventory = new SimpleInventory(1);
+        harvestPos = BlockPos.ORIGIN;
     }
 
-    @Nonnull
     @Override
-    protected ResourceLocation getLootTable() {
+    protected Identifier getLootTableId() {
         return LOOT;
     }
 
@@ -86,7 +84,7 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(@Nonnull DamageSource damageSourceIn) {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return ConfigHelper.isSoundsEnabled() ? GOLEM_HURT : null;
     }
 
@@ -96,47 +94,48 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     @Override
-    public int getTalkInterval() {
+    public int getMinAmbientSoundDelay() {
         return holdingFullBlock() ? 60 : 120;
     }
 
-
-    public static AttributeModifierMap.MutableAttribute registerAttributes() {
-        return MobEntity.func_233666_p_()
-                .func_233815_a_(Attributes.field_233818_a_, 3.0D)
-                .func_233815_a_(Attributes.field_233821_d_, 0.25D);
+    public static DefaultAttributeContainer.Builder createMob() {
+        return MobEntity.createMobAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0D)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2D);
     }
 
     @Override
-    protected void registerGoals() {
+    protected void initGoals() {
         int priority = 0;
-        this.goalSelector.addGoal(priority, new SwimGoal(this));
-        this.goalSelector.addGoal(++priority, new GolemFleeGoal(this));
-        this.goalSelector.addGoal(++priority, new GolemTemptGoal(this));
-        this.goalSelector.addGoal(++priority, new GolemHarvestGoal(this, 0.6D));
-        this.goalSelector.addGoal(++priority, new GolemDeliverGoal(this, 0.6D));
+        this.goalSelector.add(priority, new SwimGoal(this));
+        this.goalSelector.add(++priority, new GolemFleeGoal(this));
+        this.goalSelector.add(++priority, new GolemTemptGoal(this));
+        this.goalSelector.add(++priority, new GolemHarvestGoal(this, 0.6D));
+        this.goalSelector.add(++priority, new GolemDeliverGoal(this, 0.6D));
         if (ConfigHelper.isTetherEnabled()) {
-            this.goalSelector.addGoal(++priority, new GolemTetherGoal(this, 0.9D)); // tether is fast
+            this.goalSelector.add(++priority, new GolemTetherGoal(this, 0.9D)); // tether is fast
         }
-        this.goalSelector.addGoal(++priority, new GolemWanderGoal(this, 0.6D));
-        this.goalSelector.addGoal(++priority, new GolemLookAtPlayerGoal(this, 5.0F));
-        this.goalSelector.addGoal(++priority, new GolemLookRandomlyGoal(this));
+        this.goalSelector.add(++priority, new GolemWanderGoal(this, 0.6D));
+        this.goalSelector.add(++priority, new GolemLookAtPlayerGoal(this, 5.0F));
+        this.goalSelector.add(++priority, new GolemLookRandomlyGoal(this));
     }
 
     @Override
     public void baseTick() {
         super.baseTick();
-        if (!world.isRemote) {
+        if (!world.isClient) {
             lifespan.update();
             if (holdingFullBlock() && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
             if (isInRain()) lifespan.update();
-            if (isInWater() && ConfigHelper.isLifespanPenalty("water")) lifespan.update();
-            if (rand.nextInt(40) == 0) {
-                PacketHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> this), new MessageLifespan(this));
+            if (isWet() && ConfigHelper.isLifespanPenalty("water")) lifespan.update();
+            if (random.nextInt(40) == 0) {
+                PacketHandler.sendLifespanPacket(this);
             }
-            if (lifespan.isOver()) attackEntityFrom(DamageSource.MAGIC, getMaxHealth() * 100);
-        } else if (lifespan.get() * 4 < ConfigHelper.getLifespan() && lifespan.get() >= 0 && rand.nextInt(80) == 0) {
-            world.addParticle(Registry.FLY_PARTICLE, lastTickPosX, lastTickPosY, lastTickPosZ,
+            if (lifespan.isOver()) {
+                damage(DamageSource.MAGIC, getMaxHealth() * 100);
+            }
+        } else if (lifespan.get() * 4 < ConfigHelper.getLifespan() && lifespan.get() >= 0 && random.nextInt(80) == 0) {
+            world.addParticle(ClientRegistry.FLY_PARTICLE, prevX, prevY, prevZ,
                     0, 0, 0);
         }
     }
@@ -146,8 +145,8 @@ public class EntityStrawGolem extends GolemEntity {
      * @return true if the golem is in rain, false otherwise
      */
     public boolean isInRain() {
-        return world.isRainingAt(getPosition())
-                && world.canSeeSky(getPosition())
+        return world.hasRain(getBlockPos())
+                && world.isSkyVisible(getBlockPos())
                 && ConfigHelper.isLifespanPenalty("rain");
     }
 
@@ -156,7 +155,7 @@ public class EntityStrawGolem extends GolemEntity {
      * @return true if the golem is in the cold, false otherwise
      */
     public boolean isInCold() {
-        return world.getBiome(getPosition()).getTemperature(getPosition()) < 0.15F;
+        return world.getBiome(getBlockPos()).getTemperature(getBlockPos()) < 0.15F;
     }
 
     /* Handle inventory */
@@ -167,14 +166,17 @@ public class EntityStrawGolem extends GolemEntity {
      * @return whether the hand is empty
      */
     public boolean isHandEmpty() {
-        return getHeldItemMainhand().isEmpty();
+        return getHeldItem(Hand.MAIN_HAND).isEmpty();
     }
 
-    @Nonnull
+    public ItemStack getHeldItem(Hand hand) {
+        return inventory.getStack(0);
+    }
+
     @Override
-    public ItemStack getHeldItem(@Nonnull Hand hand) {
-        if (hand == Hand.MAIN_HAND) {
-            return inventory.getStackInSlot(0);
+    public ItemStack getEquippedStack(EquipmentSlot slot) {
+        if (slot == EquipmentSlot.MAINHAND) {
+            return inventory.getStack(0);
         }
         return ItemStack.EMPTY;
     }
@@ -185,11 +187,11 @@ public class EntityStrawGolem extends GolemEntity {
      * @return whether the golem is holding a gourd block
      */
     public boolean holdingFullBlock() {
-        ItemStack item = inventory.getStackInSlot(0);
+        ItemStack item = getMainHandStack();
         if (!(item.getItem() instanceof BlockItem)) return false;
         BlockItem blockItem = (BlockItem) item.getItem();
         return blockItem != Items.AIR
-                && blockItem.getBlock().getDefaultState().isSolid()
+                && blockItem.getBlock().getDefaultState().isOpaque()
                 && blockItem.getBlock().asItem() == blockItem;
     }
 
@@ -201,43 +203,47 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     @Override
-    public boolean canDespawn(double distanceToClosestPlayer) {
+    public boolean canImmediatelyDespawn(double distanceSquared) {
         return false;
     }
 
-    //Drops held item
     @Override
-    protected void dropSpecialItems(@Nonnull DamageSource source, int looting, boolean recentlyHitIn) {
-        super.dropSpecialItems(source, looting, recentlyHitIn);
-        if (EffectiveSide.get().isServer()) {
-            entityDropItem(inventory.getStackInSlot(0).copy());
-            inventory.getStackInSlot(0).setCount(0);
+    protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
+        super.dropEquipment(source, lootingMultiplier, allowDrops);
+        if (!world.isClient) {
+            dropStack(inventory.getStack(0).copy());
+            inventory.getStack(0).setCount(0);
         }
     }
 
-    @ParametersAreNonnullByDefault
     @Override
-    public @Nonnull ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d vec, Hand hand) {
-        if (player.getHeldItem(hand).getItem() == Items.WHEAT) {
-            if (EffectiveSide.get().isServer()) {
+    protected ActionResult interactMob(PlayerEntity player, Hand hand) {
+        if (player.getStackInHand(hand).getItem() == Items.WHEAT) {
+            if (!world.isClient) {
                 if (player.isSneaking()) {
-                    StringTextComponent message = new StringTextComponent("Ordering: " + getDisplayName().getString());
-                    player.sendMessage(message, Util.field_240973_b_);
-                    player.getPersistentData().putInt("golemId", getEntityId());
+                    Text message = new TranslatableText("strawgolem.order", getDisplayName().getString());
+                    player.sendMessage(message, true);
+                    GolemChestHandler.addMapping(player.getUuid(), getEntityId());
                 } else if (isGolemHurt()) {
                     setHealth(getMaxHealth());
                     playSound(GOLEM_HEAL, 1.0F, 1.0F);
                     playSound(SoundEvents.BLOCK_GRASS_STEP, 1.0F, 1.0F);
-                    addToLifespan(12000);
-                    if (!player.isCreative()) player.getHeldItem(hand).shrink(1);
-                    PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new MessageLifespan(this));
+                    lifespan.set(lifespan.get() + 12000);
+                    if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
+                    PacketHandler.sendLifespanPacket(this);
                 }
             }
             if (!player.isSneaking() && isGolemHurt()) {
-                spawnHealParticles(lastTickPosX, lastTickPosY, lastTickPosZ);
+                spawnHealParticles(prevX, prevY, prevZ);
             }
         }
-        return ActionResultType.FAIL;
+        return ActionResult.FAIL;
+    }
+
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        if (source == DamageSource.SWEET_BERRY_BUSH) return false;
+        return super.damage(source, amount);
     }
 
     /**
@@ -245,7 +251,7 @@ public class EntityStrawGolem extends GolemEntity {
      * @return whether golem is hurt
      */
     private boolean isGolemHurt() {
-        return getHealth() != getMaxHealth() || getCurrentLifespan() < ConfigHelper.getLifespan() * 0.9;
+        return getHealth() != getMaxHealth() || lifespan.get() < ConfigHelper.getLifespan() * 0.9;
     }
 
     /**
@@ -255,43 +261,44 @@ public class EntityStrawGolem extends GolemEntity {
      * @param z coordinate
      */
     private void spawnHealParticles(double x, double y, double z) {
-        world.addParticle(ParticleTypes.HEART, x + rand.nextDouble() - 0.5, y + 0.4D, z + rand.nextDouble() - 0.5, this.getMotion().x, this.getMotion().y, this.getMotion().z);
-    }
-
-    public BlockPos getPosition() {
-        return new BlockPos(getPositionVec());
+        world.addParticle(
+                ParticleTypes.HEART,
+                x + random.nextDouble() - 0.5, y + 0.4D, z + random.nextDouble() - 0.5,
+                this.getVelocity().x, this.getVelocity().y, this.getVelocity().z);
     }
 
     /* Handles being picked up by iron golem */
 
     @Override
-    public void setPosition(double posX, double posY, double posZ) {
-        if (isPassenger() && getRidingEntity() instanceof IronGolemEntity) {
-            IronGolemEntity ironGolem = (IronGolemEntity) getRidingEntity();
-            double lookX = ironGolem.getLookVec().x;
-            double lookZ = ironGolem.getLookVec().z;
+    public void setPos(double posX, double posY, double posZ) {
+        if (hasVehicle() && getVehicle() instanceof IronGolemEntity) {
+            IronGolemEntity ironGolem = (IronGolemEntity) getVehicle();
+            double lookX = ironGolem.getRotationVector().getX();
+            double lookZ = ironGolem.getRotationVector().getZ();
             double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
             lookX /= magnitude;
             lookZ /= magnitude;
-            super.setPosition(posX + 1.9D * lookX, posY - 0.5D, posZ + 1.9D * lookZ);
+            super.setPos(posX + 1.85D * lookX, posY - 0.55D, posZ + 1.85D * lookZ);
         } else {
-            super.setPosition(posX, posY, posZ);
+            super.setPos(posX, posY, posZ);
         }
     }
 
     @Override
     public void stopRiding() {
         super.stopRiding();
-        if (getRidingEntity() instanceof IronGolemEntity) {
-            LivingEntity ridingEntity = (LivingEntity) getRidingEntity();
-            double lookX = ridingEntity.getLookVec().x;
-            double lookZ = ridingEntity.getLookVec().z;
+        if (getVehicle() instanceof IronGolemEntity) {
+            LivingEntity ridingEntity = (LivingEntity) getVehicle();
+            double lookX = ridingEntity.yaw;
+            double lookZ = ridingEntity.pitch;
             double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
             lookX /= magnitude;
             lookZ /= magnitude;
-            super.setPosition(getPositionVec().x + lookX, getPositionVec().y, getPositionVec().z + lookZ);
+            super.setPos(getPos().x + lookX, getPos().y, getPos().z + lookZ);
         }
     }
+
+    // Harvesting
 
     /**
      * Determines whether or not the block at position pos in world worldIn should be harvested
@@ -300,55 +307,56 @@ public class EntityStrawGolem extends GolemEntity {
      * @param pos     the position
      * @return whether the golem should harvest the block
      */
-    public boolean shouldHarvestBlock(IWorldReader worldIn, BlockPos pos) {
+    public boolean shouldHarvestBlock(WorldView worldIn, BlockPos pos) {
         BlockState state = worldIn.getBlockState(pos);
         if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
-            if (state.getBlock() instanceof CropsBlock)
-                return ((CropsBlock) state.getBlock()).isMaxAge(state);
-            else if (state.getBlock() instanceof StemGrownBlock)
+            if (state.getBlock() instanceof CropBlock)
+                return ((CropBlock) state.getBlock()).isMature(state);
+            else if (state.getBlock() instanceof GourdBlock)
                 return true;
             else if (state.getBlock() instanceof NetherWartBlock)
                 return state.get(NetherWartBlock.AGE) == 3;
-            else if (state.getBlock() instanceof BushBlock && state.getBlock() instanceof IGrowable)
-                return state.func_235901_b_(BlockStateProperties.AGE_0_3)
-                        && state.get(BlockStateProperties.AGE_0_3) == 3;
+            else if (state.getBlock() instanceof PlantBlock && state.getBlock() instanceof Fertilizable)
+                return state.contains(Properties.AGE_3)
+                        && state.get(Properties.AGE_3) == 3;
         }
         return false;
     }
 
     /**
      * Checks if golem has line of sight on the block
-     *
      * @param worldIn the world
      * @param pos     the position
      * @return whether the golem has line of sight
      */
-    public boolean canSeeBlock(IWorldReader worldIn, BlockPos pos) {
-        Vector3d golemPos = getPositionVec().add(0, 0.75, 0);
-        if (getPositionVec().y % 1F != 0) golemPos = golemPos.add(0, 0.5, 0);
-        Vector3d blockPos = new Vector3d(pos.getX(), pos.getY() + 0.5, pos.getZ());
-        RayTraceContext ctx = new RayTraceContext(golemPos, blockPos, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this);
-        return worldIn.rayTraceBlocks(ctx).getPos().withinDistance(blockPos, 2.5D);
+    public boolean canSeeBlock(WorldView worldIn, BlockPos pos) {
+        Vec3d golemPos = getPos().add(0, 0.75, 0);
+        if (getPos().y % 1F != 0) golemPos = golemPos.add(0, 0.5, 0);
+        Vec3d blockPos = new Vec3d(pos.getX(), pos.getY() + 0.5, pos.getZ());
+        RaycastContext ctx = new RaycastContext(golemPos, blockPos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this);
+        return worldIn.raycast(ctx).getPos().isInRange(blockPos, 2.5D);
     }
 
     /* Handles capabilities */
 
-    public IItemHandler getInventory() {
+    public SimpleInventory getInventory() {
         return inventory;
     }
 
+    public Lifespan getLifespan() {
+        return lifespan;
+    }
+
     /**
-     * Returnns the memory, capability, used to store and retrieve chest positions
-     *
+     * Returns the memory, capability, used to store and retrieve chest positions
      * @return the golem's memory capability
      */
-    public IMemory getMemory() {
+    public Memory getMemory() {
         return memory;
     }
 
     /**
      * Sets the harvest position to pos
-     *
      * @param pos new harvest position
      */
     public void setHarvesting(BlockPos pos) {
@@ -357,7 +365,6 @@ public class EntityStrawGolem extends GolemEntity {
 
     /**
      * Returns the position to be used to initiate the GolemHarvestGoal
-     *
      * @return the harvest position
      */
     public BlockPos getHarvestPos() {
@@ -368,19 +375,24 @@ public class EntityStrawGolem extends GolemEntity {
      * Clears the harvest position
      */
     public void clearHarvestPos() {
-        harvestPos = BlockPos.ZERO;
+        harvestPos = BlockPos.ORIGIN;
     }
 
-    public int getCurrentLifespan() {
-        return lifespan.get();
+    // Storage
+
+    @Override
+    public CompoundTag toTag(CompoundTag tag) {
+        tag.put("lifespan", LifespanStorage.writeNBT(lifespan));
+        tag.put("memory", MemoryStorage.writeNBT(memory));
+        tag.put("inventory", inventory.getTags());
+        return super.toTag(tag);
     }
 
-    /**
-     * Adds time to the lifespan
-     *
-     * @param time additional lifespan
-     */
-    public void addToLifespan(int time) {
-        lifespan.set(lifespan.get() + time);
+    @Override
+    public void fromTag(CompoundTag tag) {
+        if (tag.contains("lifespan")) LifespanStorage.readNBT(lifespan, tag.get("lifespan"));
+        if (tag.contains("memory")) MemoryStorage.readNBT(world.getServer(), memory, tag.get("memory"));
+        if (tag.contains("inventory")) inventory.readTags((ListTag) tag.get("inventory"));
+        super.fromTag(tag);
     }
 }
