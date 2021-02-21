@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.commodorethrawn.strawgolem.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "GrowthMixin",
+    "IronGolemMixin",
+    "LoginMixin",
+    "GoalSelectorAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
