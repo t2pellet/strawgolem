@@ -4,12 +4,14 @@ import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelStrawGolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -57,8 +59,14 @@ public class RenderStrawGolem extends MobEntityRenderer<EntityStrawGolem, ModelS
 
     @Override
     public void render(EntityStrawGolem mobEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        ModelStrawGolem golem = this.getModel();
-        golem.setStatus(!mobEntity.isHandEmpty(), mobEntity.holdingFullBlock());
+        this.getModel().setHoldingBlock(mobEntity.holdingFullBlock());
+        this.getModel().setHoldingItem(!mobEntity.isHandEmpty());
+        this.getModel().setHungry(mobEntity.getHunger().isHungry());
+        this.getModel().setPlayerHasFood(MinecraftClient.getInstance().player.getMainHandStack().getItem() == Items.APPLE && MinecraftClient.getInstance().player.distanceTo(mobEntity) < 8);
+        // Lower position for sitting
+        if (mobEntity.getHunger().isHungry()) {
+            matrixStack.translate(0, -0.2F, 0);
+        }
         // Shivering movement
         if (ConfigHelper.isShiverEnabled() &&
                 (mobEntity.isInCold()

@@ -8,15 +8,19 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-class LifespanPacket {
+class HealthPacket {
 
     static void execute(PacketContext packetContext, PacketByteBuf packetByteBuf) {
         int[] data = packetByteBuf.readIntArray();
         int lifespan = data[0];
-        int id = data[1];
+        int hunger = data[1];
+        int id = data[2];
         World world = net.minecraft.client.MinecraftClient.getInstance().world;
         EntityStrawGolem golem = null;
         if (world != null) golem = (EntityStrawGolem) world.getEntityById(id);
-        if (golem != null) golem.getLifespan().set(lifespan);
+        if (golem != null) {
+            golem.getLifespan().set(lifespan);
+            golem.getHunger().set(hunger);
+        }
     }
 }

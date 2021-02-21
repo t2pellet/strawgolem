@@ -1,15 +1,16 @@
 package com.commodorethrawn.strawgolem.entity;
 
-import com.commodorethrawn.strawgolem.entity.capability.Capability;
-import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
-import com.commodorethrawn.strawgolem.entity.capability.tether.Tether;
-import com.commodorethrawn.strawgolem.registry.ClientRegistry;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.ai.*;
+import com.commodorethrawn.strawgolem.entity.capability.Capability;
+import com.commodorethrawn.strawgolem.entity.capability.hunger.Hunger;
+import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
 import com.commodorethrawn.strawgolem.entity.capability.memory.Memory;
+import com.commodorethrawn.strawgolem.entity.capability.tether.Tether;
 import com.commodorethrawn.strawgolem.events.GolemChestHandler;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
+import com.commodorethrawn.strawgolem.registry.ClientRegistry;
 import com.commodorethrawn.strawgolem.registry.StrawgolemSounds;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
@@ -25,6 +26,7 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -58,6 +60,7 @@ public class EntityStrawGolem extends GolemEntity {
     private final Memory memory;
     private final SimpleInventory inventory;
     private final Tether tether;
+    private final Hunger hunger;
     private BlockPos harvestPos;
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
@@ -65,6 +68,7 @@ public class EntityStrawGolem extends GolemEntity {
         lifespan = Capability.create(Lifespan.class).orElseThrow(() -> new InstantiationError("Failed to create lifespan"));
         memory = Capability.create(Memory.class).orElseThrow(() -> new InstantiationError("Failed to create memory"));
         tether = Capability.create(Tether.class).orElseThrow(() -> new InstantiationError("Failed to create tether"));
+        hunger = Capability.create(Hunger.class).orElseThrow(() -> new InstantiationError("Failed to create hunger"));
         inventory = new SimpleInventory(1);
         harvestPos = BlockPos.ORIGIN;
     }
@@ -111,6 +115,7 @@ public class EntityStrawGolem extends GolemEntity {
     protected void initGoals() {
         int priority = 0;
         this.goalSelector.add(priority, new SwimGoal(this));
+        this.goalSelector.add(++priority, new GolemPoutGoal(this));
         this.goalSelector.add(++priority, new GolemFleeGoal(this));
         this.goalSelector.add(++priority, new GolemTemptGoal(this));
         this.goalSelector.add(++priority, new GolemHarvestGoal(this, 0.6D));
@@ -119,7 +124,7 @@ public class EntityStrawGolem extends GolemEntity {
             this.goalSelector.add(++priority, new GolemTetherGoal(this, 0.9D)); // tether is fast
         }
         this.goalSelector.add(++priority, new GolemWanderGoal(this, 0.6D));
-        this.goalSelector.add(++priority, new GolemLookAtPlayerGoal(this, 5.0F));
+        this.goalSelector.add(++priority, new GolemLookAtPlayerGoal(this, 4.0F));
         this.goalSelector.add(++priority, new GolemLookRandomlyGoal(this));
     }
 
@@ -128,11 +133,19 @@ public class EntityStrawGolem extends GolemEntity {
         super.baseTick();
         if (!world.isClient) {
             lifespan.update();
-            if (holdingFullBlock() && ConfigHelper.isLifespanPenalty("heavy")) lifespan.update();
-            if (isInRain()) lifespan.update();
-            if (isWet() && ConfigHelper.isLifespanPenalty("water")) lifespan.update();
+            hunger.update();
+            if (holdingFullBlock() && ConfigHelper.isLifespanPenalty("heavy")) {
+                lifespan.update();
+                hunger.update();
+            }
+            if (isInRain() && ConfigHelper.isLifespanPenalty("rain")) {
+                lifespan.update();
+            }
+            if (isWet() && ConfigHelper.isLifespanPenalty("water")) {
+                lifespan.update();
+            }
             if (random.nextInt(40) == 0) {
-                PacketHandler.sendLifespanPacket(this);
+                PacketHandler.sendHealthPacket(this);
             }
             if (lifespan.isOver()) {
                 damage(DamageSource.MAGIC, getMaxHealth() * 100);
@@ -221,23 +234,34 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
-        if (player.getStackInHand(hand).getItem() == Items.WHEAT) {
-            if (!world.isClient) {
-                if (player.isSneaking()) {
-                    Text message = new TranslatableText("strawgolem.order", getDisplayName().getString());
-                    player.sendMessage(message, true);
-                    GolemChestHandler.addMapping(player.getUuid(), getEntityId());
-                } else if (isGolemHurt()) {
+        Item heldItem = player.getStackInHand(hand).getItem();
+        if (Items.WHEAT == heldItem) {
+            if (!world.isClient() && isGolemHurt()) {
                     setHealth(getMaxHealth());
                     playSound(GOLEM_HEAL, 1.0F, 1.0F);
                     playSound(SoundEvents.BLOCK_GRASS_STEP, 1.0F, 1.0F);
-                    lifespan.set(lifespan.get() + 12000);
+                    int newLifespan = Math.min(ConfigHelper.getLifespan() * 2, lifespan.get() + 6000);
+                    lifespan.set(newLifespan);
                     if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
-                    PacketHandler.sendLifespanPacket(this);
-                }
+                    PacketHandler.sendHealthPacket(this);
             }
             if (!player.isSneaking() && isGolemHurt()) {
-                spawnHealParticles(prevX, prevY, prevZ);
+                spawnHealParticles(getX(), getY(), getZ());
+            }
+        } else if (Items.APPLE == heldItem) {
+            if (!world.isClient()) {
+                int newHunger = Math.min(ConfigHelper.getHunger() * 2, hunger.get() + 12000);
+                hunger.set(newHunger);
+                if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
+                PacketHandler.sendHealthPacket(this);
+                playSound(GOLEM_HEAL, 1.0F, 1.0F);
+            }
+            spawnHappyParticles(getX(), getY(), getZ());
+        } else if (Items.AIR == heldItem) {
+            if (!world.isClient() && player.isSneaking()) {
+                Text message = new TranslatableText("strawgolem.order", getDisplayName().getString());
+                player.sendMessage(message, true);
+                GolemChestHandler.addMapping(player.getUuid(), getEntityId());
             }
         }
         return ActionResult.FAIL;
@@ -266,6 +290,13 @@ public class EntityStrawGolem extends GolemEntity {
     private void spawnHealParticles(double x, double y, double z) {
         world.addParticle(
                 ParticleTypes.HEART,
+                x + random.nextDouble() - 0.5, y + 0.4D, z + random.nextDouble() - 0.5,
+                this.getVelocity().x, this.getVelocity().y, this.getVelocity().z);
+    }
+
+    private void spawnHappyParticles(double x, double y, double z) {
+        world.addParticle(
+                ParticleTypes.HAPPY_VILLAGER,
                 x + random.nextDouble() - 0.5, y + 0.4D, z + random.nextDouble() - 0.5,
                 this.getVelocity().x, this.getVelocity().y, this.getVelocity().z);
     }
@@ -367,6 +398,15 @@ public class EntityStrawGolem extends GolemEntity {
     }
 
     /**
+     * Returns the hunger capability, used to remember if the golem needs to eat!
+     */
+    public Hunger getHunger() {
+        return hunger;
+    }
+
+    /* Harvesting */
+
+    /**
      * Sets the harvest position to pos
      * @param pos new harvest position
      */
@@ -394,6 +434,7 @@ public class EntityStrawGolem extends GolemEntity {
     @Override
     public CompoundTag toTag(CompoundTag tag) {
         tag.put("lifespan", lifespan.writeTag());
+        tag.put("hunger", hunger.writeTag());
         tag.put("memory", memory.writeTag());
         tag.put("inventory", inventory.getTags());
         tag.put("tether", tether.writeTag());
@@ -403,6 +444,7 @@ public class EntityStrawGolem extends GolemEntity {
     @Override
     public void fromTag(CompoundTag tag) {
         if (tag.contains("lifespan")) lifespan.readTag(tag.get("lifespan"));
+        if (tag.contains("hunger")) hunger.readTag(tag.get("hunger"));
         if (tag.contains("memory")) memory.readTag(tag.get("memory"));
         if (tag.contains("inventory")) inventory.readTags((ListTag) tag.get("inventory"));
         if (tag.contains("tether")) tether.readTag(tag.get("tether"));

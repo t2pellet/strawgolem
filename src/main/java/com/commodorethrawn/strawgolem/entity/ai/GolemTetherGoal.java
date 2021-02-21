@@ -19,35 +19,23 @@ public class GolemTetherGoal extends MoveToTargetPosGoal {
         this.strawGolem = strawGolem;
     }
 
-    private double getTetherDistance() {
-        final Tether.TetherPos anchor = strawGolem.getTether().get();
-        final World golemWorld = strawGolem.world;
-        final BlockPos golemPos = strawGolem.getBlockPos();
-        if (anchor == Tether.TetherPos.ORIGIN) {
-            // if anchor is unset, this is a new golem, set it
-            Strawgolem.logger.debug( strawGolem.getEntityId() + " has no anchor, setting " + golemPos );
-            strawGolem.getTether().set(golemWorld, golemPos);
-            return 0.0;
-        } else {
-            return strawGolem.getTether().distanceTo(golemWorld, golemPos);
+
+    @Override
+    public boolean canStart() {
+        final double d = getTetherDistance();
+        if(d > ConfigHelper.getTetherMaxRange()
+                && !strawGolem.getHunger().isHungry()
+                && super.canStart()) {
+            this.targetPos = strawGolem.getTether().get().getPos();
+            return true;
         }
+        return false;
     }
 
     @Override
     public void start() {
         if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
         super.start();
-    }
-
-    @Override
-    public boolean canStart() {
-        final double d = getTetherDistance();
-        if( d > ConfigHelper.getTetherMaxRange()
-                && super.canStart() ) {
-            this.targetPos = strawGolem.getTether().get().getPos();
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -80,6 +68,20 @@ public class GolemTetherGoal extends MoveToTargetPosGoal {
             }
         } else {
             tryingTime = 0;
+        }
+    }
+
+    private double getTetherDistance() {
+        final Tether.TetherPos anchor = strawGolem.getTether().get();
+        final World golemWorld = strawGolem.world;
+        final BlockPos golemPos = strawGolem.getBlockPos();
+        if (anchor == Tether.TetherPos.ORIGIN) {
+            // if anchor is unset, this is a new golem, set it
+            Strawgolem.logger.debug( strawGolem.getEntityId() + " has no anchor, setting " + golemPos );
+            strawGolem.getTether().set(golemWorld, golemPos);
+            return 0.0;
+        } else {
+            return strawGolem.getTether().distanceTo(golemWorld, golemPos);
         }
     }
 

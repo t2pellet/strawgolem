@@ -5,7 +5,6 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
-import net.minecraft.client.render.entity.model.ZombieEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Arm;
@@ -20,12 +19,15 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
     private final ModelPart leftleg;
     private final ModelPart rightArm;
     private final ModelPart leftArm;
-    private boolean holdingItem;
     private boolean holdingBlock;
+    private boolean holdingItem;
+    private boolean isHungry;
+    private boolean playerHasFood;
 
     public ModelStrawGolem() {
-        holdingItem = false;
         holdingBlock = false;
+        holdingItem = false;
+        isHungry = false;
         textureWidth = 48;
         textureHeight = 48;
 
@@ -58,19 +60,23 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
     @Override
     public void setAngles(EntityStrawGolem entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 
+        //Head rotation
         this.head.yaw = headYaw * 0.017453292F;
         this.head.pitch = headPitch * 0.017453292F;
 
+        //Body is pretty static
         this.body.yaw = 0.0F;
+        this.body.pitch = 0.0F;
 
-        float auxLimbSwing = limbAngle * 3.331F;
-
+        // Limbs
         float swingAmountArm = 1.7F * limbDistance;
         float swingAmountLeg = 2.5F * limbDistance;
-
+        float auxLimbSwing = limbAngle * 3.331F;
         this.rightArm.pitch = MathHelper.cos(auxLimbSwing + (float) Math.PI) * swingAmountArm;
         this.leftArm.pitch = MathHelper.cos(auxLimbSwing) * swingAmountArm;
+        this.rightArm.yaw = 0.0F;
         this.rightArm.roll = 0.0F;
+        this.leftArm.yaw = 0.0F;
         this.leftArm.roll = 0.0F;
         this.rightleg.pitch = MathHelper.cos(auxLimbSwing) * swingAmountLeg;
         this.leftleg.pitch = MathHelper.cos(auxLimbSwing + (float) Math.PI) * swingAmountLeg;
@@ -79,17 +85,18 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
         this.rightleg.roll = 0.0F;
         this.leftleg.roll = 0.0F;
 
-        this.rightArm.yaw = 0.0F;
-        this.rightArm.roll = 0.0F;
-
-        this.leftArm.yaw = 0.0F;
-
-        this.rightArm.yaw = 0.0F;
-
-        this.body.pitch = 0.0F;
-
-        // Arms idle movement
-        if (holdingBlock) {
+        if (isHungry) {
+            if (playerHasFood) {
+                this.rightArm.pitch = - (float) Math.PI / 1.6F;
+                this.rightArm.yaw = - (float) Math.PI / 12 + MathHelper.cos(animationProgress * 1.1F) * 0.075F;
+                this.leftArm.pitch = - (float) Math.PI / 1.6F;
+                this.leftArm.yaw = (float) Math.PI / 12 - MathHelper.cos(animationProgress * 1.1F) * 0.075F;
+            } else idleArms(animationProgress);
+            this.leftleg.pitch = -(float) Math.PI / 2;
+            this.leftleg.yaw = -(float) Math.PI / 8;
+            this.rightleg.pitch = -(float) Math.PI / 2;
+            this.rightleg.yaw = (float) Math.PI / 8;
+        } else if (holdingBlock) {
             this.rightArm.pitch = (float) Math.PI;
             this.leftArm.pitch = (float) Math.PI;
         } else if (holdingItem) {
@@ -99,22 +106,32 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
             this.leftArm.pitch = (float) -(0.29D * Math.PI);
             this.leftArm.yaw = (float) (0.12D * Math.PI);
             this.leftArm.roll = (float) -(0.08D * Math.PI);
-        } else {
-            this.rightArm.roll += MathHelper.cos(animationProgress * 0.09F) * 0.06F + 0.06F;
-            this.leftArm.roll -= MathHelper.cos(animationProgress * 0.09F) * 0.06F + 0.06F;
-            this.rightArm.pitch += MathHelper.sin(animationProgress * 0.067F) * 0.06F;
-            this.leftArm.pitch -= MathHelper.sin(animationProgress * 0.067F) * 0.06F;
-        }
+        } else idleArms(animationProgress);
+    }
+
+    /**
+     * Idle arm swinging
+     * @param animationProgress the animation progress
+     */
+    private void idleArms(float animationProgress) {
+        this.rightArm.roll += MathHelper.cos(animationProgress * 0.09F) * 0.06F + 0.06F;
+        this.leftArm.roll -= MathHelper.cos(animationProgress * 0.09F) * 0.06F + 0.06F;
+        this.rightArm.pitch += MathHelper.sin(animationProgress * 0.067F) * 0.06F;
+        this.leftArm.pitch -= MathHelper.sin(animationProgress * 0.067F) * 0.06F;
     }
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
         body.render(matrices, vertices, light, overlay);
         head.render(matrices, vertices, light, overlay);
-        rightleg.render(matrices, vertices, light, overlay);
-        leftleg.render(matrices, vertices, light, overlay);
+
         rightArm.render(matrices, vertices, light, overlay);
         leftArm.render(matrices, vertices, light, overlay);
+
+        if (isHungry) matrices.translate(0.0F, -0.06F, -0.18F);
+        rightleg.render(matrices, vertices, light, overlay);
+        leftleg.render(matrices, vertices, light, overlay);
+
     }
 
     @Override
@@ -129,14 +146,20 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
         }
     }
 
-    /**
-     * Updates the holdingItem and holdingBlock properties of this model
-     *
-     * @param holdingItem  : the new value of this.holdingItem
-     * @param holdingBlock : the new value of this.holdingBlock
-     */
-    public void setStatus(boolean holdingItem, boolean holdingBlock) {
-        this.holdingItem = holdingItem;
+    public void setHoldingBlock(boolean holdingBlock) {
         this.holdingBlock = holdingBlock;
     }
+
+    public void setHoldingItem(boolean holdingItem) {
+        this.holdingItem = holdingItem;
+    }
+
+    public void setHungry(boolean isHungry) {
+        this.isHungry = isHungry;
+    }
+
+    public void setPlayerHasFood(boolean playerHasFood) {
+        this.playerHasFood = playerHasFood;
+    }
+
 }

@@ -19,6 +19,11 @@ public class GolemTemptGoal extends TemptGoal {
     }
 
     @Override
+    public boolean canStart() {
+        return !strawGolem.getHunger().isHungry() && super.canStart();
+    }
+
+    @Override
     public void start() {
         super.start();
         if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_INTERESTED, 1.0F, 1.0F);

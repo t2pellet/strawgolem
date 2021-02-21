@@ -17,6 +17,7 @@ public class GolemWanderGoal extends WanderAroundPointOfInterestGoal {
     public boolean canStart() {
         return strawGolem.isHandEmpty()
                 && strawGolem.getHarvestPos().equals(BlockPos.ZERO)
+                && !strawGolem.getHunger().isHungry()
                 && super.canStart();
     }
 }
