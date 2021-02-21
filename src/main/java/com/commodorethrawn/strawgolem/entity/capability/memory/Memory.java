@@ -1,5 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.capability.memory;
 
+import com.commodorethrawn.strawgolem.entity.capability.Capability;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
@@ -7,11 +8,7 @@ import net.minecraft.world.World;
 
 import java.util.Set;
 
-public interface Memory {
-
-    public static Memory create() {
-        return new MemoryImpl();
-    }
+public interface Memory extends Capability {
 
     /**
      * Returns the set of all remembered chest positions

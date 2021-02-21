@@ -1,9 +1,14 @@
 package com.commodorethrawn.strawgolem.entity.capability.memory;
 
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
+import net.minecraft.nbt.*;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +46,11 @@ class MemoryImpl implements Memory {
 
     @Override
     public void addPosition(World world, BlockPos pos) {
-        posList.add(Pair.of(world.getRegistryKey(), pos));
+        addPosition(world.getRegistryKey(), pos);
+    }
+
+    public void addPosition(RegistryKey<World> world, BlockPos pos) {
+        posList.add(Pair.of(world, pos));
     }
 
     @Override
@@ -60,4 +69,40 @@ class MemoryImpl implements Memory {
         priority = pos;
     }
 
+    @Override
+    public Tag writeTag() {
+        CompoundTag tag = new CompoundTag();
+        Set<Pair<RegistryKey<World>, BlockPos>> posList = getPositions();
+        ListTag tagList = new ListTag();
+        for (Pair<RegistryKey<World>, BlockPos> pos : posList) {
+            CompoundTag posNBT = new CompoundTag();
+            Identifier.CODEC.encodeStart(NbtOps.INSTANCE, pos.getFirst().getValue()).result().ifPresent(dim -> {
+                posNBT.put("id", dim);
+            });
+            posNBT.put("pos", NbtHelper.fromBlockPos(pos.getSecond()));
+            tagList.add(posNBT);
+        }
+        tag.put("positions", tagList);
+        tag.put("priority", NbtHelper.fromBlockPos(getPriorityChest()));
+        return tag;
+    }
+
+    @Override
+    public void readTag(Tag nbt) {
+        CompoundTag tag = (CompoundTag) nbt;
+        ListTag tagList = tag.getList("positions", 10);
+        for (Tag inbt : tagList) {
+            CompoundTag posNBT = (CompoundTag) inbt;
+            RegistryKey<World> dim = DimensionType.method_28521(new Dynamic<>(NbtOps.INSTANCE, posNBT.get("id"))).result().orElseThrow(() -> {
+                return new IllegalArgumentException("Invalid map dimension: " + posNBT.get("id"));
+            });
+            if (dim == null) continue;
+            BlockPos pos = NbtHelper.toBlockPos(posNBT.getCompound("pos"));
+            addPosition(dim, pos);
+        }
+        Tag posTag = tag.get("priority");
+        if (posTag instanceof CompoundTag) {
+            setPriorityChest(NbtHelper.toBlockPos((CompoundTag) posTag));
+        }
+    }
 }

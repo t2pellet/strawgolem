@@ -1,15 +1,13 @@
 package com.commodorethrawn.strawgolem.entity;
 
+import com.commodorethrawn.strawgolem.entity.capability.Capability;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
 import com.commodorethrawn.strawgolem.entity.capability.tether.Tether;
-import com.commodorethrawn.strawgolem.entity.capability.tether.TetherStorage;
 import com.commodorethrawn.strawgolem.registry.ClientRegistry;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.ai.*;
-import com.commodorethrawn.strawgolem.entity.capability.lifespan.LifespanStorage;
 import com.commodorethrawn.strawgolem.entity.capability.memory.Memory;
-import com.commodorethrawn.strawgolem.entity.capability.memory.MemoryStorage;
 import com.commodorethrawn.strawgolem.events.GolemChestHandler;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import com.commodorethrawn.strawgolem.registry.StrawgolemSounds;
@@ -42,7 +40,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -65,10 +62,10 @@ public class EntityStrawGolem extends GolemEntity {
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
         super(type, worldIn);
-        lifespan = Lifespan.create();
-        memory = Memory.create();
+        lifespan = Capability.create(Lifespan.class).orElseThrow(() -> new InstantiationError("Failed to create lifespan"));
+        memory = Capability.create(Memory.class).orElseThrow(() -> new InstantiationError("Failed to create memory"));
+        tether = Capability.create(Tether.class).orElseThrow(() -> new InstantiationError("Failed to create tether"));
         inventory = new SimpleInventory(1);
-        tether = Tether.create();
         harvestPos = BlockPos.ORIGIN;
     }
 
@@ -396,19 +393,19 @@ public class EntityStrawGolem extends GolemEntity {
 
     @Override
     public CompoundTag toTag(CompoundTag tag) {
-        tag.put("lifespan", LifespanStorage.writeNBT(lifespan));
-        tag.put("memory", MemoryStorage.writeNBT(memory));
+        tag.put("lifespan", lifespan.writeTag());
+        tag.put("memory", memory.writeTag());
         tag.put("inventory", inventory.getTags());
-        tag.put("tether", TetherStorage.writeNBT(tether));
+        tag.put("tether", tether.writeTag());
         return super.toTag(tag);
     }
 
     @Override
     public void fromTag(CompoundTag tag) {
-        if (tag.contains("lifespan")) LifespanStorage.readNBT(lifespan, tag.get("lifespan"));
-        if (tag.contains("memory")) MemoryStorage.readNBT(world.getServer(), memory, tag.get("memory"));
+        if (tag.contains("lifespan")) lifespan.readTag(tag.get("lifespan"));
+        if (tag.contains("memory")) memory.readTag(tag.get("memory"));
         if (tag.contains("inventory")) inventory.readTags((ListTag) tag.get("inventory"));
-        if (tag.contains("tether")) TetherStorage.readNBT(world.getServer(), tether, tag.get("tether"));
+        if (tag.contains("tether")) tether.readTag(tag.get("tether"));
         super.fromTag(tag);
     }
 

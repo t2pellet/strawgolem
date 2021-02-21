@@ -48,14 +48,11 @@ public class GolemChestHandler {
                     Text text = new LiteralText(golem.getDisplayName().getString() + " will now deliver to this chest");
                     playerEntity.sendMessage(text, true);
                     playerToGolemMap.remove(playerEntity.getUuid());
-
+                    // Tether to the priority chest
                     if (ConfigHelper.isTetherEnabled()) {
-                        BlockPos golemPos = golem.getBlockPos();
                         BlockPos anchorPos = blockHitResult.getBlockPos();
-                        if (golemPos.getManhattanDistance(anchorPos) > ConfigHelper.getTetherMaxRange()) {
-                            Strawgolem.logger.debug(golem.getEntityId() + " setting new anchor " + anchorPos);
-                            golem.getMemory().setAnchorPos(anchorPos);
-                        }
+                        Strawgolem.logger.debug(golem.getEntityId() + " setting new anchor " + anchorPos);
+                        golem.getTether().set(golem.world, anchorPos);
                     }
                 }
             }
