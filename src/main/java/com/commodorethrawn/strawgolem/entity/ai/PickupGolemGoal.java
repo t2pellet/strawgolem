@@ -12,7 +12,7 @@ import java.util.EnumSet;
  */
 public class PickupGolemGoal extends Goal {
 
-    private static final TargetPredicate predicate = new TargetPredicate().setPredicate(e -> e instanceof EntityStrawGolem).setBaseMaxDistance(7.5D).includeTeammates();
+    private static final TargetPredicate predicate = new TargetPredicate().setPredicate(e -> e instanceof EntityStrawGolem).setBaseMaxDistance(10.0D).includeTeammates();
     private final double speed;
     private final IronGolemEntity ironGolem;
     private EntityStrawGolem strawGolem;
@@ -35,7 +35,7 @@ public class PickupGolemGoal extends Goal {
                 --cooldownTime;
                 return false;
             }
-            strawGolem = ironGolem.world.getClosestEntity(EntityStrawGolem.class, predicate, this.ironGolem, this.ironGolem.getX(), this.ironGolem.getY(), this.ironGolem.getZ(), this.ironGolem.getBoundingBox().expand(7.5D, 2.0D, 7.5D));
+            strawGolem = ironGolem.world.getClosestEntity(EntityStrawGolem.class, predicate, this.ironGolem, this.ironGolem.getX(), this.ironGolem.getY(), this.ironGolem.getZ(), this.ironGolem.getBoundingBox().expand(10.0D, 4.0D, 10.0D));
             return strawGolem != null && strawGolem.isHandEmpty() && !strawGolem.hasVehicle();
         }
         return false;
