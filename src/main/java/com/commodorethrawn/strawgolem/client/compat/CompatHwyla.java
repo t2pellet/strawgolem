@@ -20,9 +20,9 @@ public class CompatHwyla {
                 event.getCurrentTip().add(new TranslatableText("strawgolem.lifespan", "<1"));
             }
             if (hungerLeft >= ConfigHelper.getHunger()) {
-                event.getCurrentTip().add(new TranslatableText("strawgolem.hunger", "Not Hungry"));
+                event.getCurrentTip().add(new TranslatableText("strawgolem.hunger", "Not At All Hungry"));
             } else if (hungerLeft >= ConfigHelper.getHunger() / 2F) {
-                event.getCurrentTip().add(new TranslatableText("strawgolem.hunger", "A Bit Hungry"));
+                event.getCurrentTip().add(new TranslatableText("strawgolem.hunger", "A Little Bit Hungry"));
             } else if (hungerLeft >= ConfigHelper.getHunger() / 4F) {
                 event.getCurrentTip().add(new TranslatableText("strawgolem.hunger", "Pretty Hungry"));
             } else if (hungerLeft > 0) {

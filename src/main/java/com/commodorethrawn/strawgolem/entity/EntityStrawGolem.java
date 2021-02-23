@@ -239,9 +239,9 @@ public class EntityStrawGolem extends GolemEntity {
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         Item heldItem = player.getStackInHand(hand).getItem();
-        if (Items.WHEAT == heldItem) {
+        if (Items.WHEAT == heldItem && isGolemHurt()) {
             if (!world.isClient()) {
-                    if (isGolemHurt()) setHealth(getMaxHealth());
+                    if (getHealth() < getMaxHealth()) setHealth(getMaxHealth());
                     playSound(GOLEM_HEAL, 1.0F, 1.0F);
                     playSound(SoundEvents.BLOCK_GRASS_STEP, 1.0F, 1.0F);
                     int newLifespan = Math.min(ConfigHelper.getLifespan() * 2, lifespan.get() + 6000);
@@ -249,9 +249,7 @@ public class EntityStrawGolem extends GolemEntity {
                     if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
                     PacketHandler.sendHealthPacket(this);
             }
-            if (!player.isSneaking()) {
-                spawnHealParticles(getX(), getY(), getZ());
-            }
+            spawnHealParticles(getX(), getY(), getZ());
         } else if (Items.APPLE == heldItem) {
             if (!world.isClient()) {
                 int newHunger = Math.min(ConfigHelper.getHunger() * 2, hunger.get() + 12000);
@@ -282,7 +280,7 @@ public class EntityStrawGolem extends GolemEntity {
      * @return whether golem is hurt
      */
     private boolean isGolemHurt() {
-        return getHealth() != getMaxHealth() || lifespan.get() < ConfigHelper.getLifespan() * 0.9;
+        return lifespan.get() < ConfigHelper.getLifespan() * 1.9 || getHealth() < getMaxHealth();
     }
 
     /**
