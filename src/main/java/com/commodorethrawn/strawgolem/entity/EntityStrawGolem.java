@@ -134,6 +134,9 @@ public class EntityStrawGolem extends GolemEntity {
         if (!world.isClient) {
             lifespan.update();
             hunger.update();
+            float healthCap = Math.round((float) lifespan.get() / ConfigHelper.getLifespan()) * 4;
+            getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(healthCap);
+            if (getHealth() > healthCap) setHealth(healthCap);
             if (holdingFullBlock() && ConfigHelper.isLifespanPenalty("heavy")) {
                 lifespan.update();
                 hunger.update();
@@ -150,6 +153,7 @@ public class EntityStrawGolem extends GolemEntity {
             if (lifespan.isOver()) {
                 damage(DamageSource.MAGIC, getMaxHealth() * 100);
             }
+            if (hunger.get() * 4 < ConfigHelper.getHunger() && hunger.get() > 0 && random.nextInt(120) == 0) playSound(GOLEM_STRAINED, 1.0F, 1.0F);
         } else if (lifespan.get() * 4 < ConfigHelper.getLifespan() && lifespan.get() >= 0 && random.nextInt(80) == 0) {
             world.addParticle(ClientRegistry.FLY_PARTICLE, prevX, prevY, prevZ,
                     0, 0, 0);
@@ -236,8 +240,8 @@ public class EntityStrawGolem extends GolemEntity {
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         Item heldItem = player.getStackInHand(hand).getItem();
         if (Items.WHEAT == heldItem) {
-            if (!world.isClient() && isGolemHurt()) {
-                    setHealth(getMaxHealth());
+            if (!world.isClient()) {
+                    if (isGolemHurt()) setHealth(getMaxHealth());
                     playSound(GOLEM_HEAL, 1.0F, 1.0F);
                     playSound(SoundEvents.BLOCK_GRASS_STEP, 1.0F, 1.0F);
                     int newLifespan = Math.min(ConfigHelper.getLifespan() * 2, lifespan.get() + 6000);
@@ -245,7 +249,7 @@ public class EntityStrawGolem extends GolemEntity {
                     if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
                     PacketHandler.sendHealthPacket(this);
             }
-            if (!player.isSneaking() && isGolemHurt()) {
+            if (!player.isSneaking()) {
                 spawnHealParticles(getX(), getY(), getZ());
             }
         } else if (Items.APPLE == heldItem) {
