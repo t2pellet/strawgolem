@@ -8,6 +8,8 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -128,6 +130,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
                 for (ItemStack drop : drops) {
                     if (isCropDrop(drop)) {
                         strawgolem.getInventory().addStack(drop);
+                        if (drop.getItem() == Items.POISONOUS_POTATO) strawgolem.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 10, 1));
                     } else if (drop.getItem() instanceof BlockItem && !(drop.getItem() instanceof AliasedBlockItem)) {
                         strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
                         strawgolem.getInventory().addStack(drop);
