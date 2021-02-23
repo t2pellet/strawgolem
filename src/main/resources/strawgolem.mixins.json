@@ -5,9 +5,10 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "GrowthMixin",
-    "IronGolemMixin",
+    "EntityGoalMixin",
     "LoginMixin",
-    "GoalSelectorAccessor"
+    "GoalSelectorAccessor",
+    "TargetSelectorAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
