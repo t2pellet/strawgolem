@@ -37,11 +37,11 @@ public class GolemChestHandler {
     public static ActionResult setPriorityChest(PlayerEntity playerEntity, World world, Hand hand, BlockHitResult blockHitResult) {
         if (!world.isClient) {
             BlockEntity blockEntity = world.getBlockEntity(blockHitResult.getBlockPos());
-            if (blockEntity != null
-                && hand == Hand.MAIN_HAND
-                && playerEntity.getMainHandStack().getItem() == Items.WHEAT
-                && blockEntity instanceof Inventory
-                && playerToGolemMap.containsKey(playerEntity.getUuid())) {
+            if (hand == Hand.MAIN_HAND
+                    && blockEntity instanceof Inventory
+                    && playerEntity.isSneaking()
+                    && playerEntity.getMainHandStack().isEmpty()
+                    && playerToGolemMap.containsKey(playerEntity.getUuid())) {
                 EntityStrawGolem golem = (EntityStrawGolem) world.getEntityById(playerToGolemMap.get(playerEntity.getUuid()));
                 if (golem != null) {
                     golem.getMemory().setPriorityChest(blockHitResult.getBlockPos());
@@ -55,6 +55,7 @@ public class GolemChestHandler {
                         Strawgolem.logger.debug(golem.getEntityId() + " setting new anchor " + anchorPos);
                         golem.getTether().set(golem.world, anchorPos);
                     }
+                    return ActionResult.FAIL;
                 }
             }
         }
