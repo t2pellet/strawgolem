@@ -38,7 +38,7 @@ class TetherImpl implements Tether {
     @Override
     public int distanceTo(World world, BlockPos pos) {
         // If we are in a different dimension, we should reset the tether
-        if (!world.getRegistryKey().equals(tetherPos.getWorld())) {
+        if (world.getRegistryKey().equals(tetherPos.getWorld())) {
            return pos.getManhattanDistance(tetherPos.getPos());
         }
         tetherPos = new TetherPosImpl(world, pos);
