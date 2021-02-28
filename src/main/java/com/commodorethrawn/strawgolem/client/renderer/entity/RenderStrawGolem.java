@@ -53,7 +53,7 @@ public class RenderStrawGolem extends MobEntityRenderer<EntityStrawGolem, ModelS
     }
 
     public RenderStrawGolem(EntityRenderDispatcher rendermanagerIn) {
-        super(rendermanagerIn, new ModelStrawGolem(), 0.5f);
+        super(rendermanagerIn, new ModelStrawGolem(), 0.35f);
         this.addFeature(new HeldItemFeatureRenderer<>(this));
     }
 

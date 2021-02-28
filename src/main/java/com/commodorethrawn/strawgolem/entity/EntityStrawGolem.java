@@ -3,10 +3,12 @@ package com.commodorethrawn.strawgolem.entity;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.ai.*;
-import com.commodorethrawn.strawgolem.entity.capability.Capability;
+import com.commodorethrawn.strawgolem.entity.capability.CapabilityHandler;
 import com.commodorethrawn.strawgolem.entity.capability.hunger.Hunger;
+import com.commodorethrawn.strawgolem.entity.capability.hunger.IHasHunger;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
 import com.commodorethrawn.strawgolem.entity.capability.memory.Memory;
+import com.commodorethrawn.strawgolem.entity.capability.tether.IHasTether;
 import com.commodorethrawn.strawgolem.entity.capability.tether.Tether;
 import com.commodorethrawn.strawgolem.events.GolemChestHandler;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
@@ -46,7 +48,7 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class EntityStrawGolem extends GolemEntity {
+public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTether {
     public static final SoundEvent GOLEM_AMBIENT = StrawgolemSounds.GOLEM_AMBIENT.getSoundEvent();
     public static final SoundEvent GOLEM_STRAINED = StrawgolemSounds.GOLEM_STRAINED.getSoundEvent();
     public static final SoundEvent GOLEM_HURT = StrawgolemSounds.GOLEM_HURT.getSoundEvent();
@@ -65,10 +67,10 @@ public class EntityStrawGolem extends GolemEntity {
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
         super(type, worldIn);
-        lifespan = Capability.create(Lifespan.class).orElseThrow(() -> new InstantiationError("Failed to create lifespan"));
-        memory = Capability.create(Memory.class).orElseThrow(() -> new InstantiationError("Failed to create memory"));
-        tether = Capability.create(Tether.class).orElseThrow(() -> new InstantiationError("Failed to create tether"));
-        hunger = Capability.create(Hunger.class).orElseThrow(() -> new InstantiationError("Failed to create hunger"));
+        lifespan = CapabilityHandler.INSTANCE.get(Lifespan.class).orElseThrow(() -> new InstantiationError("Failed to create lifespan cap"));
+        memory = CapabilityHandler.INSTANCE.get(Memory.class).orElseThrow(() -> new InstantiationError("Failed to create memory cap"));
+        tether = CapabilityHandler.INSTANCE.get(Tether.class).orElseThrow(() -> new InstantiationError("Failed to create tether cap"));
+        hunger = CapabilityHandler.INSTANCE.get(Hunger.class).orElseThrow(() -> new InstantiationError("Failed to create new hunger cap"));
         inventory = new SimpleInventory(1);
         harvestPos = BlockPos.ORIGIN;
     }
@@ -82,7 +84,7 @@ public class EntityStrawGolem extends GolemEntity {
     protected SoundEvent getAmbientSound() {
         if (ConfigHelper.isSoundsEnabled()) {
             if (goalSelector.getRunningGoals().anyMatch(
-                    goal -> goal.getGoal() instanceof GolemFleeGoal || goal.getGoal() instanceof GolemTetherGoal))
+                    goal -> goal.getGoal() instanceof GolemFleeGoal || goal.getGoal() instanceof TetherGoal))
                 return GOLEM_SCARED;
             else if (holdingFullBlock()) return GOLEM_STRAINED;
             return GOLEM_AMBIENT;
@@ -121,7 +123,7 @@ public class EntityStrawGolem extends GolemEntity {
         this.goalSelector.add(++priority, new GolemHarvestGoal(this, 0.6D));
         this.goalSelector.add(++priority, new GolemDeliverGoal(this, 0.6D));
         if (ConfigHelper.isTetherEnabled()) {
-            this.goalSelector.add(++priority, new GolemTetherGoal(this, 0.9D)); // tether is fast
+            this.goalSelector.add(++priority, new TetherGoal<>(this, 0.9D)); // tether is fast
         }
         this.goalSelector.add(++priority, new GolemWanderGoal(this, 0.6D));
         this.goalSelector.add(++priority, new GolemLookAtPlayerGoal(this, 4.0F));
@@ -395,6 +397,7 @@ public class EntityStrawGolem extends GolemEntity {
      * Returns the tether capability, used to prevent the golem from wandering too far
      * @return the golem's tether capability
      */
+    @Override
     public Tether getTether() {
         return tether;
     }
@@ -402,6 +405,7 @@ public class EntityStrawGolem extends GolemEntity {
     /**
      * Returns the hunger capability, used to remember if the golem needs to eat!
      */
+    @Override
     public Hunger getHunger() {
         return hunger;
     }

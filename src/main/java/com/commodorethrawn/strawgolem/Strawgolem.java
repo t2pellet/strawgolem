@@ -1,6 +1,11 @@
 package com.commodorethrawn.strawgolem;
 
 import com.commodorethrawn.strawgolem.client.compat.CompatHwyla;
+import com.commodorethrawn.strawgolem.entity.capability.CapabilityHandler;
+import com.commodorethrawn.strawgolem.entity.capability.hunger.Hunger;
+import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
+import com.commodorethrawn.strawgolem.entity.capability.memory.Memory;
+import com.commodorethrawn.strawgolem.entity.capability.tether.Tether;
 import com.commodorethrawn.strawgolem.events.*;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
@@ -21,6 +26,10 @@ public class Strawgolem implements ModInitializer, ClientModInitializer {
     public static final Logger logger = LogManager.getLogger(MODID);
     private static StrawgolemSaveData data;
 
+    public static StrawgolemSaveData getSaveData() {
+        return data;
+    }
+
     @Override
     public void onInitialize() {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
@@ -38,6 +47,16 @@ public class Strawgolem implements ModInitializer, ClientModInitializer {
                 e.printStackTrace();
             }
         });
+        registerEvents();
+        registerCapabilities();
+    }
+
+    @Override
+    public void onInitializeClient() {
+        PacketHandler.register();
+    }
+
+    public void registerEvents() {
         ServerLifecycleEvents.SERVER_STOPPING.register(IronGolemHandler::stopHolding);
         ServerTickEvents.END_WORLD_TICK.register(CropGrowthHandler::tick);
         CropGrowthCallback.EVENT.register(CropGrowthHandler::onCropGrowth);
@@ -49,12 +68,10 @@ public class Strawgolem implements ModInitializer, ClientModInitializer {
         }
     }
 
-    @Override
-    public void onInitializeClient() {
-        PacketHandler.register();
-    }
-
-    public static StrawgolemSaveData getSaveData() {
-        return data;
+    public void registerCapabilities() {
+        CapabilityHandler.INSTANCE.register(Hunger.class, Hunger::getInstance);
+        CapabilityHandler.INSTANCE.register(Lifespan.class, Lifespan::getInstance);
+        CapabilityHandler.INSTANCE.register(Memory.class, Memory::getInstance);
+        CapabilityHandler.INSTANCE.register(Tether.class, Tether::getInstance);
     }
 }
