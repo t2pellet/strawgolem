@@ -3,20 +3,24 @@ package com.commodorethrawn.strawgolem.entity.ai;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.capability.hunger.IHasHunger;
+import com.commodorethrawn.strawgolem.entity.capability.tether.IHasTether;
 import com.commodorethrawn.strawgolem.entity.capability.tether.Tether;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class GolemTetherGoal extends MoveToTargetPosGoal {
-    private final EntityStrawGolem strawGolem;
+public class TetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTargetPosGoal {
+    private final T entity;
+    private final Tether tether;
 
-    public GolemTetherGoal(EntityStrawGolem strawGolem, double speedIn) {
-        super(strawGolem, speedIn, ConfigHelper.getSearchRangeHorizontal(), ConfigHelper.getSearchRangeVertical());
-        this.strawGolem = strawGolem;
+    public TetherGoal(T entity, double speedIn) {
+        super(entity, speedIn, ConfigHelper.getSearchRangeHorizontal(), ConfigHelper.getSearchRangeVertical());
+        this.entity = entity;
+        tether = entity.getTether();
     }
 
 
@@ -24,9 +28,11 @@ public class GolemTetherGoal extends MoveToTargetPosGoal {
     public boolean canStart() {
         final double d = getTetherDistance();
         if(d > ConfigHelper.getTetherMaxRange()
-                && !strawGolem.getHunger().isHungry()
                 && super.canStart()) {
-            this.targetPos = strawGolem.getTether().get().getPos();
+            if (entity instanceof IHasHunger) {
+                if (((IHasHunger) entity).getHunger().isHungry()) return false;
+            }
+            this.targetPos = tether.get().getPos();
             return true;
         }
         return false;
@@ -34,7 +40,7 @@ public class GolemTetherGoal extends MoveToTargetPosGoal {
 
     @Override
     public void start() {
-        if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
+        if (ConfigHelper.isSoundsEnabled()) entity.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
         super.start();
     }
 
@@ -51,12 +57,12 @@ public class GolemTetherGoal extends MoveToTargetPosGoal {
 
     @Override
     public void tick() {
-        this.strawGolem.getLookControl().lookAt(
+        this.entity.getLookControl().lookAt(
                 this.targetPos.getX() + 0.5D,
                 this.targetPos.getY(),
                 this.targetPos.getZ() + 0.5D,
                 10.0F,
-                this.strawGolem.getLookPitchSpeed());
+                this.entity.getLookPitchSpeed());
         if (!this.targetPos.isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
             ++this.tryingTime;
             if (this.shouldResetPath()) {
@@ -72,16 +78,16 @@ public class GolemTetherGoal extends MoveToTargetPosGoal {
     }
 
     private double getTetherDistance() {
-        final Tether.TetherPos anchor = strawGolem.getTether().get();
-        final World golemWorld = strawGolem.world;
-        final BlockPos golemPos = strawGolem.getBlockPos();
+        final Tether.TetherPos anchor = tether.get();
+        final World golemWorld = entity.world;
+        final BlockPos golemPos = entity.getBlockPos();
         if (anchor == Tether.TetherPos.ORIGIN) {
             // if anchor is unset, this is a new golem, set it
-            Strawgolem.logger.debug( strawGolem.getEntityId() + " has no anchor, setting " + golemPos );
-            strawGolem.getTether().set(golemWorld, golemPos);
+            Strawgolem.logger.debug( entity.getEntityId() + " has no anchor, setting " + golemPos );
+            tether.set(golemWorld, golemPos);
             return 0.0;
         } else {
-            return strawGolem.getTether().distanceTo(golemWorld, golemPos);
+            return tether.distanceTo(golemWorld, golemPos);
         }
     }
 

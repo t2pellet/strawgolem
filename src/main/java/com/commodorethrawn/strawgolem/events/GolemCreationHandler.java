@@ -41,7 +41,6 @@ public class GolemCreationHandler {
             Block heldBlock = ((BlockItem) heldItem).getBlock();
             Vector3f direction = result.getSide().getUnitVector();
             BlockPos placementPos = pos.add(direction.getX(), direction.getY(), direction.getZ());
-            System.out.println("Held Block: " + heldBlock);
             if (heldBlock == Blocks.CARVED_PUMPKIN) {
                 BlockPos hayPos = placementPos.down();
                 if (worldIn.getBlockState(hayPos).getBlock() == Blocks.HAY_BLOCK) spawnGolem(worldIn, hayPos, placementPos, result.getSide());
