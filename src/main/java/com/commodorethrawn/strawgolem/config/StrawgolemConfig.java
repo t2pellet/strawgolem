@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.config;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.util.IniFile;
+import com.commodorethrawn.strawgolem.util.io.IniFile;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 

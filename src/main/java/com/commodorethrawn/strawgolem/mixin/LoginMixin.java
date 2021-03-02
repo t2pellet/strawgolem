@@ -1,6 +1,8 @@
 package com.commodorethrawn.strawgolem.mixin;
 
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.network.HealthPacket;
+import com.commodorethrawn.strawgolem.network.HoldingPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -37,8 +39,8 @@ public class LoginMixin {
     public void sendPacket(ServerPlayerEntity player) {
         List<EntityStrawGolem> golems = player.world.getEntitiesByClass(EntityStrawGolem.class, player.getBoundingBox().expand(30), e -> true);
         for (EntityStrawGolem golem : golems) {
-            PacketHandler.sendHealthPacket(golem);
-            PacketHandler.sendHoldingPacket(golem);
+            PacketHandler.INSTANCE.sendTo(new HealthPacket(golem), player);
+            PacketHandler.INSTANCE.sendTo(new HoldingPacket(golem), player);
         }
     }
 

@@ -2,6 +2,7 @@ package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.network.HoldingPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
@@ -104,7 +105,7 @@ public class GolemDeliverGoal extends MoveToTargetPosGoal {
         }
         worldIn.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 1.0F, 1.0F);
         strawGolem.getNavigation().recalculatePath();
-        PacketHandler.sendHoldingPacket(strawGolem);
+        PacketHandler.INSTANCE.sendInRange(new HoldingPacket(strawGolem), strawGolem, 25.0F);
     }
 
     @Override

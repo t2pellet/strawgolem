@@ -1,6 +1,7 @@
 package com.commodorethrawn.strawgolem.network;
 
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.util.scheduler.ClientScheduler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.network.PacketContext;
@@ -8,19 +9,31 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-class HealthPacket {
+public class HealthPacket extends Packet {
 
-    static void execute(PacketContext packetContext, PacketByteBuf packetByteBuf) {
-        int[] data = packetByteBuf.readIntArray();
-        int lifespan = data[0];
-        int hunger = data[1];
-        int id = data[2];
+    public HealthPacket(EntityStrawGolem golem) {
+        super();
+        tag.putInt("lifespan", golem.getLifespan().get());
+        tag.putInt("hunger", golem.getHunger().get());
+        tag.putInt("id", golem.getEntityId());
+    }
+
+    HealthPacket(PacketContext ctx, PacketByteBuf byteBuf) {
+        super(ctx, byteBuf);
+    }
+
+    @Override
+    public void execute() {
+        int lifespan = tag.getInt("lifespan");
+        int hunger = tag.getInt("hunger");
+        int id = tag.getInt("id");
         World world = net.minecraft.client.MinecraftClient.getInstance().world;
-        EntityStrawGolem golem = null;
-        if (world != null) golem = (EntityStrawGolem) world.getEntityById(id);
-        if (golem != null) {
-            golem.getLifespan().set(lifespan);
-            golem.getHunger().set(hunger);
+        if (world != null) {
+            EntityStrawGolem golem = (EntityStrawGolem) world.getEntityById(id);
+            if (golem != null) {
+                golem.getLifespan().set(lifespan);
+                golem.getHunger().set(hunger);
+            }
         }
     }
 }

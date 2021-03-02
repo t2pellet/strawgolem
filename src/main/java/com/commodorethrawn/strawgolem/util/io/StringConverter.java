@@ -1,4 +1,4 @@
-package com.commodorethrawn.strawgolem.util;
+package com.commodorethrawn.strawgolem.util.io;
 
 public interface StringConverter {
 
