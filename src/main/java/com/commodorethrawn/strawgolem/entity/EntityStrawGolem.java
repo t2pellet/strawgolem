@@ -188,11 +188,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
      * @return whether the hand is empty
      */
     public boolean isHandEmpty() {
-        return getHeldItem(Hand.MAIN_HAND).isEmpty();
-    }
-
-    public ItemStack getHeldItem(Hand hand) {
-        return inventory.getStack(0);
+        return getMainHandStack().isEmpty();
     }
 
     @Override

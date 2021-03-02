@@ -39,7 +39,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
     @Override
     public boolean canStart() {
         /* Checks for position set by the event handler (set when a block grows nearby) */
-        if (strawgolem.isHandEmpty() && !strawgolem.getHunger().isHungry() && !strawgolem.getHarvestPos().equals(BlockPos.ZERO)) {
+        if (strawgolem.isHandEmpty() && !strawgolem.getHunger().isHungry() && !strawgolem.getHarvestPos().equals(BlockPos.ORIGIN)) {
             targetPos = strawgolem.getHarvestPos();
             this.cooldown = getInterval(this.mob);
             strawgolem.clearHarvestPos();
