@@ -19,12 +19,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.commodorethrawn.strawgolem.Strawgolem",
-      "com.commodorethrawn.strawgolem.registry.CommonRegistry"
+      "com.commodorethrawn.strawgolem.Strawgolem"
     ],
     "client": [
-      "com.commodorethrawn.strawgolem.Strawgolem",
-      "com.commodorethrawn.strawgolem.registry.ClientRegistry"
+      "com.commodorethrawn.strawgolem.Strawgolem"
     ]
   },
   "mixins": [

@@ -1,4 +1,4 @@
-package com.commodorethrawn.strawgolem.mixin;
+package com.commodorethrawn.strawgolem.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
