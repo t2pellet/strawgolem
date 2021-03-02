@@ -2,7 +2,6 @@ package com.commodorethrawn.strawgolem.storage;
 
 import com.commodorethrawn.strawgolem.events.CropGrowthHandler;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.client.render.SkyProperties;
 import net.minecraft.nbt.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
@@ -11,7 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.storage.LevelStorage.Session;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,10 +17,11 @@ import java.util.Iterator;
 
 public class StrawgolemSaveData {
 
-    private final File worldDataDir;
-    private final MinecraftServer server;
     private static final String GOLEM_DATA_NAME = "strawgolem.dat";
     private static final int TAG_COMPOUND = 10;
+
+    private final File worldDataDir;
+    private final MinecraftServer server;
 
     public StrawgolemSaveData(MinecraftServer server) {
         this.server = server;

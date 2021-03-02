@@ -58,7 +58,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
     }
 
     @Override
-    public void setAngles(EntityStrawGolem entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setAngles(EntityStrawGolem entity, float limbAngle, float limbDistance, float tickDelta, float headYaw, float headPitch) {
 
         //Head rotation
         this.head.yaw = headYaw * 0.017453292F;
@@ -74,12 +74,14 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
         float auxLimbSwing = limbAngle * 3.331F;
         this.rightArm.pitch = MathHelper.cos(auxLimbSwing + (float) Math.PI) * swingAmountArm;
         this.leftArm.pitch = MathHelper.cos(auxLimbSwing) * swingAmountArm;
+        this.rightleg.pitch = MathHelper.cos(auxLimbSwing) * swingAmountLeg;
+        this.leftleg.pitch = MathHelper.cos(auxLimbSwing + (float) Math.PI) * swingAmountLeg;
+
         this.rightArm.yaw = 0.0F;
         this.rightArm.roll = 0.0F;
         this.leftArm.yaw = 0.0F;
         this.leftArm.roll = 0.0F;
-        this.rightleg.pitch = MathHelper.cos(auxLimbSwing) * swingAmountLeg;
-        this.leftleg.pitch = MathHelper.cos(auxLimbSwing + (float) Math.PI) * swingAmountLeg;
+
         this.rightleg.yaw = 0.0F;
         this.leftleg.yaw = 0.0F;
         this.rightleg.roll = 0.0F;
@@ -88,10 +90,10 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
         if (isHungry) {
             if (playerHasFood) {
                 this.rightArm.pitch = - (float) Math.PI / 1.6F;
-                this.rightArm.yaw = - (float) Math.PI / 12 + MathHelper.cos(animationProgress * 1.1F) * 0.075F;
+                this.rightArm.yaw = - (float) Math.PI / 12 + MathHelper.cos(tickDelta * 1.1F) * 0.075F;
                 this.leftArm.pitch = - (float) Math.PI / 1.6F;
-                this.leftArm.yaw = (float) Math.PI / 12 - MathHelper.cos(animationProgress * 1.1F) * 0.075F;
-            } else idleArms(animationProgress);
+                this.leftArm.yaw = (float) Math.PI / 12 - MathHelper.cos(tickDelta * 1.1F) * 0.075F;
+            } else idleArms(tickDelta);
             this.leftleg.pitch = -(float) Math.PI / 2;
             this.leftleg.yaw = -(float) Math.PI / 8;
             this.rightleg.pitch = -(float) Math.PI / 2;
@@ -106,8 +108,9 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
             this.leftArm.pitch = (float) -(0.29D * Math.PI);
             this.leftArm.yaw = (float) (0.12D * Math.PI);
             this.leftArm.roll = (float) -(0.08D * Math.PI);
-        } else idleArms(animationProgress);
+        } else idleArms(tickDelta);
     }
+
 
     /**
      * Idle arm swinging

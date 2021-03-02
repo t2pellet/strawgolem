@@ -1,10 +1,8 @@
 package com.commodorethrawn.strawgolem.events;
 
-import com.commodorethrawn.strawgolem.registry.CommonRegistry;
-import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.registry.StrawgolemEntities;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.client.util.math.Vector3f;
@@ -15,16 +13,12 @@ import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-
-import java.util.Objects;
 
 public class GolemCreationHandler {
 
@@ -81,7 +75,7 @@ public class GolemCreationHandler {
             ServerWorld world = (ServerWorld) worldIn;
             world.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
             world.setBlockState(hay, Blocks.AIR.getDefaultState());
-            EntityStrawGolem strawGolem = CommonRegistry.strawGolemEntityType().create(world);
+            EntityStrawGolem strawGolem = StrawgolemEntities.strawGolemEntityType().create(world);
             strawGolem.refreshPositionAndAngles(hay, facing.getHorizontal(), 0.0F);
             world.spawnEntity(strawGolem);
             return ActionResult.SUCCESS;

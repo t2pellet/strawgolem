@@ -1,5 +1,6 @@
 package com.commodorethrawn.strawgolem.mixin;
 
+import com.commodorethrawn.strawgolem.events.PlaceBlockCallback;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.util.ActionResult;

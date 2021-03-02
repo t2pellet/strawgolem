@@ -4,6 +4,8 @@ import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelStrawGolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.ai.GolemTemptGoal;
+import com.commodorethrawn.strawgolem.mixin.GoalSelectorAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -62,7 +64,7 @@ public class RenderStrawGolem extends MobEntityRenderer<EntityStrawGolem, ModelS
         this.getModel().setHoldingBlock(mobEntity.holdingFullBlock());
         this.getModel().setHoldingItem(!mobEntity.isHandEmpty());
         this.getModel().setHungry(mobEntity.getHunger().isHungry());
-        this.getModel().setPlayerHasFood(MinecraftClient.getInstance().player.getMainHandStack().getItem() == Items.APPLE && MinecraftClient.getInstance().player.distanceTo(mobEntity) < 8);
+        this.getModel().setPlayerHasFood(((GoalSelectorAccessor) mobEntity).goalSelector().getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof GolemTemptGoal));
         // Lower position for sitting
         if (mobEntity.getHunger().isHungry()) {
             matrixStack.translate(0, -0.2F, 0);

@@ -11,14 +11,13 @@ import com.commodorethrawn.strawgolem.entity.capability.memory.Memory;
 import com.commodorethrawn.strawgolem.entity.capability.tether.IHasTether;
 import com.commodorethrawn.strawgolem.entity.capability.tether.Tether;
 import com.commodorethrawn.strawgolem.events.GolemChestHandler;
+import com.commodorethrawn.strawgolem.network.HealthPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
-import com.commodorethrawn.strawgolem.registry.ClientRegistry;
 import com.commodorethrawn.strawgolem.registry.StrawgolemSounds;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -48,14 +47,16 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
+import static com.commodorethrawn.strawgolem.registry.StrawgolemParticles.FLY_PARTICLE;
+
 public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTether {
-    public static final SoundEvent GOLEM_AMBIENT = StrawgolemSounds.GOLEM_AMBIENT.getSoundEvent();
-    public static final SoundEvent GOLEM_STRAINED = StrawgolemSounds.GOLEM_STRAINED.getSoundEvent();
-    public static final SoundEvent GOLEM_HURT = StrawgolemSounds.GOLEM_HURT.getSoundEvent();
-    public static final SoundEvent GOLEM_DEATH = StrawgolemSounds.GOLEM_DEATH.getSoundEvent();
-    public static final SoundEvent GOLEM_HEAL = StrawgolemSounds.GOLEM_HEAL.getSoundEvent();
-    public static final SoundEvent GOLEM_SCARED = StrawgolemSounds.GOLEM_SCARED.getSoundEvent();
-    public static final SoundEvent GOLEM_INTERESTED = StrawgolemSounds.GOLEM_INTERESTED.getSoundEvent();
+    public static final SoundEvent GOLEM_AMBIENT = new SoundEvent(StrawgolemSounds.GOLEM_AMBIENT_ID);
+    public static final SoundEvent GOLEM_STRAINED = new SoundEvent(StrawgolemSounds.GOLEM_STRAINED_ID);
+    public static final SoundEvent GOLEM_HURT = new SoundEvent(StrawgolemSounds.GOLEM_HURT_ID);
+    public static final SoundEvent GOLEM_DEATH = new SoundEvent(StrawgolemSounds.GOLEM_DEATH_ID);
+    public static final SoundEvent GOLEM_HEAL = new SoundEvent(StrawgolemSounds.GOLEM_HEAL_ID);
+    public static final SoundEvent GOLEM_SCARED = new SoundEvent(StrawgolemSounds.GOLEM_SCARED_ID);
+    public static final SoundEvent GOLEM_INTERESTED = new SoundEvent(StrawgolemSounds.GOLEM_INTERESTED_ID);
     private static final Identifier LOOT = new Identifier(Strawgolem.MODID, "strawgolem");
 
     private final Lifespan lifespan;
@@ -116,7 +117,6 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     @Override
     protected void initGoals() {
         int priority = 0;
-        this.goalSelector.add(priority, new SwimGoal(this));
         this.goalSelector.add(++priority, new GolemPoutGoal(this));
         this.goalSelector.add(++priority, new GolemFleeGoal(this));
         this.goalSelector.add(++priority, new GolemTemptGoal(this));
@@ -157,7 +157,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
             }
             if (hunger.get() * 4 < ConfigHelper.getHunger() && hunger.get() > 0 && random.nextInt(120) == 0) playSound(GOLEM_STRAINED, 1.0F, 1.0F);
         } else if (lifespan.get() * 4 < ConfigHelper.getLifespan() && lifespan.get() >= 0 && random.nextInt(80) == 0) {
-            world.addParticle(ClientRegistry.FLY_PARTICLE, prevX, prevY, prevZ,
+            world.addParticle(FLY_PARTICLE, prevX, prevY, prevZ,
                     0, 0, 0);
         }
     }
@@ -201,7 +201,6 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
 
     /**
      * Returns true if the golem is holding a block crop, and false otherwise
-     *
      * @return whether the golem is holding a gourd block
      */
     public boolean holdingFullBlock() {
