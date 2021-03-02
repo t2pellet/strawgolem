@@ -15,12 +15,10 @@ import net.minecraft.world.WorldView;
 
 public class TetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTargetPosGoal {
     private final T entity;
-    private final Tether tether;
 
     public TetherGoal(T entity, double speedIn) {
         super(entity, speedIn, ConfigHelper.getSearchRangeHorizontal(), ConfigHelper.getSearchRangeVertical());
         this.entity = entity;
-        tether = entity.getTether();
     }
 
 
@@ -32,7 +30,7 @@ public class TetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTa
             if (entity instanceof IHasHunger) {
                 if (((IHasHunger) entity).getHunger().isHungry()) return false;
             }
-            this.targetPos = tether.get().getPos();
+            this.targetPos = entity.getTether().get().getPos();
             return true;
         }
         return false;
@@ -78,16 +76,16 @@ public class TetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTa
     }
 
     private double getTetherDistance() {
-        final Tether.TetherPos anchor = tether.get();
+        final Tether.TetherPos anchor = entity.getTether().get();
         final World golemWorld = entity.world;
         final BlockPos golemPos = entity.getBlockPos();
         if (anchor == Tether.TetherPos.ORIGIN) {
             // if anchor is unset, this is a new golem, set it
             Strawgolem.logger.debug( entity.getEntityId() + " has no anchor, setting " + golemPos );
-            tether.set(golemWorld, golemPos);
+            entity.getTether().set(golemWorld, golemPos);
             return 0.0;
         } else {
-            return tether.distanceTo(golemWorld, golemPos);
+            return entity.getTether().distanceTo(golemWorld, golemPos);
         }
     }
 
