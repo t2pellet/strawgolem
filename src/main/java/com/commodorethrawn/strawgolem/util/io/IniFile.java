@@ -1,4 +1,4 @@
-package com.commodorethrawn.strawgolem.util;
+package com.commodorethrawn.strawgolem.util.io;
 
 import java.io.File;
 import java.io.IOException;

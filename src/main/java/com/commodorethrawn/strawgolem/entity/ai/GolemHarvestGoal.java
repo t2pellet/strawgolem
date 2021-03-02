@@ -3,6 +3,7 @@ package com.commodorethrawn.strawgolem.entity.ai;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.network.HoldingPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
@@ -139,7 +140,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
                 }
             } else fakeRightClick(worldIn, pos, state); //Bushes
         }
-        PacketHandler.sendHoldingPacket(strawgolem);
+        PacketHandler.INSTANCE.sendInRange(new HoldingPacket(strawgolem), strawgolem, 25.0F);
     }
 
     /**

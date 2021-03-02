@@ -150,7 +150,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
                 lifespan.update();
             }
             if (random.nextInt(40) == 0) {
-                PacketHandler.sendHealthPacket(this);
+                PacketHandler.INSTANCE.sendInRange(new HealthPacket(this), this, 25.0F);
             }
             if (lifespan.isOver()) {
                 damage(DamageSource.MAGIC, getMaxHealth() * 100);
@@ -245,7 +245,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
                     int newLifespan = Math.min(ConfigHelper.getLifespan() * 2, lifespan.get() + 6000);
                     lifespan.set(newLifespan);
                     if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
-                    PacketHandler.sendHealthPacket(this);
+                    PacketHandler.INSTANCE.sendInRange(new HealthPacket(this), this, 25.0F);
             }
             spawnHealParticles(getX(), getY(), getZ());
         } else if (Items.APPLE == heldItem) {
@@ -253,7 +253,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
                 int newHunger = Math.min(ConfigHelper.getHunger() * 2, hunger.get() + 12000);
                 hunger.set(newHunger);
                 if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
-                PacketHandler.sendHealthPacket(this);
+                PacketHandler.INSTANCE.sendInRange(new HealthPacket(this), this,25.0F);
                 playSound(GOLEM_HEAL, 1.0F, 1.0F);
             }
             spawnHappyParticles(getX(), getY(), getZ());
