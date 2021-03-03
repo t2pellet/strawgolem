@@ -3,6 +3,8 @@ package com.commodorethrawn.strawgolem.entity.ai;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.network.GreedyPacket;
+import com.commodorethrawn.strawgolem.network.PacketHandler;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
@@ -27,6 +29,7 @@ public class GolemTemptGoal extends TemptGoal {
     public void start() {
         super.start();
         if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_INTERESTED, 1.0F, 1.0F);
+        PacketHandler.INSTANCE.sendInRange(new GreedyPacket(strawGolem, true), strawGolem, 25.0F);
     }
 
     @Override
@@ -41,5 +44,11 @@ public class GolemTemptGoal extends TemptGoal {
                 strawGolem.getTether().set(golemWorld, golemPos);
             }
         }
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        PacketHandler.INSTANCE.sendInRange(new GreedyPacket(strawGolem, false), strawGolem, 25.0F);
     }
 }

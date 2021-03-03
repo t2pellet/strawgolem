@@ -22,6 +22,7 @@ public class PacketHandler {
 
     private static final Identifier LIFESPAN_PACKET = new Identifier(Strawgolem.MODID, "message_lifespan");
     private static final Identifier HOLDING_PACKET = new Identifier(Strawgolem.MODID, "message_item");
+    private static final Identifier GREEDY_PACKET = new Identifier(Strawgolem.MODID, "message_greedy");
 
     public static final PacketHandler INSTANCE = new PacketHandler();
 
@@ -30,6 +31,8 @@ public class PacketHandler {
     public static void register() {
         INSTANCE.registerPacket(LIFESPAN_PACKET, HealthPacket.class);
         INSTANCE.registerPacket(HOLDING_PACKET, HoldingPacket.class);
+        INSTANCE.registerPacket(GREEDY_PACKET, GreedyPacket.class);
+
     }
 
     private PacketHandler() {
