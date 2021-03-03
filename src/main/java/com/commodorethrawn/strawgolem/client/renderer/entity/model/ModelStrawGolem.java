@@ -88,12 +88,8 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
         this.leftleg.roll = 0.0F;
 
         if (isHungry) {
-            if (playerHasFood) {
-                this.rightArm.pitch = - (float) Math.PI / 1.6F;
-                this.rightArm.yaw = - (float) Math.PI / 12 + MathHelper.cos(tickDelta * 1.1F) * 0.075F;
-                this.leftArm.pitch = - (float) Math.PI / 1.6F;
-                this.leftArm.yaw = (float) Math.PI / 12 - MathHelper.cos(tickDelta * 1.1F) * 0.075F;
-            } else idleArms(tickDelta);
+            if (playerHasFood) greedyArms(tickDelta);
+            else idleArms(tickDelta);
             this.leftleg.pitch = -(float) Math.PI / 2;
             this.leftleg.yaw = -(float) Math.PI / 8;
             this.rightleg.pitch = -(float) Math.PI / 2;
@@ -108,9 +104,20 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
             this.leftArm.pitch = (float) -(0.29D * Math.PI);
             this.leftArm.yaw = (float) (0.12D * Math.PI);
             this.leftArm.roll = (float) -(0.08D * Math.PI);
-        } else idleArms(tickDelta);
+        } else if (playerHasFood) greedyArms(tickDelta);
+        else idleArms(tickDelta);
     }
 
+    /**
+     * Greedy arms animation
+     * @param tickDelta the animation progress
+     */
+    private void greedyArms(float tickDelta) {
+        this.rightArm.pitch = - (float) Math.PI / 1.6F;
+        this.rightArm.yaw = - (float) Math.PI / 12 + MathHelper.cos(tickDelta * 1.1F) * 0.075F;
+        this.leftArm.pitch = - (float) Math.PI / 1.6F;
+        this.leftArm.yaw = (float) Math.PI / 12 - MathHelper.cos(tickDelta * 1.1F) * 0.075F;
+    }
 
     /**
      * Idle arm swinging

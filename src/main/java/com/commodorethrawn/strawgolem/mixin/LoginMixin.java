@@ -1,6 +1,8 @@
 package com.commodorethrawn.strawgolem.mixin;
 
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.entity.ai.GolemTemptGoal;
+import com.commodorethrawn.strawgolem.network.GreedyPacket;
 import com.commodorethrawn.strawgolem.network.HealthPacket;
 import com.commodorethrawn.strawgolem.network.HoldingPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
@@ -41,6 +43,8 @@ public class LoginMixin {
         for (EntityStrawGolem golem : golems) {
             PacketHandler.INSTANCE.sendTo(new HealthPacket(golem), player);
             PacketHandler.INSTANCE.sendTo(new HoldingPacket(golem), player);
+            boolean greedy = ((GoalSelectorAccessor) golem).goalSelector().getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof GolemTemptGoal);
+            PacketHandler.INSTANCE.sendTo(new GreedyPacket(golem, greedy), player);
         }
     }
 
