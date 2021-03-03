@@ -11,12 +11,15 @@ import com.commodorethrawn.strawgolem.entity.capability.memory.Memory;
 import com.commodorethrawn.strawgolem.entity.capability.tether.IHasTether;
 import com.commodorethrawn.strawgolem.entity.capability.tether.Tether;
 import com.commodorethrawn.strawgolem.events.GolemChestHandler;
+import com.commodorethrawn.strawgolem.events.GolemCreationHandler;
 import com.commodorethrawn.strawgolem.network.HealthPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import com.commodorethrawn.strawgolem.registry.StrawgolemSounds;
+import com.commodorethrawn.strawgolem.util.scheduler.ServerScheduler;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -33,6 +36,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
@@ -66,6 +70,12 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     private final Hunger hunger;
     private BlockPos harvestPos;
 
+    public static DefaultAttributeContainer.Builder createMob() {
+        return MobEntity.createMobAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 4.0D)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2D);
+    }
+
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
         super(type, worldIn);
         lifespan = CapabilityHandler.INSTANCE.get(Lifespan.class).orElseThrow(() -> new InstantiationError("Failed to create lifespan cap"));
@@ -74,44 +84,6 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         hunger = CapabilityHandler.INSTANCE.get(Hunger.class).orElseThrow(() -> new InstantiationError("Failed to create new hunger cap"));
         inventory = new SimpleInventory(1);
         harvestPos = BlockPos.ORIGIN;
-    }
-
-    @Override
-    protected Identifier getLootTableId() {
-        return LOOT;
-    }
-
-    @Override
-    protected SoundEvent getAmbientSound() {
-        if (ConfigHelper.isSoundsEnabled()) {
-            if (goalSelector.getRunningGoals().anyMatch(
-                    goal -> goal.getGoal() instanceof GolemFleeGoal || goal.getGoal() instanceof TetherGoal))
-                return GOLEM_SCARED;
-            else if (holdingFullBlock()) return GOLEM_STRAINED;
-            return GOLEM_AMBIENT;
-        }
-        return null;
-    }
-
-    @Override
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return ConfigHelper.isSoundsEnabled() ? GOLEM_HURT : null;
-    }
-
-    @Override
-    protected SoundEvent getDeathSound() {
-        return ConfigHelper.isSoundsEnabled() ? GOLEM_DEATH : null;
-    }
-
-    @Override
-    public int getMinAmbientSoundDelay() {
-        return holdingFullBlock() ? 60 : 120;
-    }
-
-    public static DefaultAttributeContainer.Builder createMob() {
-        return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 4.0D)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2D);
     }
 
     @Override
@@ -136,7 +108,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         if (!world.isClient) {
             lifespan.update();
             hunger.update();
-            float healthCap = Math.round((float) lifespan.get() / ConfigHelper.getLifespan()) * 4;
+            float healthCap = Math.round((float) lifespan.get() / ConfigHelper.getLifespan() * 8) / 2.0F;
             getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(healthCap);
             if (getHealth() > healthCap) setHealth(healthCap);
             if (holdingFullBlock() && ConfigHelper.isLifespanPenalty("heavy")) {
@@ -180,71 +152,20 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         return world.getBiome(getBlockPos()).getTemperature(getBlockPos()) < 0.15F;
     }
 
-    /* Handle inventory */
-
-    /**
-     * Returns true if the golem is not holding anything, and false otherwise
-     *
-     * @return whether the hand is empty
-     */
-    public boolean isHandEmpty() {
-        return getMainHandStack().isEmpty();
-    }
-
-    @Override
-    public ItemStack getEquippedStack(EquipmentSlot slot) {
-        if (slot == EquipmentSlot.MAINHAND) {
-            return inventory.getStack(0);
-        }
-        return ItemStack.EMPTY;
-    }
-
-    /**
-     * Returns true if the golem is holding a block crop, and false otherwise
-     * @return whether the golem is holding a gourd block
-     */
-    public boolean holdingFullBlock() {
-        ItemStack item = getMainHandStack();
-        if (!(item.getItem() instanceof BlockItem)) return false;
-        BlockItem blockItem = (BlockItem) item.getItem();
-        return blockItem != Items.AIR
-                && blockItem.getBlock().getDefaultState().isOpaque()
-                && blockItem.getBlock().asItem() == blockItem;
-    }
-
-    /* Miscellaneous */
-
-    @Override
-    public boolean canPickUpLoot() {
-        return false;
-    }
-
-    @Override
-    public boolean canImmediatelyDespawn(double distanceSquared) {
-        return false;
-    }
-
-    @Override
-    protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-        super.dropEquipment(source, lootingMultiplier, allowDrops);
-        if (!world.isClient) {
-            dropStack(inventory.getStack(0).copy());
-            inventory.getStack(0).setCount(0);
-        }
-    }
+    /* Interaction */
 
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         Item heldItem = player.getStackInHand(hand).getItem();
         if (Items.WHEAT == heldItem && isGolemHurt()) {
             if (!world.isClient()) {
-                    if (getHealth() < getMaxHealth()) setHealth(getMaxHealth());
-                    playSound(GOLEM_HEAL, 1.0F, 1.0F);
-                    playSound(SoundEvents.BLOCK_GRASS_STEP, 1.0F, 1.0F);
-                    int newLifespan = Math.min(ConfigHelper.getLifespan() * 2, lifespan.get() + 6000);
-                    lifespan.set(newLifespan);
-                    if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
-                    PacketHandler.INSTANCE.sendInRange(new HealthPacket(this), this, 25.0F);
+                if (getHealth() < getMaxHealth()) setHealth(getMaxHealth());
+                playSound(GOLEM_HEAL, 1.0F, 1.0F);
+                playSound(SoundEvents.BLOCK_GRASS_STEP, 1.0F, 1.0F);
+                int newLifespan = Math.min(ConfigHelper.getLifespan() * 2, lifespan.get() + 6000);
+                lifespan.set(newLifespan);
+                if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
+                PacketHandler.INSTANCE.sendInRange(new HealthPacket(this), this, 25.0F);
             }
             spawnHealParticles(getX(), getY(), getZ());
         } else if (Items.APPLE == heldItem) {
@@ -266,26 +187,14 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         return ActionResult.FAIL;
     }
 
-    @Override
-    public boolean damage(DamageSource source, float amount) {
-        if (source == DamageSource.SWEET_BERRY_BUSH) return false;
-        return super.damage(source, amount);
-    }
-
     /**
      * Returns whether the golem is in an imperfect state (i.e. lifespan is below 90% or it has taken damage)
      * @return whether golem is hurt
      */
     private boolean isGolemHurt() {
-        return lifespan.get() < ConfigHelper.getLifespan() * 1.9 || getHealth() < getMaxHealth();
+        return lifespan.get() + 6000 < ConfigHelper.getLifespan() * 2 || getHealth() < getMaxHealth();
     }
 
-    /**
-     * Spawns the heal particles based on location x, y, z
-     * @param x coordiante
-     * @param y coordinate
-     * @param z coordinate
-     */
     private void spawnHealParticles(double x, double y, double z) {
         world.addParticle(
                 ParticleTypes.HEART,
@@ -300,38 +209,34 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
                 this.getVelocity().x, this.getVelocity().y, this.getVelocity().z);
     }
 
-    /* Handles being picked up by iron golem */
+    @Override
+    public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
+        GolemCreationHandler.spawnStrawngGolem(world, this);
+    }
+
+    /* Death & Despawning */
 
     @Override
-    public void setPos(double posX, double posY, double posZ) {
-        if (hasVehicle() && getVehicle() instanceof IronGolemEntity) {
-            IronGolemEntity ironGolem = (IronGolemEntity) getVehicle();
-            double lookX = ironGolem.getRotationVector().getX();
-            double lookZ = ironGolem.getRotationVector().getZ();
-            double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
-            lookX /= magnitude;
-            lookZ /= magnitude;
-            super.setPos(posX + 1.85D * lookX, posY - 0.55D, posZ + 1.85D * lookZ);
-        } else {
-            super.setPos(posX, posY, posZ);
-        }
+    public boolean canImmediatelyDespawn(double distanceSquared) {
+        return false;
     }
 
     @Override
-    public void stopRiding() {
-        super.stopRiding();
-        if (getVehicle() instanceof IronGolemEntity) {
-            LivingEntity ridingEntity = (LivingEntity) getVehicle();
-            double lookX = ridingEntity.yaw;
-            double lookZ = ridingEntity.pitch;
-            double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
-            lookX /= magnitude;
-            lookZ /= magnitude;
-            super.setPos(getPos().x + lookX, getPos().y, getPos().z + lookZ);
+    public boolean damage(DamageSource source, float amount) {
+        if (source == DamageSource.SWEET_BERRY_BUSH) return false;
+        return super.damage(source, amount);
+    }
+
+    @Override
+    protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
+        super.dropEquipment(source, lootingMultiplier, allowDrops);
+        if (!world.isClient) {
+            dropStack(inventory.getStack(0).copy());
+            inventory.getStack(0).setCount(0);
         }
     }
 
-    // Harvesting
+    /* Harvesting */
 
     /**
      * Determines whether or not the block at position pos in world worldIn should be harvested
@@ -370,11 +275,66 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         return worldIn.raycast(ctx).getPos().isInRange(blockPos, 2.5D);
     }
 
-    /* Handles capabilities */
+
+    /**
+     * Sets the harvest position to pos
+     * @param pos new harvest position
+     */
+    public void setHarvesting(BlockPos pos) {
+        harvestPos = pos;
+    }
+
+    /**
+     * Returns the position to be used to initiate the GolemHarvestGoal
+     * @return the harvest position
+     */
+    public BlockPos getHarvestPos() {
+        return harvestPos;
+    }
+
+    /**
+     * Clears the harvest position
+     */
+    public void clearHarvestPos() {
+        harvestPos = BlockPos.ORIGIN;
+    }
+
+    /* Handle inventory */
 
     public SimpleInventory getInventory() {
         return inventory;
     }
+
+    /**
+     * Returns true if the golem is not holding anything, and false otherwise
+     * @return whether the hand is empty
+     */
+    public boolean isHandEmpty() {
+        return getMainHandStack().isEmpty();
+    }
+
+    @Override
+    public ItemStack getEquippedStack(EquipmentSlot slot) {
+        if (slot == EquipmentSlot.MAINHAND) {
+            return inventory.getStack(0);
+        }
+        return ItemStack.EMPTY;
+    }
+
+    /**
+     * Returns true if the golem is holding a block crop, and false otherwise
+     * @return whether the golem is holding a gourd block
+     */
+    public boolean holdingFullBlock() {
+        ItemStack item = getMainHandStack();
+        if (!(item.getItem() instanceof BlockItem)) return false;
+        BlockItem blockItem = (BlockItem) item.getItem();
+        return blockItem != Items.AIR
+                && blockItem.getBlock().getDefaultState().isOpaque()
+                && blockItem.getBlock().asItem() == blockItem;
+    }
+
+    /* Handles capabilities */
 
     public Lifespan getLifespan() {
         return lifespan;
@@ -405,29 +365,35 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         return hunger;
     }
 
-    /* Harvesting */
+    /* Iron Golem Pickup */
 
-    /**
-     * Sets the harvest position to pos
-     * @param pos new harvest position
-     */
-    public void setHarvesting(BlockPos pos) {
-        harvestPos = pos;
+    @Override
+    public void setPos(double posX, double posY, double posZ) {
+        if (hasVehicle() && getVehicle() instanceof IronGolemEntity) {
+            IronGolemEntity ironGolem = (IronGolemEntity) getVehicle();
+            double lookX = ironGolem.getRotationVector().getX();
+            double lookZ = ironGolem.getRotationVector().getZ();
+            double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
+            lookX /= magnitude;
+            lookZ /= magnitude;
+            super.setPos(posX + 1.85D * lookX, posY - 0.55D, posZ + 1.85D * lookZ);
+        } else {
+            super.setPos(posX, posY, posZ);
+        }
     }
 
-    /**
-     * Returns the position to be used to initiate the GolemHarvestGoal
-     * @return the harvest position
-     */
-    public BlockPos getHarvestPos() {
-        return harvestPos;
-    }
-
-    /**
-     * Clears the harvest position
-     */
-    public void clearHarvestPos() {
-        harvestPos = BlockPos.ORIGIN;
+    @Override
+    public void stopRiding() {
+        super.stopRiding();
+        if (getVehicle() instanceof IronGolemEntity) {
+            LivingEntity ridingEntity = (LivingEntity) getVehicle();
+            double lookX = ridingEntity.yaw;
+            double lookZ = ridingEntity.pitch;
+            double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
+            lookX /= magnitude;
+            lookZ /= magnitude;
+            super.setPos(getPos().x + lookX, getPos().y, getPos().z + lookZ);
+        }
     }
 
     // Storage
@@ -450,6 +416,41 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         if (tag.contains("inventory")) inventory.readTags((ListTag) tag.get("inventory"));
         if (tag.contains("tether")) tether.readTag(tag.get("tether"));
         super.fromTag(tag);
+    }
+
+
+    /* Sounds */
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        if (ConfigHelper.isSoundsEnabled()) {
+            if (goalSelector.getRunningGoals().anyMatch(
+                    goal -> goal.getGoal() instanceof GolemFleeGoal || goal.getGoal() instanceof TetherGoal))
+                return GOLEM_SCARED;
+            else if (holdingFullBlock()) return GOLEM_STRAINED;
+            return GOLEM_AMBIENT;
+        }
+        return null;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+        return ConfigHelper.isSoundsEnabled() ? GOLEM_HURT : null;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return ConfigHelper.isSoundsEnabled() ? GOLEM_DEATH : null;
+    }
+
+    @Override
+    public int getMinAmbientSoundDelay() {
+        return holdingFullBlock() ? 60 : 120;
+    }
+
+    @Override
+    protected Identifier getLootTableId() {
+        return LOOT;
     }
 
 }
