@@ -80,8 +80,8 @@ public class ModelStrawngGolem extends EntityModel<EntityStrawngGolem> {
 	public void animateModel(EntityStrawngGolem entity, float limbAngle, float limbDistance, float tickDelta) {
 		int attackTicks = entity.getAttackTicks();
 		if (attackTicks > 0) {
-			LeftArm.pitch = - (float) Math.PI * (attackTicks - tickDelta) / 10;
-			RightArm.pitch = - (float) Math.PI * (attackTicks - tickDelta) / 10;
+			LeftArm.pitch = - (float) Math.PI * (attackTicks - tickDelta) / 5;
+			RightArm.pitch = - (float) Math.PI * (attackTicks - tickDelta) / 5;
 		} else if (entity.getPassengerList().size() == 1 && entity.getPassengerList().get(0) instanceof EntityStrawGolem) {
 			LeftArm.pitch = -0.45F * (float) Math.PI;
 			RightArm.pitch = -0.45F * (float) Math.PI;

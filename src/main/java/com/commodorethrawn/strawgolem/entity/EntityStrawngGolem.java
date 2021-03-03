@@ -77,7 +77,7 @@ public class EntityStrawngGolem extends GolemEntity implements IHasTether {
 
     @Override
     public boolean tryAttack(Entity target) {
-        dataTracker.set(ATTACK_TICKS, 10);
+        dataTracker.set(ATTACK_TICKS, 5);
         return super.tryAttack(target);
     }
 
