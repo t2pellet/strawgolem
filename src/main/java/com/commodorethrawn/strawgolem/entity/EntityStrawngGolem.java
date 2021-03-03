@@ -18,6 +18,7 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
@@ -30,10 +31,13 @@ public class EntityStrawngGolem extends GolemEntity implements IHasTether {
 
     public static DefaultAttributeContainer.Builder createMob() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0D)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 60.0D)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.30D)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 15.0D)
-                .add(EntityAttributes.GENERIC_ATTACK_SPEED, 0.05D);
+                .add(EntityAttributes.GENERIC_ATTACK_SPEED, 0.1D)
+                .add(EntityAttributes.GENERIC_ARMOR, 4.0D)
+                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5D)
+                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0D);
     }
 
     private final Tether tether;
