@@ -46,10 +46,15 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import static com.commodorethrawn.strawgolem.registry.StrawgolemParticles.FLY_PARTICLE;
 
@@ -252,9 +257,21 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
             if (state.getBlock() instanceof CropBlock)
                 return ((CropBlock) state.getBlock()).isMature(state);
-            else if (state.getBlock() instanceof GourdBlock)
-                return true;
-            else if (state.getBlock() instanceof NetherWartBlock)
+            else if (state.getBlock() instanceof GourdBlock) {
+                // Only harvest gourd blocks that are connected to a stem (to not ruin decorative gardens)
+                BlockPos[] stems = {pos.east(), pos.west(), pos.north(), pos.south()};
+                return Arrays.stream(stems).anyMatch(stem -> {
+                    BlockState stemState = worldIn.getBlockState(stem);
+                    if (stemState.getBlock() instanceof AttachedStemBlock) {
+                        Direction stemFacing = stemState.get(AttachedStemBlock.FACING);
+                        BlockPos gourdPos = stem.add(stemFacing.getVector());
+                        System.out.println("Gourd pos: " + gourdPos);
+                        System.out.println("Actual pos: " + pos);
+                        return gourdPos.equals(pos);
+                    }
+                    return false;
+                });
+            } else if (state.getBlock() instanceof NetherWartBlock)
                 return state.get(NetherWartBlock.AGE) == 3;
             else if (state.getBlock() instanceof PlantBlock && state.getBlock() instanceof Fertilizable)
                 return state.contains(Properties.AGE_3)
