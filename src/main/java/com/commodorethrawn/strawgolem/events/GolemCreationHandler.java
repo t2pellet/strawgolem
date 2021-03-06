@@ -36,8 +36,8 @@ public class GolemCreationHandler {
         Item heldItem = player.getMainHandStack().getItem();
         if (heldItem instanceof BlockItem) {
             Block heldBlock = ((BlockItem) heldItem).getBlock();
-            Vector3f direction = result.getSide().getUnitVector();
-            BlockPos placementPos = pos.add(direction.getX(), direction.getY(), direction.getZ());
+            Direction direction = result.getSide();
+            BlockPos placementPos = pos.add(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
             if (heldBlock == Blocks.CARVED_PUMPKIN) {
                 BlockPos hayPos = placementPos.down();
                 if (worldIn.getBlockState(hayPos).getBlock() == Blocks.HAY_BLOCK) spawnStrawGolem(worldIn, hayPos, placementPos, result.getSide());
