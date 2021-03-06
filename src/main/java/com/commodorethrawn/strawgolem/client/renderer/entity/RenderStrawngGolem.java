@@ -14,7 +14,7 @@ public class RenderStrawngGolem extends MobEntityRenderer<EntityStrawngGolem, Mo
     private static final Identifier TEXTURE = new Identifier(Strawgolem.MODID, "textures/entity/strawng_golem.png");
 
     public RenderStrawngGolem(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher, new ModelStrawngGolem(), 1.2F);
+        super(entityRenderDispatcher, new ModelStrawngGolem(), 1.05F);
     }
 
     @Override

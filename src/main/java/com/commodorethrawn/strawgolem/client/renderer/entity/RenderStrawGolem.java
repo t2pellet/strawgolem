@@ -64,6 +64,7 @@ public class RenderStrawGolem extends MobEntityRenderer<EntityStrawGolem, ModelS
         this.getModel().setHoldingBlock(mobEntity.holdingFullBlock());
         this.getModel().setHoldingItem(!mobEntity.isHandEmpty());
         this.getModel().setHungry(mobEntity.getHunger().isHungry());
+        this.getModel().setTempted(mobEntity.isTempted());
         // Lower position for sitting
         if (mobEntity.getHunger().isHungry()) {
             matrixStack.translate(0, -0.2F, 0);
