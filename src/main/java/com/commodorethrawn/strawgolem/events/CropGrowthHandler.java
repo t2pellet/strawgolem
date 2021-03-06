@@ -5,9 +5,7 @@ import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.entity.ai.GolemHarvestGoal;
 import com.commodorethrawn.strawgolem.mixin.GoalSelectorAccessor;
-import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
 import net.minecraft.block.*;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
@@ -19,7 +17,6 @@ import net.minecraft.world.WorldAccess;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.PriorityQueue;
 
 /**
