@@ -23,11 +23,13 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
     private boolean holdingItem;
     private boolean isHungry;
     private boolean playerHasFood;
+    private boolean tempted;
 
     public ModelStrawGolem() {
         holdingBlock = false;
         holdingItem = false;
         isHungry = false;
+        tempted = false;
         textureWidth = 48;
         textureHeight = 48;
 
@@ -57,7 +59,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
         leftArm.setTextureOffset(4, 39).addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F, 0.0F, false);
     }
 
-    @Override
+    @Override //TODO All the golems seem to do the wavy arms thing, not just the ones being tempted
     public void setAngles(EntityStrawGolem entity, float limbAngle, float limbDistance, float tickDelta, float headYaw, float headPitch) {
 
         //Head rotation
@@ -172,4 +174,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
         this.playerHasFood = playerHasFood;
     }
 
+    public void setTempted(boolean tempted) {
+        this.tempted = tempted;
+    }
 }

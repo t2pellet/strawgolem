@@ -85,8 +85,8 @@ public class ModelStrawngGolem extends EntityModel<EntityStrawngGolem> {
 		} else if (entity.getPassengerList().size() == 1 && entity.getPassengerList().get(0) instanceof EntityStrawGolem) {
 			LeftArm.pitch = -0.45F * (float) Math.PI;
 			RightArm.pitch = -0.45F * (float) Math.PI;
-			LeftArm.yaw = 0.18F;
-			RightArm.yaw = -0.18F;
+			LeftArm.yaw = 0.34F;
+			RightArm.yaw = -0.34F;
 		} else {
 			this.RightArm.pitch = (-0.2F + 1.5F * MathHelper.method_24504(limbAngle, 13.0F)) * limbDistance;
 			this.LeftArm.pitch = (-0.2F - 1.5F * MathHelper.method_24504(limbAngle, 13.0F)) * limbDistance;

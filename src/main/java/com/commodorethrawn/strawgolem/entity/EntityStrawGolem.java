@@ -69,6 +69,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     private final Tether tether;
     private final Hunger hunger;
     private BlockPos harvestPos;
+    private boolean tempted;
 
     public static DefaultAttributeContainer.Builder createMob() {
         return MobEntity.createMobAttributes()
@@ -84,6 +85,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         hunger = CapabilityHandler.INSTANCE.get(Hunger.class).orElseThrow(() -> new InstantiationError("Failed to create new hunger cap"));
         inventory = new SimpleInventory(1);
         harvestPos = BlockPos.ORIGIN;
+        tempted = false;
     }
 
     @Override
@@ -365,18 +367,28 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         return hunger;
     }
 
-    /* Iron Golem Pickup */
+    @Override
+    public void setTempted(boolean tempted) {
+        this.tempted = tempted;
+    }
+
+    @Override
+    public boolean isTempted() {
+        return tempted;
+    }
+
+    /* Golem Pickup */
 
     @Override
     public void setPos(double posX, double posY, double posZ) {
-        if (hasVehicle() && getVehicle() instanceof IronGolemEntity) {
-            IronGolemEntity ironGolem = (IronGolemEntity) getVehicle();
-            double lookX = ironGolem.getRotationVector().getX();
-            double lookZ = ironGolem.getRotationVector().getZ();
+        if (hasVehicle() && (getVehicle() instanceof IronGolemEntity || getVehicle() instanceof EntityStrawngGolem)) {
+            GolemEntity golemEntity = (GolemEntity) getVehicle();
+            double lookX = golemEntity.getRotationVector().getX();
+            double lookZ = golemEntity.getRotationVector().getZ();
             double magnitude = Math.sqrt(lookX * lookX + lookZ * lookZ);
             lookX /= magnitude;
             lookZ /= magnitude;
-            super.setPos(posX + 1.85D * lookX, posY - 0.55D, posZ + 1.85D * lookZ);
+            super.setPos(posX + 1.71D * lookX, posY - 0.55D, posZ + 1.71D * lookZ);
         } else {
             super.setPos(posX, posY, posZ);
         }
@@ -385,7 +397,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     @Override
     public void stopRiding() {
         super.stopRiding();
-        if (getVehicle() instanceof IronGolemEntity) {
+        if (getVehicle() instanceof IronGolemEntity || getVehicle() instanceof EntityStrawngGolem) {
             LivingEntity ridingEntity = (LivingEntity) getVehicle();
             double lookX = ridingEntity.yaw;
             double lookZ = ridingEntity.pitch;

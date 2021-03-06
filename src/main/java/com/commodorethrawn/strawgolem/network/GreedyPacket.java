@@ -23,7 +23,6 @@ public class GreedyPacket extends Packet {
     public void execute() {
         World world = MinecraftClient.getInstance().world;
         EntityStrawGolem golem = (EntityStrawGolem) world.getEntityById(tag.getInt("id"));
-        RenderStrawGolem renderStrawGolem = (RenderStrawGolem) MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(golem);
-        renderStrawGolem.getModel().setPlayerHasFood(tag.getBoolean("greedy"));
+        golem.setTempted(true);
     }
 }

@@ -2,6 +2,7 @@ package com.commodorethrawn.strawgolem.entity;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.entity.ai.PickupGolemGoal;
 import com.commodorethrawn.strawgolem.entity.ai.TetherGoal;
 import com.commodorethrawn.strawgolem.entity.ai.TrackStrawngGolemTargetGoal;
 import com.commodorethrawn.strawgolem.entity.capability.CapabilityHandler;
@@ -59,13 +60,13 @@ public class EntityStrawngGolem extends GolemEntity implements IHasTether {
         if (ConfigHelper.isTetherEnabled()) {
             goalSelector.add(2, new TetherGoal<>(this, 0.85D));
         }
-        goalSelector.add(2, new WanderNearTargetGoal(this, 0.7D, ConfigHelper.getTetherMaxRange()));
-        goalSelector.add(3, new WanderAroundGoal(this, 0.6D));
-        goalSelector.add(4, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
-        goalSelector.add(5, new LookAroundGoal(this));
+        goalSelector.add(3, new PickupGolemGoal(this, 0.6D));
+        goalSelector.add(4, new WanderNearTargetGoal(this, 0.7D, ConfigHelper.getTetherMaxRange()));
+        goalSelector.add(5, new WanderAroundGoal(this, 0.6D));
+        goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+        goalSelector.add(7, new LookAroundGoal(this));
         targetSelector.add(1, new TrackStrawngGolemTargetGoal(this));
-        targetSelector.add(2, new RevengeGoal(this));
-        targetSelector.add(3, new FollowTargetGoal(this, MobEntity.class, 5, false, false, e -> {
+        targetSelector.add(2, new FollowTargetGoal<>(this, MobEntity.class, 5, false, false, e -> {
             return e instanceof Monster && !(e instanceof CreeperEntity);
         }));
     }
