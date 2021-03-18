@@ -6,6 +6,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class GolemPoutGoal extends Goal {
         if (player.isPresent()) {
             golem.getLookControl().lookAt(player.get().getPos().add(0, 2.0F, 0));
         } else {
-            Vector3f facingVector = golem.getHorizontalFacing().getUnitVector();
+            Vec3i facingVector = golem.getHorizontalFacing().getVector();
             Vec3d facingPos = golem.getPos().add(facingVector.getX(), facingVector.getY(), facingVector.getZ());
             golem.getLookControl().lookAt(facingPos);
         }

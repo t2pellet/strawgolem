@@ -12,6 +12,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -50,8 +51,8 @@ public class CropGrowthHandler {
         if (!world.isClient()) {
             BlockPos cropPos = pos;
             if (world.getBlockState(cropPos).getBlock() instanceof AttachedStemBlock) {
-                Direction facing = world.getBlockState(cropPos).get(AttachedStemBlock.FACING);
-                cropPos = cropPos.add(facing.getUnitVector().getX(), facing.getUnitVector().getX(), facing.getUnitVector().getZ());
+                Vec3i facing = world.getBlockState(cropPos).get(AttachedStemBlock.FACING).getVector();
+                cropPos = cropPos.add(facing.getX(), facing.getX(), facing.getZ());
             }
             if (isFullyGrown(world, cropPos)) {
                 EntityStrawGolem golem = getCropGolem(world, cropPos);
