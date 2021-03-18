@@ -1,16 +1,22 @@
 package com.commodorethrawn.strawgolem.network;
 
-import net.fabricmc.fabric.api.network.PacketContext;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.MinecraftServer;
 
 public abstract class Packet {
 
     CompoundTag tag;
 
-    Packet(PacketContext ctx, PacketByteBuf byteBuf) {
+    Packet(MinecraftClient client, PacketByteBuf byteBuf) {
         this.tag = byteBuf.readCompoundTag();
-        ctx.getTaskQueue().execute(this::execute);
+        client.execute(this::execute);
+    }
+
+    Packet(MinecraftServer server, PacketByteBuf byteBuf) {
+        this.tag = byteBuf.readCompoundTag();
+        server.execute(this::execute);
     }
 
     public Packet() {

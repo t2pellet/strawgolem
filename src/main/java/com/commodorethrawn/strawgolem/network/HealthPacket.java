@@ -1,14 +1,13 @@
 package com.commodorethrawn.strawgolem.network;
 
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
-import com.commodorethrawn.strawgolem.util.scheduler.ClientScheduler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.network.PacketContext;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.world.World;
 
-@Environment(EnvType.CLIENT)
 public class HealthPacket extends Packet {
 
     public HealthPacket(EntityStrawGolem golem) {
@@ -18,10 +17,11 @@ public class HealthPacket extends Packet {
         tag.putInt("id", golem.getEntityId());
     }
 
-    HealthPacket(PacketContext ctx, PacketByteBuf byteBuf) {
-        super(ctx, byteBuf);
+    HealthPacket(MinecraftClient client, PacketByteBuf byteBuf) {
+        super(client, byteBuf);
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public void execute() {
         int lifespan = tag.getInt("lifespan");
