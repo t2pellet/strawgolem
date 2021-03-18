@@ -15,7 +15,8 @@ import com.commodorethrawn.strawgolem.events.GolemCreationHandler;
 import com.commodorethrawn.strawgolem.network.HealthPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
 import com.commodorethrawn.strawgolem.registry.StrawgolemSounds;
-import com.commodorethrawn.strawgolem.util.scheduler.ServerScheduler;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -218,7 +219,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
 
     @Override
     public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
-        GolemCreationHandler.spawnStrawngGolem(world, this);
+        if (random.nextInt(10) == 0) GolemCreationHandler.spawnStrawngGolem(world, this);
     }
 
     /* Death & Despawning */
@@ -385,11 +386,13 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public void setTempted(boolean tempted) {
         this.tempted = tempted;
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public boolean isTempted() {
         return tempted;
     }

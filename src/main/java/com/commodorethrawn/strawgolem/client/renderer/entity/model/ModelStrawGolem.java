@@ -22,7 +22,6 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
     private boolean holdingBlock;
     private boolean holdingItem;
     private boolean isHungry;
-    private boolean playerHasFood;
     private boolean tempted;
 
     public ModelStrawGolem() {
@@ -90,7 +89,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
         this.leftleg.roll = 0.0F;
 
         if (isHungry) {
-            if (playerHasFood) greedyArms(tickDelta);
+            if (tempted) greedyArms(tickDelta);
             else idleArms(tickDelta);
             this.leftleg.pitch = -(float) Math.PI / 2;
             this.leftleg.yaw = -(float) Math.PI / 8;
@@ -106,7 +105,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
             this.leftArm.pitch = (float) -(0.29D * Math.PI);
             this.leftArm.yaw = (float) (0.12D * Math.PI);
             this.leftArm.roll = (float) -(0.08D * Math.PI);
-        } else if (playerHasFood) greedyArms(tickDelta);
+        } else if (tempted) greedyArms(tickDelta);
         else idleArms(tickDelta);
     }
 
@@ -168,10 +167,6 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Mo
 
     public void setHungry(boolean isHungry) {
         this.isHungry = isHungry;
-    }
-
-    public void setPlayerHasFood(boolean playerHasFood) {
-        this.playerHasFood = playerHasFood;
     }
 
     public void setTempted(boolean tempted) {
