@@ -4,6 +4,7 @@ import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
+import com.commodorethrawn.strawgolem.util.CropLogic;
 import net.minecraft.block.*;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
@@ -123,18 +124,7 @@ public class CropGrowthHandler {
     private static boolean isFullyGrown(IWorld world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
         if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
-            if (state.getBlock() instanceof CropsBlock) {
-                CropsBlock crop = (CropsBlock) state.getBlock();
-                return crop.isMaxAge(state);
-            } else if (state.getBlock() instanceof StemGrownBlock) {
-                return true;
-            } else if (state.getBlock() instanceof NetherWartBlock) {
-                return state.get(NetherWartBlock.AGE) == 3;
-            } else if (state.getBlock() instanceof BushBlock
-                    && state.getBlock() instanceof IGrowable
-                    && state.func_235901_b_(BlockStateProperties.AGE_0_3)) {
-                return state.get(BlockStateProperties.AGE_0_3) == 3;
-            }
+            return CropLogic.getLogic(state).isFullyGrown(state, world, pos);
         }
         return false;
     }

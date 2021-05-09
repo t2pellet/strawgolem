@@ -3,6 +3,7 @@ package com.commodorethrawn.strawgolem.entity.ai;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
+import com.commodorethrawn.strawgolem.util.CropLogic;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.*;
 import net.minecraft.entity.CreatureEntity;
@@ -102,108 +103,9 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         ServerWorld worldIn = (ServerWorld) this.strawgolem.world;
         BlockPos pos = this.destinationBlock;
         BlockState state = worldIn.getBlockState(pos);
-        Block block = state.getBlock();
         /* If its the right block to harvest */
         if (shouldMoveTo(worldIn, pos)) {
-            worldIn.playSound(null, pos, SoundEvents.BLOCK_CROP_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
-            doPickup(worldIn, pos, state, block);
-            doReplant(worldIn, pos, state, block);
+            CropLogic.getLogic(state).handleHarvest(strawgolem, worldIn, pos, state);
         }
     }
-
-    /**
-     * Handles the logic for picking up the harvests
-     * @param worldIn : the world
-     * @param pos : the position of the crop
-     * @param state : the BlockState of the crop
-     * @param block : the Block of the crop
-     */
-    private void doPickup(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
-        if (ConfigHelper.isDeliveryEnabled()) {
-            if (block instanceof StemGrownBlock) {
-                strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
-                strawgolem.getInventory().insertItem(0, new ItemStack(Item.BLOCK_TO_ITEM.getOrDefault(block, Items.AIR)), false);
-            } else if (block instanceof CropsBlock || block instanceof NetherWartBlock) {
-                List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getTileEntity(pos));
-                for (ItemStack drop : drops) {
-                    if (isCropDrop(drop)) {
-                        strawgolem.getInventory().insertItem(0, drop, false);
-                    } else if (drop.getItem() instanceof BlockItem && !(drop.getItem() instanceof BlockNamedItem)) {
-                        strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
-                        strawgolem.getInventory().insertItem(0, drop, false);
-                        break;
-                    }
-                }
-            } else fakeRightClick(worldIn, pos, state); //Bushes
-        }
-    }
-
-    /**
-     * Handles the replanting logic
-     * @param worldIn : the world
-     * @param pos : the position of the crop
-     * @param state : the BlockState of the crop
-     * @param block : the Block of the crop
-     */
-    private void doReplant(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
-        if (ConfigHelper.isReplantEnabled()) {
-            if (block instanceof CropsBlock) {
-                CropsBlock crop = (CropsBlock) block;
-                worldIn.setBlockState(pos, crop.getDefaultState());
-            } else if (block instanceof NetherWartBlock) {
-                worldIn.setBlockState(pos, block.getDefaultState().with(NetherWartBlock.AGE, 0));
-            } else if (state.func_235901_b_(BlockStateProperties.AGE_0_3) && block instanceof BushBlock) { // Bushes
-                worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
-            } else {
-                worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
-            }
-        } else {
-            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
-        }
-        worldIn.notifyBlockUpdate(pos.up(), state, worldIn.getBlockState(pos), 3);
-    }
-
-    /**
-     * Performs a simulated player right click on the given block at position pos, with BlockState state,
-     * in the world worldIn
-     *
-     * @param worldIn the world
-     * @param pos     the position
-     * @param state   the BlockState
-     */
-    private void fakeRightClick(ServerWorld worldIn, BlockPos pos, BlockState state) {
-        PlayerEntity fake = FakePlayerFactory.get(worldIn, new GameProfile(null, "golem"));
-        BlockRayTraceResult result = new BlockRayTraceResult(strawgolem.getPositionVec(),
-                strawgolem.getHorizontalFacing().getOpposite(),
-                pos,
-                false);
-        try {
-            state.onBlockActivated(worldIn, fake, Hand.MAIN_HAND, result);
-            MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickBlock(fake,
-                    Hand.MAIN_HAND,
-                    pos,
-                    strawgolem.getHorizontalFacing().getOpposite()));
-            List<ItemEntity> itemList = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(2.5F));
-            for (ItemEntity item : itemList) {
-                strawgolem.getInventory().insertItem(0, item.getItem(), false);
-                item.remove();
-            }
-        } catch (NullPointerException ex) {
-            Strawgolem.logger.info(String.format("Golem could not harvest block at: %s", pos));
-        }
-        fake.remove(false);
-    }
-
-    /**
-     * Determines whether the given drop is a normal crop to be picked up
-     *
-     * @param drop : the drop in question
-     * @return if the drop is a normal crop to pick up
-     */
-    private boolean isCropDrop(ItemStack drop) {
-        return !(drop.getItem() instanceof BlockItem)
-                || drop.getUseAction() == UseAction.EAT
-                || drop.getItem() == Items.NETHER_WART;
-    }
-
 }

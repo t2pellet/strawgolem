@@ -13,6 +13,7 @@ import com.commodorethrawn.strawgolem.entity.capability.profession.IProfession;
 import com.commodorethrawn.strawgolem.entity.capability.profession.ProfessionProvider;
 import com.commodorethrawn.strawgolem.network.MessageLifespan;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
+import com.commodorethrawn.strawgolem.util.CropLogic;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -303,15 +304,7 @@ public class EntityStrawGolem extends GolemEntity {
     public boolean shouldHarvestBlock(IWorldReader worldIn, BlockPos pos) {
         BlockState state = worldIn.getBlockState(pos);
         if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
-            if (state.getBlock() instanceof CropsBlock)
-                return ((CropsBlock) state.getBlock()).isMaxAge(state);
-            else if (state.getBlock() instanceof StemGrownBlock)
-                return true;
-            else if (state.getBlock() instanceof NetherWartBlock)
-                return state.get(NetherWartBlock.AGE) == 3;
-            else if (state.getBlock() instanceof BushBlock && state.getBlock() instanceof IGrowable)
-                return state.func_235901_b_(BlockStateProperties.AGE_0_3)
-                        && state.get(BlockStateProperties.AGE_0_3) == 3;
+            return CropLogic.getLogic(state).isFullyGrown(state, worldIn, pos);
         }
         return false;
     }
