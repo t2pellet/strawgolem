@@ -1,6 +1,7 @@
 package com.commodorethrawn.strawgolem.registry;
 
 import com.commodorethrawn.strawgolem.client.compat.CompatHwyla;
+import com.commodorethrawn.strawgolem.crop.ICropRegistry;
 import com.commodorethrawn.strawgolem.entity.capability.CapabilityHandler;
 import com.commodorethrawn.strawgolem.entity.capability.hunger.Hunger;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
@@ -15,6 +16,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.*;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.registry.Registry;
 
 public class CommonRegistry {
 
@@ -24,6 +28,7 @@ public class CommonRegistry {
         PacketHandler.register();
         registerEvents();
         registerCapabilities();
+        registerCrops();
     }
 
     private static void registerEvents() {
@@ -50,6 +55,19 @@ public class CommonRegistry {
         CapabilityHandler.INSTANCE.register(Lifespan.class, Lifespan::getInstance);
         CapabilityHandler.INSTANCE.register(Memory.class, Memory::getInstance);
         CapabilityHandler.INSTANCE.register(Tether.class, Tether::getInstance);
+    }
+
+    private static void registerCrops() {
+        for (Block block : Registry.BLOCK) {
+            if (block instanceof CropBlock) ICropRegistry.INSTANCE.register(block, ((CropBlock) block).getAgeProperty());
+            else if (block instanceof GourdBlock) ICropRegistry.INSTANCE.register(block, null);
+            else if (block instanceof NetherWartBlock) ICropRegistry.INSTANCE.register(block, NetherWartBlock.AGE);
+            else if ((block instanceof PlantBlock
+                    && block instanceof Fertilizable
+                    && block.getDefaultState().contains(Properties.AGE_3))) {
+                ICropRegistry.INSTANCE.register(block, Properties.AGE_3);
+            }
+        }
     }
 
 }

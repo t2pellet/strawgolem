@@ -2,6 +2,7 @@ package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.crop.CropValidator;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.network.HoldingPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
@@ -44,8 +45,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
             targetPos = strawgolem.getHarvestPos();
             this.cooldown = getInterval(this.mob);
             strawgolem.clearHarvestPos();
-            return strawgolem.shouldHarvestBlock(strawgolem.world, targetPos)
-                    && strawgolem.canSeeBlock(strawgolem.world, targetPos);
+            return CropValidator.isGrownCrop(strawgolem.world.getBlockState(targetPos));
         }
         /* Based off the vanilla code of shouldExecute, with additional check to ensure the golems hand is empty */
         if (this.cooldown > 0) {
@@ -94,7 +94,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
 
     @Override
     protected boolean isTargetPos(WorldView worldIn, BlockPos pos) {
-        return strawgolem.shouldHarvestBlock(worldIn, pos) && strawgolem.isHandEmpty();
+        return CropValidator.isGrownCrop(worldIn.getBlockState(pos)) && strawgolem.isHandEmpty();
     }
 
     /**

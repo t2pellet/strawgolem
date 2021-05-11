@@ -247,41 +247,6 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     /* Harvesting */
 
     /**
-     * Determines whether or not the block at position pos in world worldIn should be harvested
-     *
-     * @param worldIn the world
-     * @param pos     the position
-     * @return whether the golem should harvest the block
-     */
-    public boolean shouldHarvestBlock(WorldView worldIn, BlockPos pos) {
-        BlockState state = worldIn.getBlockState(pos);
-        if (ConfigHelper.blockHarvestAllowed(state.getBlock())) {
-            if (state.getBlock() instanceof CropBlock)
-                return ((CropBlock) state.getBlock()).isMature(state);
-            else if (state.getBlock() instanceof GourdBlock) {
-                // Only harvest gourd blocks that are connected to a stem (to not ruin decorative gardens)
-                BlockPos[] stems = {pos.east(), pos.west(), pos.north(), pos.south()};
-                return Arrays.stream(stems).anyMatch(stem -> {
-                    BlockState stemState = worldIn.getBlockState(stem);
-                    if (stemState.getBlock() instanceof AttachedStemBlock) {
-                        Direction stemFacing = stemState.get(AttachedStemBlock.FACING);
-                        BlockPos gourdPos = stem.add(stemFacing.getVector());
-                        System.out.println("Gourd pos: " + gourdPos);
-                        System.out.println("Actual pos: " + pos);
-                        return gourdPos.equals(pos);
-                    }
-                    return false;
-                });
-            } else if (state.getBlock() instanceof NetherWartBlock)
-                return state.get(NetherWartBlock.AGE) == 3;
-            else if (state.getBlock() instanceof PlantBlock && state.getBlock() instanceof Fertilizable)
-                return state.contains(Properties.AGE_3)
-                        && state.get(Properties.AGE_3) == 3;
-        }
-        return false;
-    }
-
-    /**
      * Checks if golem has line of sight on the block
      * @param worldIn the world
      * @param pos     the position
@@ -294,7 +259,6 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         RaycastContext ctx = new RaycastContext(golemPos, blockPos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this);
         return worldIn.raycast(ctx).getPos().isInRange(blockPos, 2.5D);
     }
-
 
     /**
      * Sets the harvest position to pos
