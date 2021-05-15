@@ -6,16 +6,17 @@ import com.commodorethrawn.strawgolem.crop.CropValidator;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.entity.ai.GolemHarvestGoal;
 import com.commodorethrawn.strawgolem.mixin.GoalSelectorAccessor;
+import com.commodorethrawn.strawgolem.util.scheduler.ActionScheduler;
 import net.minecraft.entity.ai.goal.GoalSelector;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.PriorityQueue;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Handles how golems tend to harvest crops
@@ -25,23 +26,13 @@ import java.util.PriorityQueue;
  */
 public class CropGrowthHandler {
 
-    protected static final PriorityQueue<CropQueueEntry> queue = new PriorityQueue<>();
+    protected static final Set<CropQueueEntry> activeEntries = new HashSet<>();
     private static final int HARVEST_DELAY = 100;
 
     private CropGrowthHandler() {}
 
-    private static int ticks = 0;
-
-    public static void tick(ServerWorld world) {
-        if (!world.isClient && Strawgolem.getSaveData() != null) {
-            while (!queue.isEmpty() && ticks == queue.peek().tick) {
-                queue.remove().execute();
-                try {
-                    Strawgolem.getSaveData().saveData();
-                } catch (IOException ex) { ex.printStackTrace(); }
-            }
-            ++ticks;
-        }
+    public static Stream<CropQueueEntry> getCrops() {
+        return activeEntries.stream();
     }
 
     public static void onCropGrowth(WorldAccess world, BlockPos cropPos) {
@@ -86,23 +77,14 @@ public class CropGrowthHandler {
      */
     public static void scheduleCrop(WorldAccess world, BlockPos pos, int runsLeft) {
         if (runsLeft <= 0) return;
-        int executeTick = ticks + HARVEST_DELAY;
-        queue.add(new CropQueueEntry(pos, (World) world, executeTick, runsLeft));
-        if (Strawgolem.getSaveData() != null) {
-            try {
-                Strawgolem.getSaveData().saveData();
-            } catch (IOException ex) { ex.printStackTrace(); }
-        }
+        CropQueueEntry queueEntry = new CropQueueEntry(pos, (World) world, runsLeft);
+        ActionScheduler.INSTANCE.scheduleServerTask(HARVEST_DELAY, queueEntry::execute);
     }
 
-    public static Iterator<CropQueueEntry> getCrops() {
-        return queue.iterator();
-    }
+    public static class CropQueueEntry {
 
-    public static class CropQueueEntry implements Comparable<CropQueueEntry> {
         private final BlockPos pos;
         private final World world;
-        private final int tick;
         private int count;
 
         public BlockPos getPos() {
@@ -113,14 +95,22 @@ public class CropGrowthHandler {
             return world;
         }
 
-        public CropQueueEntry(BlockPos pos, World world, int tick, int count) {
+        public CropQueueEntry(BlockPos pos, World world, int count) {
             this.pos = pos;
             this.world = world;
-            this.tick = tick;
             this.count = count;
+            if (!world.isClient) activeEntries.add(this);
         }
 
         public void execute() {
+            if (!world.isClient) {
+                activeEntries.remove(this);
+                try {
+                    Strawgolem.getSaveData().saveData();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             if (world.isChunkLoaded(pos)) {
                 if (CropValidator.isGrownCrop(world.getBlockState(pos))) {
                     EntityStrawGolem golem = getCropGolem(world, pos);
@@ -133,13 +123,5 @@ public class CropGrowthHandler {
             } else scheduleCrop(world, pos, count);
         }
 
-        @Override
-        public int compareTo(CropQueueEntry entry) {
-            if (entry.tick == tick) {
-                if (entry.count == count) return 0;
-                return entry.count > count ? 1 : -1;
-            }
-            return entry.tick > tick ? -1 : 1;
-        }
     }
 }

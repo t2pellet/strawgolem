@@ -4,8 +4,10 @@ import com.commodorethrawn.strawgolem.client.renderer.entity.RenderIronGolem;
 import com.commodorethrawn.strawgolem.client.renderer.entity.RenderStrawGolem;
 import com.commodorethrawn.strawgolem.client.renderer.entity.RenderStrawngGolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.util.scheduler.ActionScheduler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.minecraft.entity.EntityType;
 
@@ -16,6 +18,7 @@ public class ClientRegistry {
 
     @Environment(EnvType.CLIENT)
     public static void register() {
+        ClientTickEvents.END_WORLD_TICK.register(ActionScheduler.INSTANCE::tick);
         StrawgolemParticles.register();
         registerEntityRenderer();
     }

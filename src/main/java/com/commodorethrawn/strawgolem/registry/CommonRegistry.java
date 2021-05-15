@@ -33,7 +33,7 @@ public class CommonRegistry {
 
     private static void registerEvents() {
         // Server Scheduler
-        ServerTickEvents.END_WORLD_TICK.register(ServerScheduler.INSTANCE::tick);
+        ServerTickEvents.END_WORLD_TICK.register(ActionScheduler.INSTANCE::tick);
         // Iron Golem Handling
         ServerLifecycleEvents.SERVER_STOPPING.register(IronGolemHandler::stopHolding);
         //Crop growth handling
