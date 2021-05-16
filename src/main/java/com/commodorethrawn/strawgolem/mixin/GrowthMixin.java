@@ -24,7 +24,7 @@ public class GrowthMixin {
 			cropPos = pos.add(state.get(AttachedStemBlock.FACING).getVector());
 			block = world.getBlockState(cropPos).getBlock();
 		}
-		if (CropValidator.isCrop(block)) {
+		if (CropValidator.isCrop(block) || CropValidator.isCrop(world.getBlockEntity(pos))) {
 			CropGrowthCallback.EVENT.invoker().grow(world, cropPos);
 		}
 	}

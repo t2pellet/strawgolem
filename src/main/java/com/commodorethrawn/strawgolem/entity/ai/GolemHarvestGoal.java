@@ -3,6 +3,7 @@ package com.commodorethrawn.strawgolem.entity.ai;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.crop.CropValidator;
+import com.commodorethrawn.strawgolem.crop.ICropRegistry;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.network.HoldingPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
@@ -19,7 +20,7 @@ import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.property.Properties;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.Hand;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -68,7 +69,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
         return super.shouldContinue() && !strawgolem.hasVehicle();
     }
 
-    /* Almost copied from the vanilla tick() method, just calling doHarvest when it gets to the block and some tweaks for different kinds of blocks */
+    /* Almost copied from the vanilla tick() method, just calling harvestCrop when it gets to the block and some tweaks for different kinds of blocks */
     @Override
     public void tick() {
         this.strawgolem.getLookControl().lookAt(
@@ -109,8 +110,9 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
         /* If its the right block to harvest */
         if (isTargetPos(worldIn, pos)) {
             worldIn.playSound(null, pos, SoundEvents.BLOCK_CROP_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
-            doPickup(worldIn, pos, state, block);
-            doReplant(worldIn, pos, state, block);
+            if (ConfigHelper.isDeliveryEnabled()) pickupCrop(worldIn, pos, state, block);
+            if (ConfigHelper.isReplantEnabled()) replantCrop(worldIn, pos, state, block);
+            else worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
     }
 
@@ -121,25 +123,23 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
      * @param state : the BlockState of the crop
      * @param block : the Block of the crop
      */
-    private void doPickup(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
-        if (ConfigHelper.isDeliveryEnabled()) {
-            if (block instanceof GourdBlock) {
-                strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
-                strawgolem.getInventory().addStack(new ItemStack(Item.BLOCK_ITEMS.getOrDefault(block, Items.AIR)));
-            } else if (block instanceof CropBlock || block instanceof NetherWartBlock) {
-                List<ItemStack> drops = Block.getDroppedStacks(state, worldIn, pos, worldIn.getBlockEntity(pos));
-                for (ItemStack drop : drops) {
-                    if (isCropDrop(drop)) {
-                        strawgolem.getInventory().addStack(drop);
-                        if (drop.getItem() == Items.POISONOUS_POTATO) strawgolem.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 10, 1));
-                    } else if (drop.getItem() instanceof BlockItem && !(drop.getItem() instanceof AliasedBlockItem)) {
-                        strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
-                        strawgolem.getInventory().addStack(drop);
-                        break;
-                    }
+    private void pickupCrop(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
+        if (block instanceof GourdBlock) {
+            strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
+            strawgolem.getInventory().addStack(new ItemStack(Item.BLOCK_ITEMS.getOrDefault(block, Items.AIR)));
+        } else if (block instanceof CropBlock || block instanceof NetherWartBlock) {
+            List<ItemStack> drops = Block.getDroppedStacks(state, worldIn, pos, worldIn.getBlockEntity(pos));
+            for (ItemStack drop : drops) {
+                if (isCropDrop(drop)) {
+                    strawgolem.getInventory().addStack(drop);
+                    if (drop.getItem() == Items.POISONOUS_POTATO) strawgolem.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 10, 1));
+                } else if (drop.getItem() instanceof BlockItem && !(drop.getItem() instanceof AliasedBlockItem)) {
+                    strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
+                    strawgolem.getInventory().addStack(drop);
+                    break;
                 }
-            } else fakeRightClick(worldIn, pos, state); //Bushes
-        }
+            }
+        } else fakeRightClick(worldIn, pos, state); //Bushes
         PacketHandler.INSTANCE.sendInRange(new HoldingPacket(strawgolem), strawgolem, 25.0F);
     }
 
@@ -150,23 +150,13 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
      * @param state : the BlockState of the crop
      * @param block : the Block of the crop
      */
-    private void doReplant(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
-        if (ConfigHelper.isReplantEnabled()) {
-            if (block instanceof CropBlock) {
-                CropBlock crop = (CropBlock) block;
-                worldIn.setBlockState(pos, crop.getDefaultState());
-            } else if (block instanceof NetherWartBlock) {
-                worldIn.setBlockState(pos, block.getDefaultState().with(NetherWartBlock.AGE, 0));
-            } else if (state.contains(Properties.AGE_3) && block instanceof PlantBlock) { // Bushes
-
-                worldIn.setBlockState(pos, block.getDefaultState().with(Properties.AGE_3, 2));
-            } else {
-                worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
-            }
+    private void replantCrop(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
+        IntProperty ageProperty = ICropRegistry.INSTANCE.getAgeProperty(block);
+        if (block instanceof SweetBerryBushBlock) {
+            worldIn.setBlockState(pos, block.getDefaultState().with(ageProperty, 2));
         } else {
-            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+            worldIn.setBlockState(pos, state.with(ageProperty, 1));
         }
-        worldIn.updateListeners(pos.up(), state, worldIn.getBlockState(pos), 3);
     }
 
     /**

@@ -4,5 +4,5 @@ import net.minecraft.block.BlockState;
 
 public interface IAmHarvestable {
 
-    boolean isFullyGrown(BlockState state);
+    boolean isMature(BlockState state);
 }

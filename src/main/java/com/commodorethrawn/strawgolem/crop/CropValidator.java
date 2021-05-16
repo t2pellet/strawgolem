@@ -1,16 +1,10 @@
 package com.commodorethrawn.strawgolem.crop;
 
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
-import net.minecraft.block.AttachedStemBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.GourdBlock;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldView;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class CropValidator {
@@ -21,8 +15,13 @@ public class CropValidator {
     private static final ICropRegistry cropRegistry = ICropRegistry.INSTANCE;
 
     public static boolean isCrop(Block block) {
-        return ConfigHelper.blockHarvestAllowed(block)
-                && (block instanceof IAmHarvestable || cropRegistry.containsCrop(block));
+        return (block instanceof IAmHarvestable || cropRegistry.containsCrop(block))
+                && ConfigHelper.blockHarvestAllowed(block);
+    }
+
+    public static boolean isCrop(BlockEntity blockEntity) {
+        return (blockEntity instanceof IAmHarvestable || cropRegistry.containsCrop(blockEntity))
+                && ConfigHelper.blockHarvestAllowed(blockEntity.getCachedState().getBlock());
     }
 
     public static boolean isStem(Block block) {
@@ -33,7 +32,7 @@ public class CropValidator {
         Block block = state.getBlock();
         if (!isCrop(block)) return false;
         if (block instanceof IAmHarvestable) {
-            return ((IAmHarvestable) block).isFullyGrown(state);
+            return ((IAmHarvestable) block).isMature(state);
         } else {
             IntProperty ageProperty = cropRegistry.getAgeProperty(block);
             if (ageProperty != null) {
@@ -44,6 +43,14 @@ public class CropValidator {
                 return gourdBlock.getAttachedStem() != null;
             } else return false;
         }
+    }
+
+    public static boolean isGrownCrop(BlockEntity blockEntity) {
+        IntProperty ageProperty = cropRegistry.getAgeProperty(blockEntity);
+        if (ageProperty != null) {
+            int maxValue = Collections.max(ageProperty.getValues());
+            return blockEntity.getCachedState().get(ageProperty) == maxValue;
+        } else return false;
     }
 
 }
