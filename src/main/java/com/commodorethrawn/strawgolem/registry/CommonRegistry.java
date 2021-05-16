@@ -8,17 +8,20 @@ import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
 import com.commodorethrawn.strawgolem.entity.capability.memory.Memory;
 import com.commodorethrawn.strawgolem.entity.capability.tether.Tether;
 import com.commodorethrawn.strawgolem.events.*;
-import com.commodorethrawn.strawgolem.events.CropGrowthCallback;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
-import com.commodorethrawn.strawgolem.util.scheduler.ServerScheduler;
+import com.commodorethrawn.strawgolem.util.scheduler.ActionScheduler;
 import mcp.mobius.waila.api.event.WailaTooltipEvent;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.registry.Registry;
+
+import java.util.Arrays;
 
 public class CommonRegistry {
 
@@ -32,12 +35,13 @@ public class CommonRegistry {
     }
 
     private static void registerEvents() {
+        // Crop Registry
+        RegistryEntryAddedCallback.event(Registry.BLOCK).register((i, id, block) -> registerCrop(block));
         // Server Scheduler
         ServerTickEvents.END_WORLD_TICK.register(ActionScheduler.INSTANCE::tick);
         // Iron Golem Handling
         ServerLifecycleEvents.SERVER_STOPPING.register(IronGolemHandler::stopHolding);
         //Crop growth handling
-        ServerTickEvents.END_WORLD_TICK.register(CropGrowthHandler::tick);
         CropGrowthCallback.EVENT.register(CropGrowthHandler::onCropGrowth);
         //Golem Creation Handling
         UseBlockCallback.EVENT.register(GolemCreationHandler::onGolemBuilt);
@@ -58,15 +62,20 @@ public class CommonRegistry {
     }
 
     private static void registerCrops() {
-        for (Block block : Registry.BLOCK) {
-            if (block instanceof CropBlock) ICropRegistry.INSTANCE.register(block, ((CropBlock) block).getAgeProperty());
-            else if (block instanceof GourdBlock) ICropRegistry.INSTANCE.register(block, null);
-            else if (block instanceof NetherWartBlock) ICropRegistry.INSTANCE.register(block, NetherWartBlock.AGE);
-            else if ((block instanceof PlantBlock
-                    && block instanceof Fertilizable
-                    && block.getDefaultState().contains(Properties.AGE_3))) {
-                ICropRegistry.INSTANCE.register(block, Properties.AGE_3);
-            }
+        Registry.BLOCK.forEach(CommonRegistry::registerCrop);
+    }
+
+    private static void registerCrop(Block block) {
+        if (block instanceof CropBlock) ICropRegistry.INSTANCE.register(block, ((CropBlock) block).getAgeProperty());
+        else if (block instanceof GourdBlock) ICropRegistry.INSTANCE.register(block, null);
+        else if (block instanceof NetherWartBlock) ICropRegistry.INSTANCE.register(block, NetherWartBlock.AGE);
+        else if (block instanceof PlantBlock && block instanceof Fertilizable) {
+            // Register any Fertilizable PlantBlock with 3, 5 or 7 age states
+            IntProperty[] ageProperties = {Properties.AGE_3, Properties.AGE_5, Properties.AGE_7};
+            Arrays.stream(ageProperties)
+                    .filter(age -> block.getDefaultState().contains(age))
+                    .findFirst()
+                    .ifPresent(ageProperty -> ICropRegistry.INSTANCE.register(block, ageProperty));
         }
     }
 

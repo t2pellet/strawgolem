@@ -46,7 +46,7 @@ public class StrawgolemSaveData {
                         BlockPos pos = NbtHelper.toBlockPos((CompoundTag) entryTag.get(POS));
                         World world = server.getWorld(dim);
                         if (world != null) {
-                            CropGrowthHandler.scheduleCrop(world, pos, 3);
+                            CropGrowthHandler.scheduleCrop(world, pos, 5);
                         }
                     }
                 }
@@ -56,16 +56,14 @@ public class StrawgolemSaveData {
 
     public void saveData() throws IOException {
         CompoundTag compound = new CompoundTag();
-        Iterator<CropGrowthHandler.CropQueueEntry> cropIterator = CropGrowthHandler.getCrops();
         ListTag listTag = new ListTag();
-        while (cropIterator.hasNext()) {
+        CropGrowthHandler.getCrops().forEach(entry -> {
             CompoundTag entryTag = new CompoundTag();
-            CropGrowthHandler.CropQueueEntry entry = cropIterator.next();
             entryTag.put(POS, NbtHelper.fromBlockPos(entry.getPos()));
             Identifier.CODEC.encodeStart(NbtOps.INSTANCE, entry.getWorld().getRegistryKey().getValue())
                     .result().ifPresent(dim -> entryTag.put(WORLD, dim));
             listTag.add(entryTag);
-        }
+        });
         compound.put("listTag", listTag);
         File file = new File(worldDataDir, GOLEM_DATA_NAME);
         NbtIo.writeCompressed(compound, file);

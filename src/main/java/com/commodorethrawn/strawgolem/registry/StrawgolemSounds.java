@@ -16,9 +16,17 @@ public class StrawgolemSounds {
     public static final Identifier GOLEM_HEAL_ID = new Identifier(Strawgolem.MODID, "golem_heal");
     public static final Identifier GOLEM_SCARED_ID = new Identifier(Strawgolem.MODID, "golem_scared");
     public static final Identifier GOLEM_INTERESTED_ID = new Identifier(Strawgolem.MODID, "golem_interested");
+    public static final Identifier GOLEM_DISGUSTED_ID = new Identifier(Strawgolem.MODID, "golem_disgusted");
 
     public static void register() {
-        registerSounds(GOLEM_AMBIENT_ID, GOLEM_STRAINED_ID, GOLEM_HURT_ID, GOLEM_DEATH_ID, GOLEM_HEAL_ID, GOLEM_SCARED_ID, GOLEM_INTERESTED_ID);
+        registerSounds(GOLEM_AMBIENT_ID,
+                GOLEM_STRAINED_ID,
+                GOLEM_HURT_ID,
+                GOLEM_DEATH_ID,
+                GOLEM_HEAL_ID,
+                GOLEM_SCARED_ID,
+                GOLEM_INTERESTED_ID,
+                GOLEM_DISGUSTED_ID);
     }
 
     private static void registerSounds(Identifier... ids) {

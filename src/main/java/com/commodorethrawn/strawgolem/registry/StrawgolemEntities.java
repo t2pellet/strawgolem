@@ -4,6 +4,7 @@ import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.entity.EntityStrawngGolem;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.Identifier;
@@ -23,20 +24,19 @@ public class StrawgolemEntities {
     }
 
     public static void register() {
-        STRAW_GOLEM_TYPE = Registry.register(
-                Registry.ENTITY_TYPE,
-                new Identifier(Strawgolem.MODID, "strawgolem"),
-                EntityType.Builder.create(EntityStrawGolem::new, SpawnGroup.CREATURE)
-                        .maxTrackingRange(48).trackingTickInterval(3).setDimensions(0.6F, 0.9F)
-                        .build("strawgolem"));
+        STRAW_GOLEM_TYPE = registerEntity("strawgolem", EntityStrawGolem::new, SpawnGroup.CREATURE, 0.6F, 0.9F);
         FabricDefaultAttributeRegistry.register(STRAW_GOLEM_TYPE, EntityStrawGolem.createMob());
-        STRAWNG_GOLEM_TYPE = Registry.register(
-                Registry.ENTITY_TYPE,
-                new Identifier(Strawgolem.MODID, "strawnggolem"),
-                EntityType.Builder.create(EntityStrawngGolem::new, SpawnGroup.CREATURE)
-                        .maxTrackingRange(48).trackingTickInterval(3).setDimensions(1.25F, 3.5F)
-                        .build("strawnggolem"));
+        STRAWNG_GOLEM_TYPE = registerEntity("strawnggolem", EntityStrawngGolem::new, SpawnGroup.CREATURE, 1.25F, 3.5F);
         FabricDefaultAttributeRegistry.register(STRAWNG_GOLEM_TYPE, EntityStrawngGolem.createMob());
+    }
+
+    private static <T extends Entity> EntityType<T> registerEntity(String name, EntityType.EntityFactory<T> factory, SpawnGroup spawnGroup, float width, float height) {
+        return Registry.register(
+                Registry.ENTITY_TYPE,
+                new Identifier(Strawgolem.MODID, name),
+                EntityType.Builder.create(factory, spawnGroup)
+                    .maxTrackingRange(48).trackingTickInterval(3).setDimensions(width, height)
+                    .build(name));
     }
 
 }

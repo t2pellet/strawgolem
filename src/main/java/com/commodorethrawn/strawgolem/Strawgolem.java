@@ -1,19 +1,11 @@
 package com.commodorethrawn.strawgolem;
 
-import com.commodorethrawn.strawgolem.crop.ICropRegistry;
 import com.commodorethrawn.strawgolem.registry.ClientRegistry;
 import com.commodorethrawn.strawgolem.registry.CommonRegistry;
 import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
-import com.commodorethrawn.strawgolem.util.scheduler.ClientScheduler;
-import com.commodorethrawn.strawgolem.util.scheduler.ServerScheduler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.block.*;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,13 +24,11 @@ public class Strawgolem implements ModInitializer, ClientModInitializer {
     public void onInitialize() {
         CommonRegistry.register();
         registerSaveData();
-        ServerTickEvents.END_WORLD_TICK.register(ServerScheduler.INSTANCE::tick);
     }
 
     @Override
     public void onInitializeClient() {
         ClientRegistry.register();
-        ClientTickEvents.END_WORLD_TICK.register(ClientScheduler.INSTANCE::tick);
     }
 
     public void registerSaveData() {
