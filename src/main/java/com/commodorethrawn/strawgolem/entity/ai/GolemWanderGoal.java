@@ -17,7 +17,7 @@ public class GolemWanderGoal extends WanderAroundGoal {
     @Override
     public boolean canStart() {
         return strawGolem.isHandEmpty()
-                && strawGolem.getHarvestPos().equals(BlockPos.ORIGIN)
+                && !strawGolem.isHarvesting()
                 && !strawGolem.getHunger().isHungry()
                 && super.canStart();
     }

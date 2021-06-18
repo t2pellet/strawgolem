@@ -1,10 +1,11 @@
 package com.commodorethrawn.strawgolem.storage;
 
-import com.commodorethrawn.strawgolem.events.CropGrowthHandler;
+import com.commodorethrawn.strawgolem.crop.CropHandler;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
@@ -46,7 +47,7 @@ public class StrawgolemSaveData {
                         BlockPos pos = NbtHelper.toBlockPos((CompoundTag) entryTag.get(POS));
                         World world = server.getWorld(dim);
                         if (world != null) {
-                            CropGrowthHandler.scheduleCrop(world, pos, 5);
+                            CropHandler.INSTANCE.addCrop(world, pos);
                         }
                     }
                 }
@@ -57,13 +58,19 @@ public class StrawgolemSaveData {
     public void saveData() throws IOException {
         CompoundTag compound = new CompoundTag();
         ListTag listTag = new ListTag();
-        CropGrowthHandler.getCrops().forEach(entry -> {
-            CompoundTag entryTag = new CompoundTag();
-            entryTag.put(POS, NbtHelper.fromBlockPos(entry.getPos()));
-            Identifier.CODEC.encodeStart(NbtOps.INSTANCE, entry.getWorld().getRegistryKey().getValue())
-                    .result().ifPresent(dim -> entryTag.put(WORLD, dim));
-            listTag.add(entryTag);
-        });
+        Iterator<Pair<RegistryKey<World>, Iterator<BlockPos>>> it = CropHandler.INSTANCE.iterator();
+        while (it.hasNext()) {
+            Pair<RegistryKey<World>, Iterator<BlockPos>> entry = it.next();
+            Iterator<BlockPos> posIterator = entry.getRight();
+            RegistryKey<World> key = entry.getLeft();
+            while (posIterator.hasNext()) {
+                CompoundTag entryTag = new CompoundTag();
+                entryTag.put(POS, NbtHelper.fromBlockPos(posIterator.next()));
+                Identifier.CODEC.encodeStart(NbtOps.INSTANCE, key.getValue())
+                        .result().ifPresent(dim -> entryTag.put(WORLD, dim));
+                listTag.add(entryTag);
+            }
+        }
         compound.put("listTag", listTag);
         File file = new File(worldDataDir, GOLEM_DATA_NAME);
         NbtIo.writeCompressed(compound, file);

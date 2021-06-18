@@ -2,8 +2,9 @@ package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.crop.CropHandler;
 import com.commodorethrawn.strawgolem.crop.CropValidator;
-import com.commodorethrawn.strawgolem.crop.ICropRegistry;
+import com.commodorethrawn.strawgolem.crop.CropRegistry;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.network.HoldingPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
@@ -35,33 +36,33 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
     private final EntityStrawGolem strawgolem;
 
     public GolemHarvestGoal(EntityStrawGolem strawgolem, double speedIn) {
-        super(strawgolem, speedIn, ConfigHelper.getSearchRangeHorizontal(), ConfigHelper.getSearchRangeVertical());
+        super(strawgolem, speedIn, ConfigHelper.getSearchRange(), ConfigHelper.getSearchRange());
         this.strawgolem = strawgolem;
     }
 
     @Override
     public boolean canStart() {
-        /* Checks for position set by the event handler (set when a block grows nearby) */
-        if (strawgolem.isHandEmpty() && !strawgolem.getHunger().isHungry() && !strawgolem.getHarvestPos().equals(BlockPos.ORIGIN)) {
-            targetPos = strawgolem.getHarvestPos();
-            this.cooldown = getInterval(this.mob);
-            strawgolem.clearHarvestPos();
-            return CropValidator.isGrownCrop(strawgolem.world.getBlockState(targetPos));
-        }
-        /* Based off the vanilla code of shouldExecute, with additional check to ensure the golems hand is empty */
+        /* Checks for cooldown period, then checks for any nearby crops */
         if (this.cooldown > 0) {
             --this.cooldown;
             return false;
-        } else {
-            this.cooldown = getInterval(this.mob);
-            return strawgolem.isHandEmpty() && this.findTargetPos()
-                    && strawgolem.canSeeBlock(strawgolem.world, targetPos);
+        } else if (strawgolem.isHandEmpty() && !strawgolem.isHarvesting() && !strawgolem.getHunger().isHungry()) {
+            targetPos = CropHandler.INSTANCE.getNearestCrop(strawgolem.world, strawgolem.getBlockPos(), ConfigHelper.getSearchRange());
+            return targetPos != null && CropValidator.isGrownCrop(strawgolem.world.getBlockState(targetPos));
         }
+        return false;
+    }
+
+    @Override
+    public void start() {
+        this.cooldown = getInterval(this.mob);
+        CropHandler.INSTANCE.removeCrop(strawgolem.world, targetPos); // Remove crop from handler, as its being harvested now
+        strawgolem.setHarvesting(true);
     }
 
     @Override
     protected int getInterval(PathAwareEntity mob) {
-        return 360;
+        return 120 + mob.getRandom().nextInt(241);
     }
 
     @Override
@@ -114,6 +115,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
             if (ConfigHelper.isReplantEnabled()) replantCrop(worldIn, pos, state, block);
             else worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
+        strawgolem.setHarvesting(false);
     }
 
     /**
@@ -151,9 +153,11 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
      * @param block : the Block of the crop
      */
     private void replantCrop(ServerWorld worldIn, BlockPos pos, BlockState state, Block block) {
-        IntProperty ageProperty = ICropRegistry.INSTANCE.getAgeProperty(block);
+        IntProperty ageProperty = CropRegistry.INSTANCE.getAgeProperty(block);
         if (block instanceof SweetBerryBushBlock) {
             worldIn.setBlockState(pos, block.getDefaultState().with(ageProperty, 2));
+        } else if (block instanceof StemBlock) {
+            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
         } else {
             worldIn.setBlockState(pos, state.with(ageProperty, 1));
         }

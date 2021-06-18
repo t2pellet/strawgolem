@@ -17,7 +17,7 @@ public class TetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTa
     private final T entity;
 
     public TetherGoal(T entity, double speedIn) {
-        super(entity, speedIn, ConfigHelper.getSearchRangeHorizontal(), ConfigHelper.getSearchRangeVertical());
+        super(entity, speedIn, ConfigHelper.getSearchRange(), ConfigHelper.getSearchRange());
         this.entity = entity;
     }
 

@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.registry;
 
 import com.commodorethrawn.strawgolem.client.compat.CompatHwyla;
-import com.commodorethrawn.strawgolem.crop.ICropRegistry;
+import com.commodorethrawn.strawgolem.crop.CropRegistry;
 import com.commodorethrawn.strawgolem.entity.capability.CapabilityHandler;
 import com.commodorethrawn.strawgolem.entity.capability.hunger.Hunger;
 import com.commodorethrawn.strawgolem.entity.capability.lifespan.Lifespan;
@@ -66,16 +66,16 @@ public class CommonRegistry {
     }
 
     private static void registerCrop(Block block) {
-        if (block instanceof CropBlock) ICropRegistry.INSTANCE.register(block, ((CropBlock) block).getAgeProperty());
-        else if (block instanceof GourdBlock) ICropRegistry.INSTANCE.register(block, null);
-        else if (block instanceof NetherWartBlock) ICropRegistry.INSTANCE.register(block, NetherWartBlock.AGE);
+        if (block instanceof CropBlock) CropRegistry.INSTANCE.register(block, ((CropBlock) block).getAgeProperty());
+        else if (block instanceof GourdBlock) CropRegistry.INSTANCE.register(block, null);
+        else if (block instanceof NetherWartBlock) CropRegistry.INSTANCE.register(block, NetherWartBlock.AGE);
         else if (block instanceof PlantBlock && block instanceof Fertilizable) {
             // Register any Fertilizable PlantBlock with 3, 5 or 7 age states
             IntProperty[] ageProperties = {Properties.AGE_3, Properties.AGE_5, Properties.AGE_7};
             Arrays.stream(ageProperties)
                     .filter(age -> block.getDefaultState().contains(age))
                     .findFirst()
-                    .ifPresent(ageProperty -> ICropRegistry.INSTANCE.register(block, ageProperty));
+                    .ifPresent(ageProperty -> CropRegistry.INSTANCE.register(block, ageProperty));
         }
     }
 

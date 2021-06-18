@@ -74,7 +74,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     private final SimpleInventory inventory;
     private final Tether tether;
     private final Hunger hunger;
-    private BlockPos harvestPos;
+    private boolean harvesting;
     private boolean tempted;
 
     public static DefaultAttributeContainer.Builder createMob() {
@@ -90,7 +90,6 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         tether = CapabilityHandler.INSTANCE.get(Tether.class).orElseThrow(() -> new InstantiationError("Failed to create tether cap"));
         hunger = CapabilityHandler.INSTANCE.get(Hunger.class).orElseThrow(() -> new InstantiationError("Failed to create new hunger cap"));
         inventory = new SimpleInventory(1);
-        harvestPos = BlockPos.ORIGIN;
         tempted = false;
     }
 
@@ -260,27 +259,12 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         return worldIn.raycast(ctx).getPos().isInRange(blockPos, 2.5D);
     }
 
-    /**
-     * Sets the harvest position to pos
-     * @param pos new harvest position
-     */
-    public void setHarvesting(BlockPos pos) {
-        harvestPos = pos;
+    public void setHarvesting(boolean isHarvesting) {
+        harvesting = isHarvesting;
     }
 
-    /**
-     * Returns the position to be used to initiate the GolemHarvestGoal
-     * @return the harvest position
-     */
-    public BlockPos getHarvestPos() {
-        return harvestPos;
-    }
-
-    /**
-     * Clears the harvest position
-     */
-    public void clearHarvestPos() {
-        harvestPos = BlockPos.ORIGIN;
+    public boolean isHarvesting() {
+        return harvesting;
     }
 
     /* Handle inventory */

@@ -12,7 +12,7 @@ public class CropValidator {
     private CropValidator() {
     }
 
-    private static final ICropRegistry cropRegistry = ICropRegistry.INSTANCE;
+    private static final CropRegistry cropRegistry = CropRegistry.INSTANCE;
 
     public static boolean isCrop(Block block) {
         return (block instanceof IAmHarvestable || cropRegistry.containsCrop(block))

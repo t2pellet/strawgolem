@@ -64,10 +64,8 @@ public class StrawgolemConfig {
         harvestingSection.comment("replantEnabled", "Enables golems replanting crops");
         harvestingSection.add("deliveryEnabled", true);
         harvestingSection.comment("deliveryEnabled", "Enables golems delivering crops to a chest");
-        harvestingSection.add("searchRangeHorizontal", 24);
-        harvestingSection.comment("searchRangeHorizontal", "The horizontal range of crops golems can detect");
-        harvestingSection.add("searchRangeVertical", 4);
-        harvestingSection.comment("searchRangeVertical", "The vertical range of crops golems can detect");
+        harvestingSection.add("searchRange", 24);
+        harvestingSection.comment("searchRange", "The vertical range of crops golems can detect");
         harvestingSection.add("filterMode", FILTER_MODE_BLACKLIST);
         harvestingSection.comment("filterMode", "The golem filtration mode. Either 'whitelist' or 'blacklist'");
         harvestingSection.add("whitelist", new ArrayList<String>());

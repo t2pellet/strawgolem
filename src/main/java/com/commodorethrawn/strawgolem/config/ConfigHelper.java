@@ -42,8 +42,8 @@ public class ConfigHelper {
         return StrawgolemConfig.tether.get("tetherMaxRange", Integer.class);
     }
 
-    public static int getSearchRangeHorizontal() {
-        return StrawgolemConfig.harvesting.get("searchRangeHorizontal", Integer.class);
+    public static int getSearchRange() {
+        return StrawgolemConfig.harvesting.get("searchRange", Integer.class);
     }
 
     public static int getLifespan() {
@@ -65,10 +65,6 @@ public class ConfigHelper {
             default:
                 return false;
         }
-    }
-
-    public static int getSearchRangeVertical() {
-        return StrawgolemConfig.harvesting.get("searchRangeVertical", Integer.class);
     }
 
     public static boolean blockHarvestAllowed(Block block) {

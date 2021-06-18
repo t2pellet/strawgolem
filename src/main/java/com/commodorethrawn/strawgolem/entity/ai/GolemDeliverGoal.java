@@ -22,7 +22,7 @@ public class GolemDeliverGoal extends MoveToTargetPosGoal {
     private Boolean deliveringBlock;
 
     public GolemDeliverGoal(EntityStrawGolem strawGolem, double speedIn) {
-        super(strawGolem, speedIn, ConfigHelper.getSearchRangeHorizontal(), ConfigHelper.getSearchRangeVertical());
+        super(strawGolem, speedIn, ConfigHelper.getSearchRange(), ConfigHelper.getSearchRange());
         this.strawGolem = strawGolem;
     }
 
