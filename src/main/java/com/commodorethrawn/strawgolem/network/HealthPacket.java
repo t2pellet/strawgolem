@@ -3,7 +3,6 @@ package com.commodorethrawn.strawgolem.network;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.world.World;

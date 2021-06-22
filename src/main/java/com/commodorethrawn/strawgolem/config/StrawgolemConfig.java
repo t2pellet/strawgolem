@@ -1,114 +1,152 @@
 package com.commodorethrawn.strawgolem.config;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.util.io.IniFile;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
+import com.commodorethrawn.strawgolem.util.io.Config;
+import net.minecraft.block.Block;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Optional;
 
-public class StrawgolemConfig {
+public class StrawgolemConfig extends Config {
 
     static final String FILTER_MODE_WHITELIST = "whitelist";
     static final String FILTER_MODE_BLACKLIST = "blacklist";
-    static final File configFile;
-    static final IniFile ini;
-    static final IniFile.Section harvesting;
-    static final IniFile.Section miscellaneous;
-    static final IniFile.Section tether;
-    static final IniFile.Section health;
 
-    private static final IniFile.Section version;
-    private static final String modVersion;
-
-    static {
-        String configPath = FabricLoader.getInstance().getConfigDir().toString()+ "\\strawgolem.ini";
-        Optional<ModContainer> modContainerOptional = FabricLoader.getInstance().getModContainer(Strawgolem.MODID);
-        if (modContainerOptional.isPresent()) modVersion = modContainerOptional.get().getMetadata().getVersion().getFriendlyString();
-        else modVersion = "1.9";
-        configFile = new File(configPath);
-        ini = IniFile.newInstance();
+    public static StrawgolemConfig init() {
         try {
-            if (configFile.createNewFile()) createConfig();
-            else ini.load(configFile);
-        } catch (IOException e) {
+            return new StrawgolemConfig();
+        } catch (Exception e) {
+            System.err.println("Error loading Strawgolem Config");
             e.printStackTrace();
+            return null;
         }
-        harvesting = ini.getSection("Harvesting");
-        miscellaneous = ini.getSection("Miscellaneous");
-        tether = ini.getSection("Tether");
-        health = ini.getSection("Health");
-        version = ini.getSection("Version");
-        if (!version.get("version", String.class).equals(modVersion)) {
-            try {
-                ini.clear();
-                createConfig();
-            } catch (IOException e) {
-                e.printStackTrace();
+    }
+
+    private StrawgolemConfig() throws IOException, IllegalAccessException {
+        super(Strawgolem.MODID);
+    }
+
+    @Section("Harvesting")
+    public static class Harvest {
+        @Section.Comment("Enables golems replanting crops")
+        private static boolean replantEnabled = true;
+        @Section.Comment("Enables golems delivering crops to a chest")
+        private static boolean deliveryEnabled = true;
+        @Section.Comment("The range of crops golems can detect")
+        private static int searchRange = 24;
+
+        @Section.Comment("The golem filtration mode. Enter 'whitelist' or 'blacklist'")
+        private static String filterMode = FILTER_MODE_BLACKLIST;
+        private static ArrayList<String> whitelist = new ArrayList<>();
+        private static ArrayList<String> blacklist = new ArrayList<>();
+
+        public static boolean isHarvestAllowed(Block block) {
+            String blockStr = block.getLootTableId().getNamespace() + ":" + block.getLootTableId().getPath();
+            switch (filterMode) {
+                case FILTER_MODE_WHITELIST:
+                    return whitelist.stream().anyMatch(s -> s.equals(blockStr));
+                case FILTER_MODE_BLACKLIST:
+                    return blacklist.stream().noneMatch(s -> s.equals(blockStr));
+                default:
+                    return true;
             }
         }
+
+        public static boolean isReplantEnabled() {
+            return replantEnabled;
+        }
+
+        public static boolean isDeliveryEnabled() {
+            return deliveryEnabled;
+        }
+
+        public static int getSearchRange() {
+            return searchRange;
+        }
     }
 
+    @Section("Miscellaneous")
+    public static class Miscellaneous {
+        @Section.Comment("Enables golem sounds")
+        private static boolean soundsEnabled = true;
+        @Section.Comment("Enables golems shivering in the cold & rain")
+        private static boolean shiverEnabled = true;
+        @Section.Comment("Enables Iron Golem's picking up Straw Golems")
+        private static boolean golemInteract = true;
+        @Section.Comment("Enables HWYLA Compat")
+        private static boolean enableHwyla = true;
 
-    private static void createConfig() throws IOException {
-        PrintWriter writer = new PrintWriter(configFile);
-        writer.print("");
-        writer.close();
+        public static boolean isSoundsEnabled() {
+            return soundsEnabled;
+        }
 
-        IniFile.Section harvestingSection = ini.addSection("Harvesting");
-        harvestingSection.add("replantEnabled", true);
-        harvestingSection.comment("replantEnabled", "Enables golems replanting crops");
-        harvestingSection.add("deliveryEnabled", true);
-        harvestingSection.comment("deliveryEnabled", "Enables golems delivering crops to a chest");
-        harvestingSection.add("searchRange", 24);
-        harvestingSection.comment("searchRange", "The vertical range of crops golems can detect");
-        harvestingSection.add("filterMode", FILTER_MODE_BLACKLIST);
-        harvestingSection.comment("filterMode", "The golem filtration mode. Either 'whitelist' or 'blacklist'");
-        harvestingSection.add("whitelist", new ArrayList<String>());
-        harvestingSection.add("blacklist", new ArrayList<String>());
+        public static boolean isShiverEnabled() {
+            return shiverEnabled;
+        }
 
-        IniFile.Section miscSection = ini.addSection("Miscellaneous");
-        miscSection.add("soundsEnabled", true);
-        miscSection.comment("soundsEnabled", "Enables golem sounds");
-        miscSection.add("shiverEnabled", true);
-        miscSection.comment("shiverEnabled", "Enables golems shivering in the cold or rain");
-        miscSection.add("golemInteract", true);
-        miscSection.comment("golemInteract", "Enables Iron Golems periodically picking up straw golems");
-        miscSection.add("enableHwyla", true);
-        miscSection.comment("enableHwyla", "Enables HWYLA Compat");
+        public static boolean isGolemInteract() {
+            return golemInteract;
+        }
 
-        IniFile.Section tetherSection = ini.addSection("Tether");
-        tetherSection.add("tetherEnabled", true);
-        tetherSection.comment("tetherEnabled", "Enables tether system, preventing golem from wandering too far");
-        tetherSection.add("temptResetsTether", true);
-        tetherSection.comment("temptResetsTether", "Enables whether tempting a golem away with an apple will reset its tether");
-        tetherSection.add("tetherMaxRange", 24);
-        tetherSection.comment("tetherMaxRange", "The maximum range away from its tether the golem should wander");
-
-        IniFile.Section healthSection = ini.addSection("Health");
-        healthSection.add("lifespan", 168000);
-        healthSection.comment("lifespan", "Set to -1 for infinite");
-        healthSection.add("hunger", 24000);
-        healthSection.add("rainPenalty", true);
-        healthSection.comment("rainPenalty", "Enables lifespan going down faster in the rain (+1 / tick)");
-        healthSection.add("waterPenalty", true);
-        healthSection.comment("waterPenalty", "Enables lifespan going down faster in water (+1 / tick)");
-        healthSection.add("heavyPenalty", true);
-        healthSection.comment("heavyPenalty", "Enables lifespan going down faster carrying something heavy (+1 / tick)");
-
-        IniFile.Section configSection = ini.addSection("Version");
-        configSection.add("version", modVersion);
-
-        ini.store(configFile);
+        public static boolean isEnableHwyla() {
+            return enableHwyla;
+        }
     }
 
-    public enum FilterMatch {
-        None,
-        Mod,
-        Exact,
+    @Section("Tether")
+    public static class Tether {
+        @Section.Comment("Enables tether system preventing golems from wandering too far")
+        private static boolean tetherEnabled = true;
+        @Section.Comment("Enables whether tempting a golem away with an apple will change its tether")
+        private static boolean temptResetsTether = true;
+        @Section.Comment("The maximum range away from its tether the golem should wander")
+        private static int tetherMaxRange = 36;
+
+        public static boolean isTetherEnabled() {
+            return tetherEnabled;
+        }
+
+        public static boolean doesTemptResetTether() {
+            return temptResetsTether;
+        }
+
+        public static int getTetherMaxRange() {
+            return tetherMaxRange;
+        }
     }
+
+    @Section("Health")
+    public static class Health {
+        @Section.Comment("Golem lifespan in ticks. Set to -1 for infinite")
+        private static int lifespan = 168000;
+        @Section.Comment("Golem hunger in ticks. Set to -1 for infinite")
+        private static int hunger = 24000;
+        @Section.Comment("Enables lifespan penalty in the rain (-1 extra / tick)")
+        private static boolean rainPenalty = true;
+        @Section.Comment("Enables lifespan penalty in water (-1 extra / tick)")
+        private static boolean waterPenalty = true;
+        @Section.Comment("Enables lifespan heavy penalty, such as carrying a gourd block (-1 extra / tick)")
+        private static boolean heavyPenalty = true;
+
+        public static int getLifespan() {
+            return lifespan;
+        }
+
+        public static int getHunger() {
+            return hunger;
+        }
+
+        public static boolean isRainPenalty() {
+            return rainPenalty;
+        }
+
+        public static boolean isWaterPenalty() {
+            return waterPenalty;
+        }
+
+        public static boolean isHeavyPenalty() {
+            return heavyPenalty;
+        }
+    }
+
 }

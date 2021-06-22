@@ -3,13 +3,13 @@ package com.commodorethrawn.strawgolem.util.io;
 
 class StringConverterImpl implements StringConverter{
 
-    private static final String INTEGER = "java.lang.Integer";
-    private static final String BOOLEAN = "java.lang.Boolean";
-    private static final String DOUBLE = "java.lang.Double";
-    private static final String FLOAT = "java.lang.Float";
+    private static final String INTEGER = "int";
+    private static final String BOOLEAN = "boolean";
+    private static final String DOUBLE = "double";
+    private static final String FLOAT = "float";
     private static final String STRING = "java.lang.String";
 
-    private String value;
+    private final String value;
 
     public StringConverterImpl(String value) {
         this.value = value;

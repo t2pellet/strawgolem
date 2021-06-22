@@ -3,7 +3,7 @@ package com.commodorethrawn.strawgolem.registry;
 import com.commodorethrawn.strawgolem.client.renderer.entity.RenderIronGolem;
 import com.commodorethrawn.strawgolem.client.renderer.entity.RenderStrawGolem;
 import com.commodorethrawn.strawgolem.client.renderer.entity.RenderStrawngGolem;
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.util.scheduler.ActionScheduler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -31,7 +31,7 @@ public class ClientRegistry {
         EntityRendererRegistry.INSTANCE.register(STRAWNG_GOLEM_TYPE, (dispatcher, ctx) -> {
             return new RenderStrawngGolem(dispatcher);
         });
-        if (ConfigHelper.doGolemPickup()) {
+        if (StrawgolemConfig.Miscellaneous.isGolemInteract()) {
             EntityRendererRegistry.INSTANCE.register(EntityType.IRON_GOLEM, (dispatcher, ctx) -> {
                 return new RenderIronGolem(dispatcher);
             });

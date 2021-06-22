@@ -1,6 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.capability.lifespan;
 
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 
@@ -8,7 +8,7 @@ class LifespanImpl implements Lifespan {
     private int tickLeft;
 
     public LifespanImpl() {
-        this.tickLeft = ConfigHelper.getLifespan();
+        this.tickLeft = StrawgolemConfig.Health.getLifespan();
     }
 
     @Override

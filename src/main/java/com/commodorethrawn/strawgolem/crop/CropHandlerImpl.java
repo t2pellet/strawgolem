@@ -40,7 +40,7 @@ class CropHandlerImpl implements CropHandler {
     public BlockPos getNearestCrop(World world, BlockPos pos, int maxRange) {
         if (treeMap.containsKey(world.getRegistryKey())) {
             BlockPos closest = treeMap.get(world.getRegistryKey()).findNearest(pos);
-            if (pos == null || pos.getManhattanDistance(closest) > maxRange) return null;
+            if (pos == null || closest != null && pos.getManhattanDistance(closest) > maxRange) return null;
             return closest;
         }
         return null;

@@ -1,6 +1,7 @@
 package com.commodorethrawn.strawgolem.registry;
 
 import com.commodorethrawn.strawgolem.client.compat.CompatHwyla;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.crop.CropRegistry;
 import com.commodorethrawn.strawgolem.entity.capability.CapabilityHandler;
 import com.commodorethrawn.strawgolem.entity.capability.hunger.Hunger;
@@ -49,7 +50,7 @@ public class CommonRegistry {
         //Chest Handling
         UseBlockCallback.EVENT.register(GolemChestHandler::setPriorityChest);
         //WAILA
-        if (FabricLoader.getInstance().isModLoaded("waila")) {
+        if (FabricLoader.getInstance().isModLoaded("waila") && StrawgolemConfig.Miscellaneous.isEnableHwyla()) {
             WailaTooltipEvent.WAILA_HANDLE_TOOLTIP.register(CompatHwyla::patchTooltip);
         }
     }

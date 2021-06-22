@@ -1,6 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.network.HoldingPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
@@ -22,7 +22,7 @@ public class GolemDeliverGoal extends MoveToTargetPosGoal {
     private Boolean deliveringBlock;
 
     public GolemDeliverGoal(EntityStrawGolem strawGolem, double speedIn) {
-        super(strawGolem, speedIn, ConfigHelper.getSearchRange(), ConfigHelper.getSearchRange());
+        super(strawGolem, speedIn, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
         this.strawGolem = strawGolem;
     }
 

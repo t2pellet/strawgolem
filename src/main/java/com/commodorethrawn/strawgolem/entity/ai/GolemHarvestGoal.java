@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.crop.CropHandler;
 import com.commodorethrawn.strawgolem.crop.CropValidator;
 import com.commodorethrawn.strawgolem.crop.CropRegistry;
@@ -36,7 +36,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
     private final EntityStrawGolem strawgolem;
 
     public GolemHarvestGoal(EntityStrawGolem strawgolem, double speedIn) {
-        super(strawgolem, speedIn, ConfigHelper.getSearchRange(), ConfigHelper.getSearchRange());
+        super(strawgolem, speedIn, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
         this.strawgolem = strawgolem;
     }
 
@@ -47,7 +47,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
             --this.cooldown;
             return false;
         } else if (strawgolem.isHandEmpty() && !strawgolem.isHarvesting() && !strawgolem.getHunger().isHungry()) {
-            targetPos = CropHandler.INSTANCE.getNearestCrop(strawgolem.world, strawgolem.getBlockPos(), ConfigHelper.getSearchRange());
+            targetPos = CropHandler.INSTANCE.getNearestCrop(strawgolem.world, strawgolem.getBlockPos(), StrawgolemConfig.Harvest.getSearchRange());
             return targetPos != null && CropValidator.isGrownCrop(strawgolem.world.getBlockState(targetPos));
         }
         return false;
@@ -111,8 +111,8 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
         /* If its the right block to harvest */
         if (isTargetPos(worldIn, pos)) {
             worldIn.playSound(null, pos, SoundEvents.BLOCK_CROP_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
-            if (ConfigHelper.isDeliveryEnabled()) pickupCrop(worldIn, pos, state, block);
-            if (ConfigHelper.isReplantEnabled()) replantCrop(worldIn, pos, state, block);
+            if (StrawgolemConfig.Harvest.isDeliveryEnabled()) pickupCrop(worldIn, pos, state, block);
+            if (StrawgolemConfig.Harvest.isReplantEnabled()) replantCrop(worldIn, pos, state, block);
             else worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
         strawgolem.setHarvesting(false);

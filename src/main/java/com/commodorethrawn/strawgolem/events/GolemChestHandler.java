@@ -1,13 +1,11 @@
 package com.commodorethrawn.strawgolem.events;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Items;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -50,7 +48,7 @@ public class GolemChestHandler {
                     playerEntity.sendMessage(text, true);
                     playerToGolemMap.remove(playerEntity.getUuid());
                     // Tether to the priority chest
-                    if (ConfigHelper.isTetherEnabled()) {
+                    if (StrawgolemConfig.Tether.isTetherEnabled()) {
                         BlockPos anchorPos = blockHitResult.getBlockPos();
                         Strawgolem.logger.debug(golem.getEntityId() + " setting new anchor " + anchorPos);
                         golem.getTether().set(golem.world, anchorPos);

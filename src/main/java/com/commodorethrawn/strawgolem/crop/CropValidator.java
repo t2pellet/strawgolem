@@ -1,6 +1,6 @@
 package com.commodorethrawn.strawgolem.crop;
 
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.state.property.IntProperty;
@@ -16,12 +16,12 @@ public class CropValidator {
 
     public static boolean isCrop(Block block) {
         return (block instanceof IAmHarvestable || cropRegistry.containsCrop(block))
-                && ConfigHelper.blockHarvestAllowed(block);
+                && StrawgolemConfig.Harvest.isHarvestAllowed(block);
     }
 
     public static boolean isCrop(BlockEntity blockEntity) {
         return (blockEntity instanceof IAmHarvestable || cropRegistry.containsCrop(blockEntity))
-                && ConfigHelper.blockHarvestAllowed(blockEntity.getCachedState().getBlock());
+                && StrawgolemConfig.Harvest.isHarvestAllowed(blockEntity.getCachedState().getBlock());
     }
 
     public static boolean isStem(Block block) {

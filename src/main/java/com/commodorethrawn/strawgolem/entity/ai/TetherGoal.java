@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.entity.capability.hunger.IHasHunger;
 import com.commodorethrawn.strawgolem.entity.capability.tether.IHasTether;
@@ -17,7 +17,7 @@ public class TetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTa
     private final T entity;
 
     public TetherGoal(T entity, double speedIn) {
-        super(entity, speedIn, ConfigHelper.getSearchRange(), ConfigHelper.getSearchRange());
+        super(entity, speedIn, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
         this.entity = entity;
     }
 
@@ -25,8 +25,7 @@ public class TetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTa
     @Override
     public boolean canStart() {
         final double d = getTetherDistance();
-        if(d > ConfigHelper.getTetherMaxRange()
-                && super.canStart()) {
+        if(d > StrawgolemConfig.Tether.getTetherMaxRange() && super.canStart()) {
             if (entity instanceof IHasHunger) {
                 if (((IHasHunger) entity).getHunger().isHungry()) return false;
             }
@@ -38,14 +37,14 @@ public class TetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTa
 
     @Override
     public void start() {
-        if (ConfigHelper.isSoundsEnabled()) entity.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
+        if (StrawgolemConfig.Miscellaneous.isSoundsEnabled()) entity.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
         super.start();
     }
 
     @Override
     public boolean shouldContinue() {
         final double d = getTetherDistance();
-        return d > ConfigHelper.getTetherMaxRange();
+        return d > StrawgolemConfig.Tether.getTetherMaxRange();
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.ai.PickupGolemGoal;
 import com.commodorethrawn.strawgolem.entity.ai.TetherGoal;
 import com.commodorethrawn.strawgolem.entity.ai.TrackStrawngGolemTargetGoal;
@@ -19,7 +19,6 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.GolemEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
@@ -57,11 +56,11 @@ public class EntityStrawngGolem extends GolemEntity implements IHasTether {
     @Override
     protected void initGoals() {
         goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
-        if (ConfigHelper.isTetherEnabled()) {
+        if (StrawgolemConfig.Tether.isTetherEnabled()) {
             goalSelector.add(2, new TetherGoal<>(this, 0.85D));
         }
         goalSelector.add(3, new PickupGolemGoal(this, 0.6D));
-        goalSelector.add(4, new WanderNearTargetGoal(this, 0.7D, ConfigHelper.getTetherMaxRange()));
+        goalSelector.add(4, new WanderNearTargetGoal(this, 0.7D, StrawgolemConfig.Tether.getTetherMaxRange()));
         goalSelector.add(5, new WanderAroundGoal(this, 0.6D));
         goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
         goalSelector.add(7, new LookAroundGoal(this));

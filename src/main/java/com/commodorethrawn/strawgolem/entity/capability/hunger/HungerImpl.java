@@ -1,6 +1,6 @@
 package com.commodorethrawn.strawgolem.entity.capability.hunger;
 
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 
@@ -9,7 +9,7 @@ class HungerImpl implements Hunger {
     private int hunger;
 
     public HungerImpl() {
-        hunger = ConfigHelper.getHunger();
+        hunger = StrawgolemConfig.Health.getHunger();
     }
 
     @Override

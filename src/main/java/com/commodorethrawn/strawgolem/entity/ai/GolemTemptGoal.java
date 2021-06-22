@@ -1,7 +1,7 @@
 package com.commodorethrawn.strawgolem.entity.ai;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import com.commodorethrawn.strawgolem.network.GreedyPacket;
 import com.commodorethrawn.strawgolem.network.PacketHandler;
@@ -22,24 +22,24 @@ public class GolemTemptGoal extends TemptGoal {
 
     @Override
     public boolean canStart() {
-        return !strawGolem.getHunger().isHungry() && super.canStart();
+        return !strawGolem.getHunger().isHungry() && !strawGolem.isHarvesting() && super.canStart();
     }
 
     @Override
     public void start() {
         super.start();
-        if (ConfigHelper.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_INTERESTED, 1.0F, 1.0F);
+        if (StrawgolemConfig.Miscellaneous.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_INTERESTED, 1.0F, 1.0F);
         PacketHandler.INSTANCE.sendInRange(new GreedyPacket(strawGolem, true), strawGolem, 25.0F);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (ConfigHelper.isTetherEnabled() && ConfigHelper.doesTemptResetTether()) {
+        if (StrawgolemConfig.Tether.isTetherEnabled() && StrawgolemConfig.Tether.doesTemptResetTether()) {
             BlockPos golemPos = strawGolem.getBlockPos();
             World golemWorld = strawGolem.world;
             double d = strawGolem.getTether().distanceTo(golemWorld, golemPos);
-            if (d > ConfigHelper.getTetherMaxRange()) {
+            if (d > StrawgolemConfig.Tether.getTetherMaxRange()) {
                 Strawgolem.logger.debug(strawGolem.getEntityId() + " setting new anchor " + golemPos);
                 strawGolem.getTether().set(golemWorld, golemPos);
             }

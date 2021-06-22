@@ -1,11 +1,14 @@
 package com.commodorethrawn.strawgolem;
 
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.registry.ClientRegistry;
 import com.commodorethrawn.strawgolem.registry.CommonRegistry;
 import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,13 +18,11 @@ public class Strawgolem implements ModInitializer, ClientModInitializer {
     public static final String MODID = "strawgolem";
     public static final Logger logger = LogManager.getLogger(MODID);
     private static StrawgolemSaveData data;
-
-    public static StrawgolemSaveData getSaveData() {
-        return data;
-    }
+    private static StrawgolemConfig config;
 
     @Override
     public void onInitialize() {
+        config = StrawgolemConfig.init();
         CommonRegistry.register();
         registerSaveData();
     }
@@ -32,18 +33,19 @@ public class Strawgolem implements ModInitializer, ClientModInitializer {
     }
 
     public void registerSaveData() {
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-            data = new StrawgolemSaveData(server);
+        ServerLifecycleEvents.SERVER_STARTING.register(minecraftServer -> {
+            data = new StrawgolemSaveData(minecraftServer);
             try {
                 data.loadData();
-            } catch (IOException e) {
+                config.load();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+        ServerLifecycleEvents.SERVER_STOPPING.register(minecraftServer -> {
             try {
                 data.saveData();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });

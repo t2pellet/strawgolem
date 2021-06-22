@@ -2,18 +2,13 @@ package com.commodorethrawn.strawgolem.client.renderer.entity;
 
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.client.renderer.entity.model.ModelStrawGolem;
-import com.commodorethrawn.strawgolem.config.ConfigHelper;
+import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
-import com.commodorethrawn.strawgolem.entity.ai.GolemTemptGoal;
-import com.commodorethrawn.strawgolem.mixin.GoalSelectorAccessor;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -70,7 +65,7 @@ public class RenderStrawGolem extends MobEntityRenderer<EntityStrawGolem, ModelS
             matrixStack.translate(0, -0.2F, 0);
         }
         // Shivering movement
-        if (ConfigHelper.isShiverEnabled() &&
+        if (StrawgolemConfig.Miscellaneous.isShiverEnabled() &&
                 (mobEntity.isInCold()
                         || mobEntity.isInRain()
                         || mobEntity.isWet())) {
@@ -84,7 +79,7 @@ public class RenderStrawGolem extends MobEntityRenderer<EntityStrawGolem, ModelS
     @Override
     public Identifier getTexture(EntityStrawGolem golem) {
         int lifespan = golem.getLifespan().get();
-        int maxLifespan = ConfigHelper.getLifespan();
+        int maxLifespan = StrawgolemConfig.Health.getLifespan();
         if (lifespan * 4 < maxLifespan && lifespan >= 0) return TEXTURE_DYING;
         if (golem.hasCustomName()) {
             String name = golem.getDisplayName().getString().toLowerCase();
