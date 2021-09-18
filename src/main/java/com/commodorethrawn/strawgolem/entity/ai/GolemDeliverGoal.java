@@ -21,8 +21,8 @@ public class GolemDeliverGoal extends MoveToTargetPosGoal {
     private final EntityStrawGolem strawGolem;
     private Boolean deliveringBlock;
 
-    public GolemDeliverGoal(EntityStrawGolem strawGolem, double speedIn) {
-        super(strawGolem, speedIn, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
+    public GolemDeliverGoal(EntityStrawGolem strawGolem) {
+        super(strawGolem, 0.7D, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
         this.strawGolem = strawGolem;
     }
 
@@ -70,6 +70,7 @@ public class GolemDeliverGoal extends MoveToTargetPosGoal {
             ++this.tryingTime;
             if (this.shouldContinue()) {
                 double moveSpeed = strawGolem.holdingFullBlock() ? speed * 2/3F : speed;
+                moveSpeed *= strawGolem.getHunger().getPercentage();
                 this.mob.getNavigation().startMovingTo(this.targetPos.getX() + 0.5D, this.targetPos.getY() + 1D, this.targetPos.getZ() + 0.5D, moveSpeed);
             }
         } else {

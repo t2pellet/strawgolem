@@ -13,10 +13,12 @@ import net.minecraft.world.World;
 
 public class GolemTemptGoal extends TemptGoal {
 
+    private static final double speed = 0.8D;
+
     private final EntityStrawGolem strawGolem;
 
     public GolemTemptGoal(EntityStrawGolem creatureIn) {
-        super(creatureIn, 0.7D, false, Ingredient.ofItems(Items.APPLE));
+        super(creatureIn, speed, false, Ingredient.ofItems(Items.APPLE));
         strawGolem = creatureIn;
     }
 
@@ -34,7 +36,12 @@ public class GolemTemptGoal extends TemptGoal {
 
     @Override
     public void tick() {
-        super.tick();
+        this.mob.getLookControl().lookAt(this.closestPlayer, (float)(this.mob.getBodyYawSpeed() + 20), (float)this.mob.getLookPitchSpeed());
+        if (this.mob.squaredDistanceTo(this.closestPlayer) < 6.25D) {
+            this.mob.getNavigation().stop();
+        } else {
+            this.mob.getNavigation().startMovingTo(this.closestPlayer, speed * strawGolem.getHunger().getPercentage());
+        }
         if (StrawgolemConfig.Tether.isTetherEnabled() && StrawgolemConfig.Tether.doesTemptResetTether()) {
             BlockPos golemPos = strawGolem.getBlockPos();
             World golemWorld = strawGolem.world;

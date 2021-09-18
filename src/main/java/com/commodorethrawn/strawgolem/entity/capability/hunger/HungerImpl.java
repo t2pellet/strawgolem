@@ -18,6 +18,11 @@ class HungerImpl implements Hunger {
     }
 
     @Override
+    public float getPercentage() {
+        return (float) hunger / StrawgolemConfig.Health.getHunger();
+    }
+
+    @Override
     public void update() {
         if (hunger > 0) --hunger;
     }

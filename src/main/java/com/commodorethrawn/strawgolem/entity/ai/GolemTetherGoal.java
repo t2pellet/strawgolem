@@ -13,11 +13,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class TetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTargetPosGoal {
+public class GolemTetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTargetPosGoal {
+
     private final T entity;
 
-    public TetherGoal(T entity, double speedIn) {
-        super(entity, speedIn, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
+    public GolemTetherGoal(T entity, double speed) {
+        super(entity, speed, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
         this.entity = entity;
     }
 
@@ -63,11 +64,13 @@ public class TetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTa
         if (!this.targetPos.isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
             ++this.tryingTime;
             if (this.shouldResetPath()) {
+                double speed = this.speed;
+                if (entity instanceof IHasHunger) speed *= ((IHasHunger) entity).getHunger().getPercentage();
                 this.mob.getNavigation().startMovingTo(
                         this.targetPos.getX() + 0.5D,
-                        this.targetPos.getY() + 1D
-                        , this.targetPos.getZ() + 0.5D,
-                        0.8F);
+                        this.targetPos.getY() + 1D,
+                        this.targetPos.getZ() + 0.5D,
+                        speed);
             }
         } else {
             tryingTime = 0;

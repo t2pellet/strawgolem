@@ -73,7 +73,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     public static DefaultAttributeContainer.Builder createMob() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 4.0D)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2D);
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.175D);
     }
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {
@@ -92,12 +92,12 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         this.goalSelector.add(++priority, new GolemPoutGoal(this));
         this.goalSelector.add(++priority, new GolemFleeGoal(this));
         this.goalSelector.add(++priority, new GolemTemptGoal(this));
-        this.goalSelector.add(++priority, new GolemHarvestGoal(this, 0.6D));
-        this.goalSelector.add(++priority, new GolemDeliverGoal(this, 0.6D));
+        this.goalSelector.add(++priority, new GolemHarvestGoal(this));
+        this.goalSelector.add(++priority, new GolemDeliverGoal(this));
         if (StrawgolemConfig.Tether.isTetherEnabled()) {
             this.goalSelector.add(++priority, new TetherGoal<>(this, 0.9D)); // tether is fast
         }
-        this.goalSelector.add(++priority, new GolemWanderGoal(this, 0.6D));
+        this.goalSelector.add(++priority, new GolemWanderGoal(this));
         this.goalSelector.add(++priority, new GolemLookAtPlayerGoal(this, 4.0F));
         this.goalSelector.add(++priority, new GolemLookRandomlyGoal(this));
     }

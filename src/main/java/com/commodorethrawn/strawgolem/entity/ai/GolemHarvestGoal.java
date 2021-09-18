@@ -35,8 +35,8 @@ import java.util.UUID;
 public class GolemHarvestGoal extends MoveToTargetPosGoal {
     private final EntityStrawGolem strawgolem;
 
-    public GolemHarvestGoal(EntityStrawGolem strawgolem, double speedIn) {
-        super(strawgolem, speedIn, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
+    public GolemHarvestGoal(EntityStrawGolem strawgolem) {
+        super(strawgolem, 0.7D, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
         this.strawgolem = strawgolem;
     }
 
@@ -96,7 +96,8 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
         if (!this.targetPos.isWithinDistance(this.mob.getPos(), targetDistance)) {
             ++this.tryingTime;
             if (this.shouldResetPath()) {
-                this.mob.getNavigation().startMovingTo(this.targetPos.getX() + 0.5D, this.targetPos.getY() + 1D, this.targetPos.getZ() + 0.5D, this.speed);
+                double speed = this.speed * strawgolem.getHunger().getPercentage();
+                this.mob.getNavigation().startMovingTo(this.targetPos.getX() + 0.5D, this.targetPos.getY() + 1D, this.targetPos.getZ() + 0.5D, speed);
             }
         } else {
             --this.tryingTime;

@@ -7,10 +7,12 @@ import net.minecraft.util.math.BlockPos;
 
 public class GolemWanderGoal extends WanderAroundGoal {
 
+    private static final double speed = 0.55D;
+
     private final EntityStrawGolem strawGolem;
 
-    public GolemWanderGoal(EntityStrawGolem creature, double speedIn) {
-        super(creature, speedIn);
+    public GolemWanderGoal(EntityStrawGolem creature) {
+        super(creature, speed);
         strawGolem = creature;
     }
 
@@ -20,5 +22,10 @@ public class GolemWanderGoal extends WanderAroundGoal {
                 && !strawGolem.isHarvesting()
                 && !strawGolem.getHunger().isHungry()
                 && super.canStart();
+    }
+
+    @Override
+    public void start() {
+        this.mob.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, speed * strawGolem.getHunger().getPercentage());
     }
 }

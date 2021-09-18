@@ -7,10 +7,13 @@ import net.minecraft.entity.mob.HostileEntity;
 
 public class GolemFleeGoal extends FleeEntityGoal<HostileEntity> {
 
+    private static final double slowSpeed = 0.7D;
+    private static final double fastSpeed = 1.0D;
+
     private final EntityStrawGolem strawGolem;
 
     public GolemFleeGoal(EntityStrawGolem entityIn) {
-        super(entityIn, HostileEntity.class, 10.0F, 0.6D, 0.75D);
+        super(entityIn, HostileEntity.class, 12.0F, slowSpeed, fastSpeed);
         strawGolem = entityIn;
     }
 
@@ -21,8 +24,18 @@ public class GolemFleeGoal extends FleeEntityGoal<HostileEntity> {
 
     @Override
     public void start() {
-        super.start();
+        this.fleeingEntityNavigation.startMovingAlong(this.fleePath, slowSpeed * strawGolem.getHunger().getPercentage());
         if (StrawgolemConfig.Miscellaneous.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
+    }
+
+    @Override
+    public void tick() {
+        if (this.mob.squaredDistanceTo(this.targetEntity) < 49.0D) {
+            this.mob.getNavigation().setSpeed(fastSpeed * strawGolem.getHunger().getPercentage());
+        } else {
+            this.mob.getNavigation().setSpeed(slowSpeed * strawGolem.getHunger().getPercentage());
+        }
+
     }
 
 }
