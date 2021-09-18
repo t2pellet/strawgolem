@@ -7,10 +7,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 /**
- * Handles how golems tend to harvest crops
- * Every time a crop grows, it checks for a golem nearby to harvest. If none is found it is added to a queue
- * Every 100 ticks, it goes through the queue checking for golems to harvest, skipping through already harvested blocks
- * and breaking when it cannot find a golem to harvest
+ * Handles crop growth events, adds them to the crop handler
  */
 public class CropGrowthHandler {
 

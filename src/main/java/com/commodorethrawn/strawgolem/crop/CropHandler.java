@@ -12,6 +12,11 @@ public interface CropHandler {
     CropHandler INSTANCE = new CropHandlerImpl();
 
     /**
+     * Reset / clear
+     */
+    void reset();
+
+    /**
      * Add a crop
      * @param world the world the crop is in
      * @param pos the position of the crop

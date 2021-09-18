@@ -18,6 +18,11 @@ class CropHandlerImpl implements CropHandler {
     }
 
     @Override
+    public void reset() {
+        treeMap = new HashMap<>();
+    }
+
+    @Override
     public void addCrop(World world, BlockPos pos) {
         if (treeMap.containsKey(world.getRegistryKey())) {
             treeMap.get(world.getRegistryKey()).insert(pos);
@@ -33,14 +38,13 @@ class CropHandlerImpl implements CropHandler {
         if (treeMap.containsKey(world.getRegistryKey())) {
             treeMap.get(world.getRegistryKey()).delete(pos);
         }
-        treeMap.get(world.getRegistryKey()).delete(pos);
     }
 
     @Override
     public BlockPos getNearestCrop(World world, BlockPos pos, int maxRange) {
         if (treeMap.containsKey(world.getRegistryKey())) {
             BlockPos closest = treeMap.get(world.getRegistryKey()).findNearest(pos);
-            if (pos == null || closest != null && pos.getManhattanDistance(closest) > maxRange) return null;
+            if (closest == null || pos.getManhattanDistance(closest) > maxRange) return null;
             return closest;
         }
         return null;

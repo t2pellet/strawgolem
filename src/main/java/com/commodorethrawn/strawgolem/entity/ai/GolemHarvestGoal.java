@@ -70,6 +70,16 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
         return super.shouldContinue() && !strawgolem.hasVehicle();
     }
 
+    @Override
+    public void stop() {
+        if (strawgolem.isHarvesting()) {
+            // If we stopped while still harvesting, restore the crop
+            CropHandler.INSTANCE.addCrop(strawgolem.world, targetPos);
+        }
+    }
+
+
+
     /* Almost copied from the vanilla tick() method, just calling harvestCrop when it gets to the block and some tweaks for different kinds of blocks */
     @Override
     public void tick() {

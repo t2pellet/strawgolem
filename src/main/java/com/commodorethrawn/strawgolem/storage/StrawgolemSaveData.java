@@ -36,6 +36,7 @@ public class StrawgolemSaveData {
     public void loadData() throws IOException {
         File saveFile = new File(worldDataDir, GOLEM_DATA_NAME);
         if (saveFile.exists() && saveFile.isFile()) {
+            CropHandler.INSTANCE.reset();
             CompoundTag nbt = NbtIo.readCompressed(saveFile);
             ListTag listTag = nbt.getList("listTag", TAG_COMPOUND);
             listTag.forEach(tag -> {

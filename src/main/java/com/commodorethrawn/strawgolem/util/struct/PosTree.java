@@ -11,7 +11,7 @@ public interface PosTree {
      * @return the instance
      */
     static PosTree create() {
-        return new PosTreeImpl();
+        return new OctTree();
     }
 
     /**
