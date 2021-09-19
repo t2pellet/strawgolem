@@ -1,11 +1,11 @@
 package com.commodorethrawn.strawgolem.crop;
 
 import com.commodorethrawn.strawgolem.util.struct.PosTree;
-import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -51,10 +51,8 @@ class CropHandlerImpl implements CropHandler {
     }
 
     @Override
-    public Iterator<Pair<RegistryKey<World>,Iterator<BlockPos>>> iterator() {
-        return treeMap.keySet().stream()
-                .map(key -> new Pair<>(key, treeMap.get(key).iterator()))
-                .iterator();
+    public Iterator<BlockPos> getCrops(World world) {
+        if (treeMap.containsKey(world.getRegistryKey())) return treeMap.get(world.getRegistryKey()).iterator();
+        return Collections.emptyIterator();
     }
-
 }

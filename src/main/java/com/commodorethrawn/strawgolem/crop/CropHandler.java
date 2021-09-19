@@ -40,8 +40,9 @@ public interface CropHandler {
     BlockPos getNearestCrop(World world, BlockPos pos, int maxRange);
 
     /**
-     * Iterate through all worlds and corresponding blockposes
-     * @return the iterator
+     * Gets iterator for all the crops in that world
+     * @param world the given world
+     * @return the iterator for crops in that world
      */
-    Iterator<Pair<RegistryKey<World>, Iterator<BlockPos>>> iterator();
+    Iterator<BlockPos> getCrops(World world);
 }

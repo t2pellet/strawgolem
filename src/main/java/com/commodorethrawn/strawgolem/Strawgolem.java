@@ -33,18 +33,18 @@ public class Strawgolem implements ModInitializer, ClientModInitializer {
     }
 
     public void registerSaveData() {
-        ServerLifecycleEvents.SERVER_STARTING.register(minecraftServer -> {
+        ServerWorldEvents.LOAD.register((minecraftServer, serverWorld) -> {
             data = new StrawgolemSaveData(minecraftServer);
             try {
-                data.loadData();
+                data.loadData(serverWorld);
                 config.load();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-        ServerLifecycleEvents.SERVER_STOPPING.register(minecraftServer -> {
+        ServerWorldEvents.UNLOAD.register((minecraftServer, serverWorld) -> {
             try {
-                data.saveData();
+                data.saveData(serverWorld);
             } catch (Exception e) {
                 e.printStackTrace();
             }

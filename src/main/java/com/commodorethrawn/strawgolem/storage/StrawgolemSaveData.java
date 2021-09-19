@@ -1,16 +1,15 @@
 package com.commodorethrawn.strawgolem.storage;
 
 import com.commodorethrawn.strawgolem.crop.CropHandler;
-import com.mojang.serialization.Dynamic;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,62 +17,45 @@ import java.util.Iterator;
 
 public class StrawgolemSaveData {
 
-    private static final String GOLEM_DATA_NAME = "strawgolem.dat";
     private static final int TAG_COMPOUND = 10;
 
     private final File worldDataDir;
-    private final MinecraftServer server;
 
     public StrawgolemSaveData(MinecraftServer server) {
-        this.server = server;
-        String url = server.getSavePath(WorldSavePath.LEVEL_DAT).toFile().getParentFile().getAbsolutePath();
-        worldDataDir = new File(url + "/data");
+        worldDataDir = new File(server.getSavePath(WorldSavePath.ROOT) + "\\strawgolem");
+        if (!worldDataDir.exists()) worldDataDir.mkdirs();
     }
 
-    private static final String WORLD = "world";
     private static final String POS = "pos";
 
-    public void loadData() throws IOException {
-        File saveFile = new File(worldDataDir, GOLEM_DATA_NAME);
+    public void loadData(World world) throws IOException {
+        File saveFile = new File(worldDataDir, getFileName(world));
         if (saveFile.exists() && saveFile.isFile()) {
-            CropHandler.INSTANCE.reset();
-            CompoundTag nbt = NbtIo.readCompressed(saveFile);
-            ListTag listTag = nbt.getList("listTag", TAG_COMPOUND);
-            listTag.forEach(tag -> {
-                CompoundTag entryTag = (CompoundTag) tag;
-                if (entryTag.get(WORLD) != null) {
-                    RegistryKey<World> dim = DimensionType.method_28521(new Dynamic<>(NbtOps.INSTANCE, entryTag.get(WORLD)))
-                            .result().orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + entryTag.get(WORLD)));
-                    if (entryTag.get(POS) != null && dim != null) {
-                        BlockPos pos = NbtHelper.toBlockPos((CompoundTag) entryTag.get(POS));
-                        World world = server.getWorld(dim);
-                        if (world != null) {
-                            CropHandler.INSTANCE.addCrop(world, pos);
-                        }
-                    }
-                }
+            CompoundTag worldTag = NbtIo.readCompressed(saveFile);
+            ListTag positionsTag = worldTag.getList(POS, TAG_COMPOUND);
+            positionsTag.forEach(tag -> {
+                BlockPos pos = NbtHelper.toBlockPos((CompoundTag) tag);
+                CropHandler.INSTANCE.addCrop(world, pos);
             });
         }
     }
 
-    public void saveData() throws IOException {
-        CompoundTag compound = new CompoundTag();
-        ListTag listTag = new ListTag();
-        Iterator<Pair<RegistryKey<World>, Iterator<BlockPos>>> it = CropHandler.INSTANCE.iterator();
-        while (it.hasNext()) {
-            Pair<RegistryKey<World>, Iterator<BlockPos>> entry = it.next();
-            Iterator<BlockPos> posIterator = entry.getRight();
-            RegistryKey<World> key = entry.getLeft();
-            while (posIterator.hasNext()) {
-                CompoundTag entryTag = new CompoundTag();
-                entryTag.put(POS, NbtHelper.fromBlockPos(posIterator.next()));
-                Identifier.CODEC.encodeStart(NbtOps.INSTANCE, key.getValue())
-                        .result().ifPresent(dim -> entryTag.put(WORLD, dim));
-                listTag.add(entryTag);
-            }
+    public void saveData(World world) throws IOException {
+        CompoundTag worldTag = new CompoundTag();
+        ListTag positionsTag = new ListTag();
+        Iterator<BlockPos> cropIterator = CropHandler.INSTANCE.getCrops(world);
+        while (cropIterator.hasNext()) {
+            BlockPos pos = cropIterator.next();
+            positionsTag.add(NbtHelper.fromBlockPos(pos));
         }
-        compound.put("listTag", listTag);
-        File file = new File(worldDataDir, GOLEM_DATA_NAME);
-        NbtIo.writeCompressed(compound, file);
+        worldTag.put(POS, positionsTag);
+
+        File file = new File(worldDataDir, getFileName(world));
+        NbtIo.writeCompressed(worldTag, file);
+    }
+
+    private String getFileName(World world) {
+        Identifier id = world.getRegistryKey().getValue();
+        return id.getNamespace() + "-" + id.getPath() + ".dat";
     }
 }
