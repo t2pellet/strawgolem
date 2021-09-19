@@ -60,7 +60,10 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     public static final SoundEvent GOLEM_HEAL = new SoundEvent(StrawgolemSounds.GOLEM_HEAL_ID);
     public static final SoundEvent GOLEM_SCARED = new SoundEvent(StrawgolemSounds.GOLEM_SCARED_ID);
     public static final SoundEvent GOLEM_INTERESTED = new SoundEvent(StrawgolemSounds.GOLEM_INTERESTED_ID);
+
     private static final Identifier LOOT = new Identifier(Strawgolem.MODID, "strawgolem");
+    private static final int maxLifespan = StrawgolemConfig.Health.getLifespan() + 12000;
+    private static final int maxHunger = StrawgolemConfig.Health.getHunger() + 6000;
 
     private final Lifespan lifespan;
     private final Memory memory;
@@ -95,7 +98,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         this.goalSelector.add(++priority, new GolemHarvestGoal(this));
         this.goalSelector.add(++priority, new GolemDeliverGoal(this));
         if (StrawgolemConfig.Tether.isTetherEnabled()) {
-            this.goalSelector.add(++priority, new TetherGoal<>(this, 0.9D)); // tether is fast
+            this.goalSelector.add(++priority, new GolemTetherGoal<>(this, 0.8D));
         }
         this.goalSelector.add(++priority, new GolemWanderGoal(this));
         this.goalSelector.add(++priority, new GolemLookAtPlayerGoal(this, 4.0F));
@@ -108,7 +111,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         if (!world.isClient) {
             lifespan.update();
             hunger.update();
-            float healthCap = Math.round((float) lifespan.get() / StrawgolemConfig.Health.getLifespan() * 8) / 2.0F;
+            float healthCap = 4.0F * Math.round((float) lifespan.get() / StrawgolemConfig.Health.getLifespan());
             getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(healthCap);
             if (getHealth() > healthCap) setHealth(healthCap);
             if (holdingFullBlock() && StrawgolemConfig.Health.isHeavyPenalty()) {
@@ -156,33 +159,53 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         Item heldItem = player.getStackInHand(hand).getItem();
-        if (Items.WHEAT == heldItem && isGolemHurt()) {
+
+        if (heldItem == Items.WHEAT) {
+            // Check condition
+            int newLifespan = lifespan.get() + 12000;
+            if (newLifespan > maxLifespan) return ActionResult.FAIL;
+            // Compute
             if (!world.isClient()) {
                 if (getHealth() < getMaxHealth()) setHealth(getMaxHealth());
-                playSound(GOLEM_HEAL, 1.0F, 1.0F);
-                playSound(SoundEvents.BLOCK_GRASS_STEP, 1.0F, 1.0F);
-                int newLifespan = Math.min(StrawgolemConfig.Health.getLifespan() * 2, lifespan.get() + 6000);
                 lifespan.set(newLifespan);
                 if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
                 PacketHandler.INSTANCE.sendInRange(new HealthPacket(this), this, 25.0F);
+            // Feedback
+                playSound(GOLEM_HEAL, 1.0F, 1.0F);
+                playSound(SoundEvents.BLOCK_GRASS_STEP, 1.0F, 1.0F);
             }
             spawnHealParticles(getX(), getY(), getZ());
-        } else if (Items.APPLE == heldItem) {
+            // Result
+            return ActionResult.CONSUME;
+        } else if (heldItem == Items.APPLE) {
+            // Check condition
+            int newHunger = hunger.get() + 6000;
+            if (newHunger > maxHunger) return ActionResult.FAIL;
+            // Compute
             if (!world.isClient()) {
-                int newHunger = Math.min(StrawgolemConfig.Health.getHunger() * 2, hunger.get() + 12000);
                 hunger.set(newHunger);
                 if (!player.isCreative()) player.getStackInHand(hand).decrement(1);
                 PacketHandler.INSTANCE.sendInRange(new HealthPacket(this), this,25.0F);
+            // Feedback
                 playSound(GOLEM_HEAL, 1.0F, 1.0F);
             }
             spawnHappyParticles(getX(), getY(), getZ());
-        } else if (Items.AIR == heldItem) {
-            if (!world.isClient() && player.isSneaking()) {
+            // Result
+            return ActionResult.CONSUME;
+        } else if (heldItem == Items.AIR) {
+            // Condition
+            if (hand == Hand.OFF_HAND || !player.isSneaking()) return ActionResult.FAIL;
+            // Compute
+            if (!world.isClient()) {
+                GolemChestHandler.addMapping(player.getUuid(), getEntityId());
+            // Feedback
                 Text message = new TranslatableText("strawgolem.order", getDisplayName().getString());
                 player.sendMessage(message, true);
-                GolemChestHandler.addMapping(player.getUuid(), getEntityId());
             }
+            // Result
+            return ActionResult.SUCCESS;
         }
+
         return ActionResult.FAIL;
     }
 
@@ -397,7 +420,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     protected SoundEvent getAmbientSound() {
         if (StrawgolemConfig.Miscellaneous.isSoundsEnabled()) {
             if (goalSelector.getRunningGoals().anyMatch(
-                    goal -> goal.getGoal() instanceof GolemFleeGoal || goal.getGoal() instanceof TetherGoal))
+                    goal -> goal.getGoal() instanceof GolemFleeGoal || goal.getGoal() instanceof GolemTetherGoal))
                 return GOLEM_SCARED;
             else if (holdingFullBlock()) return GOLEM_STRAINED;
             return GOLEM_AMBIENT;

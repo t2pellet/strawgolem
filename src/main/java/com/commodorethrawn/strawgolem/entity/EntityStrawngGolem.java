@@ -3,7 +3,7 @@ package com.commodorethrawn.strawgolem.entity;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.config.StrawgolemConfig;
 import com.commodorethrawn.strawgolem.entity.ai.PickupGolemGoal;
-import com.commodorethrawn.strawgolem.entity.ai.TetherGoal;
+import com.commodorethrawn.strawgolem.entity.ai.GolemTetherGoal;
 import com.commodorethrawn.strawgolem.entity.ai.TrackStrawngGolemTargetGoal;
 import com.commodorethrawn.strawgolem.entity.capability.CapabilityHandler;
 import com.commodorethrawn.strawgolem.entity.capability.tether.IHasTether;
@@ -57,7 +57,7 @@ public class EntityStrawngGolem extends GolemEntity implements IHasTether {
     protected void initGoals() {
         goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
         if (StrawgolemConfig.Tether.isTetherEnabled()) {
-            goalSelector.add(2, new TetherGoal<>(this, 0.85D));
+            goalSelector.add(2, new GolemTetherGoal<>(this, 0.8D));
         }
         goalSelector.add(3, new PickupGolemGoal(this, 0.6D));
         goalSelector.add(4, new WanderNearTargetGoal(this, 0.7D, StrawgolemConfig.Tether.getTetherMaxRange()));
