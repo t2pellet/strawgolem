@@ -2,6 +2,7 @@ package com.commodorethrawn.strawgolem.events;
 
 import com.commodorethrawn.strawgolem.Registry;
 import com.commodorethrawn.strawgolem.Strawgolem;
+import com.commodorethrawn.strawgolem.config.ConfigHelper;
 import com.commodorethrawn.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -35,17 +36,19 @@ public class GolemCreationHandler {
         BlockPos pos = event.getPos();
         Block block = event.getState().getBlock();
 
-        BlockPos pumpkin;
-        BlockPos hay;
+        BlockPos head;
+        BlockPos body;
 
-        if (block == Blocks.CARVED_PUMPKIN) {
-            pumpkin = pos;
-            hay = pos.down();
-        } else if (block == Blocks.HAY_BLOCK) {
-            pumpkin = pos.up();
-            hay = pos;
-        } else return;
-        spawnGolem(worldIn, hay, pumpkin);
+        if (ConfigHelper.isHeadBlock(block)) {
+            head = pos;
+            body = pos.down();
+            spawnGolem(worldIn, body, head);
+        }
+        if (ConfigHelper.isBodyBlock(block)) {
+            head = pos.up();
+            body = pos;
+            spawnGolem(worldIn, body, head);
+        }
     }
 
     /**
@@ -55,7 +58,8 @@ public class GolemCreationHandler {
      */
     @SubscribeEvent
     public static void onGolemBuiltAlternate(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getPlayer().getHeldItemMainhand().getItem() == Items.SHEARS
+        if (ConfigHelper.isShearsConstructionEnabled()
+                && event.getPlayer().getHeldItemMainhand().getItem() == Items.SHEARS
                 && event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.PUMPKIN) {
             Direction facing = event.getPlayer().getHorizontalFacing().getOpposite();
             event.getWorld().setBlockState(event.getPos(), Blocks.CARVED_PUMPKIN.getDefaultState().with(HorizontalBlock.HORIZONTAL_FACING, facing));
@@ -67,19 +71,19 @@ public class GolemCreationHandler {
     }
 
     /**
-     * Spawns the strawgolem in the given world if theres a hay block at pos hay and pumpkin block at pos pumpkin
+     * Spawns the strawgolem in the given world if the blocks at positions passed in can be used as head and body
      *
      * @param worldIn the world
-     * @param hay     position of hay
-     * @param pumpkin position of pumpkin
+     * @param body    position of body block
+     * @param head    position of head block
      */
-    private static void spawnGolem(World worldIn, BlockPos hay, BlockPos pumpkin) {
-        if (worldIn.getBlockState(hay).getBlock() == Blocks.HAY_BLOCK
-                && worldIn.getBlockState(pumpkin).getBlock() == Blocks.CARVED_PUMPKIN) {
-            worldIn.setBlockState(pumpkin, Blocks.AIR.getDefaultState());
-            worldIn.setBlockState(hay, Blocks.AIR.getDefaultState());
+    private static void spawnGolem(World worldIn, BlockPos body, BlockPos head) {
+        if (ConfigHelper.isBodyBlock(worldIn.getBlockState(body).getBlock())
+                && ConfigHelper.isHeadBlock(worldIn.getBlockState(head).getBlock())) {
+            worldIn.setBlockState(head, Blocks.AIR.getDefaultState());
+            worldIn.setBlockState(body, Blocks.AIR.getDefaultState());
             EntityStrawGolem strawGolem = new EntityStrawGolem(Registry.STRAW_GOLEM_TYPE, worldIn);
-            strawGolem.setPosition(hay.getX() + 0.5D, hay.getY(), hay.getZ() + 0.5D);
+            strawGolem.setPosition(body.getX() + 0.5D, body.getY(), body.getZ() + 0.5D);
             worldIn.addEntity(strawGolem);
         }
     }

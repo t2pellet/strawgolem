@@ -25,6 +25,10 @@ public class ConfigHelper {
         return StrawgolemConfig.enableHwyla;
     }
 
+    public static boolean isShearsConstructionEnabled() {
+        return StrawgolemConfig.shearsConstructionEnabled;
+    }
+
     public static boolean doGolemPickup() {
         return StrawgolemConfig.golemInteract;
     }
@@ -52,6 +56,14 @@ public class ConfigHelper {
 
     public static int getSearchRangeVertical() {
         return StrawgolemConfig.searchRangeVertical;
+    }
+
+    public static boolean isHeadBlock(Block block) {
+        return blockMatchesFilter(block, StrawgolemConfig.headBlocks) != StrawgolemConfig.FilterMatch.None;
+    }
+
+    public static boolean isBodyBlock(Block block) {
+        return blockMatchesFilter(block, StrawgolemConfig.bodyBlocks) != StrawgolemConfig.FilterMatch.None;
     }
 
     public static boolean blockHarvestAllowed(Block block) {

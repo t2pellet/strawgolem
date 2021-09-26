@@ -3,6 +3,7 @@ package com.commodorethrawn.strawgolem.config;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +26,9 @@ public class StrawgolemConfig {
     static boolean shiverEnabled;
     static boolean golemInteract;
     static boolean enableHwyla;
+    static List<? extends String> headBlocks;
+    static List<? extends String> bodyBlocks;
+    static boolean shearsConstructionEnabled;
     /* Tethering */
     static boolean tetherEnabled;
     static boolean temptResetsTether;
@@ -50,6 +54,8 @@ public class StrawgolemConfig {
         final ForgeConfigSpec.IntValue searchRangeHorizontal, searchRangeVertical;
         final ForgeConfigSpec.BooleanValue soundsEnabled, golemInteract, shiverEnabled;
         final ForgeConfigSpec.BooleanValue enableHwyla;
+        final ForgeConfigSpec.ConfigValue<List<? extends String>> headBlocks, bodyBlocks;
+        final ForgeConfigSpec.BooleanValue shearsConstructionEnabled;
         final ForgeConfigSpec.BooleanValue waterPenalty, rainPenalty, heavyPenalty;
         final ForgeConfigSpec.BooleanValue tetherEnabled, tetherToTemptEnabled;
         final ForgeConfigSpec.IntValue tetherRangeMin, tetherRangeMax;
@@ -89,6 +95,9 @@ public class StrawgolemConfig {
             shiverEnabled = builder.comment("Enable/disable golem shivering in cold").define("shiverEnabled", true);
             golemInteract = builder.comment("Enable iron golems picking up straw golems occasionally").define("golemInteract", true);
             enableHwyla = builder.comment("Enable HWYLA compatibility").define("enableHwyla", true);
+            headBlocks = builder.comment("Blocks that can be used to construct the golem's head").defineList("headBlocks", Arrays.asList("minecraft:carved_pumpkin"), o -> o instanceof String);
+            bodyBlocks = builder.comment("Blocks that can be used to construct the golem's body").defineList("bodyBlocks", Arrays.asList("minecraft:hay_block"), o -> o instanceof String);
+            shearsConstructionEnabled = builder.comment("Allow constructing head by shearing a pumpkin").define("shearsConstructionEnabled", true);
             builder.pop();
         }
     }
