@@ -76,7 +76,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
     public static DefaultAttributeContainer.Builder createMob() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 4.0D)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.175D);
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.225D);
     }
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, World worldIn) {

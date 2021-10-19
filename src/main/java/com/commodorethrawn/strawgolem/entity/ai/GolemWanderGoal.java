@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class GolemWanderGoal extends WanderAroundGoal {
 
-    private static final double speed = 0.55D;
+    private static final double speed = 0.5D;
 
     private final EntityStrawGolem strawGolem;
 
