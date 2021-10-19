@@ -101,6 +101,8 @@ public class StrawgolemConfig extends Config {
         private static boolean temptResetsTether = true;
         @Section.Comment("The maximum range away from its tether the golem should wander")
         private static int tetherMaxRange = 36;
+        @Section.Comment("The min distance to the tether the golem should return to when it wanders too far")
+        private static int tetherMinRange = 0;
 
         public static boolean isTetherEnabled() {
             return tetherEnabled;
@@ -112,6 +114,10 @@ public class StrawgolemConfig extends Config {
 
         public static int getTetherMaxRange() {
             return tetherMaxRange;
+        }
+
+        public static int getTetherMinRange() {
+            return tetherMinRange;
         }
     }
 

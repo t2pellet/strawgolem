@@ -10,26 +10,28 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class GolemTetherGoal<T extends PathAwareEntity & IHasTether> extends MoveToTargetPosGoal {
 
     private final T entity;
+    private final int desiredDistance;
 
     public GolemTetherGoal(T entity, double speed) {
         super(entity, speed, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
         this.entity = entity;
+        desiredDistance = entity.getRandom().nextInt(StrawgolemConfig.Tether.getTetherMaxRange()) + StrawgolemConfig.Tether.getTetherMinRange();
     }
-
 
     @Override
     public boolean canStart() {
-        final double d = getTetherDistance();
-        if(d > StrawgolemConfig.Tether.getTetherMaxRange() && super.canStart()) {
-            if (entity instanceof IHasHunger) {
-                if (((IHasHunger) entity).getHunger().isHungry()) return false;
+        if (entity instanceof IHasHunger) {
+            if (((IHasHunger) entity).getHunger().isHungry()) {
+                return false;
             }
+        }
+        final double currentDistance = getTetherDistance();
+        if(currentDistance > StrawgolemConfig.Tether.getTetherMaxRange()) {
             this.targetPos = entity.getTether().get().getPos();
             return true;
         }
@@ -38,14 +40,16 @@ public class GolemTetherGoal<T extends PathAwareEntity & IHasTether> extends Mov
 
     @Override
     public void start() {
-        if (StrawgolemConfig.Miscellaneous.isSoundsEnabled()) entity.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
+        if (StrawgolemConfig.Miscellaneous.isSoundsEnabled()) {
+            entity.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
+        }
         super.start();
     }
 
     @Override
     public boolean shouldContinue() {
-        final double d = getTetherDistance();
-        return d > StrawgolemConfig.Tether.getTetherMaxRange();
+        final double currentDistance = entity.getTether().distanceTo(entity);
+        return currentDistance > desiredDistance;
     }
 
     @Override
@@ -78,17 +82,14 @@ public class GolemTetherGoal<T extends PathAwareEntity & IHasTether> extends Mov
     }
 
     private double getTetherDistance() {
-        final Tether.TetherPos anchor = entity.getTether().get();
-        final World golemWorld = entity.world;
-        final BlockPos golemPos = entity.getBlockPos();
-        if (anchor == Tether.TetherPos.ORIGIN) {
+        // Set tether if unset
+        if (entity.getTether().get() == Tether.TetherPos.ORIGIN) {
             // if anchor is unset, this is a new golem, set it
-            Strawgolem.logger.debug( entity.getEntityId() + " has no anchor, setting " + golemPos );
-            entity.getTether().set(golemWorld, golemPos);
+            Strawgolem.logger.debug( entity.getEntityId() + " has no anchor, setting " + entity.getBlockPos());
+            entity.getTether().set(entity.world, entity.getBlockPos());
             return 0.0;
-        } else {
-            return entity.getTether().distanceTo(golemWorld, golemPos);
         }
+        return entity.getTether().distanceTo(entity);
     }
 
 }

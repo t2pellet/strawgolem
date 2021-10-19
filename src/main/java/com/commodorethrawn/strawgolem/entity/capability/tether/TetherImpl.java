@@ -1,11 +1,11 @@
 package com.commodorethrawn.strawgolem.entity.capability.tether;
 
 import com.mojang.serialization.Dynamic;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
@@ -36,11 +36,21 @@ class TetherImpl implements Tether {
     }
 
     @Override
-    public int distanceTo(World world, BlockPos pos) {
+    public <T extends Entity> double distanceTo(T entity) {
         // If we are in a different dimension, we should reset the tether
-        if (world.getRegistryKey().equals(tetherPos.getWorld())) {
-           return pos.getManhattanDistance(tetherPos.getPos());
+        if (entity.world.getRegistryKey().equals(tetherPos.getWorld())) {
+            return entity.getBlockPos().getManhattanDistance(tetherPos.getPos());
         }
+        tetherPos = new TetherPosImpl(entity.world, entity.getBlockPos());
+        return 0;
+    }
+
+    @Override
+    public double distanceTo(World world, BlockPos pos) {
+        if (world.getRegistryKey().equals(tetherPos.getWorld())) {
+            return pos.getManhattanDistance(tetherPos.getPos());
+        }
+        // If we are in a different dimension, we should reset the tether
         tetherPos = new TetherPosImpl(world, pos);
         return 0;
     }
