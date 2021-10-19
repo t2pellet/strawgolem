@@ -107,10 +107,12 @@ public class OctTree implements PosTree {
         if (pos == null) return;
         OctTree result = search(pos);
         if (pos.equals(result.point)) {
-            if (result.parent != null) {
+            result.point = null;
+            while (result.parent != null && result.isEmpty()) {
                 Octant octant = result.parent.getOctant(pos);
                 result.parent.setOctTree(octant, null);
-            } else result.point = null;
+                result = result.parent;
+            }
         }
     }
 
@@ -201,9 +203,13 @@ public class OctTree implements PosTree {
 
     private static BlockPos findNearest(PriorityQueue<OctTree> closestPQ, final BlockPos pos) {
         OctTree closest = closestPQ.poll();
-        if (closest.point != null) return closest.point;
+        if (closest.point != null) {
+            return closest.point;
+        }
         for (OctTree tree : closest.octTrees.values()) {
-            if (tree != null) closestPQ.offer(tree);
+            if (tree != null) {
+                closestPQ.offer(tree);
+            }
         }
         return findNearest(closestPQ, pos);
     }
@@ -228,15 +234,6 @@ public class OctTree implements PosTree {
             buildStack(tree);
         }
 
-        private void buildStack(OctTree parent) {
-            for (OctTree tree : parent.octTrees.values()) {
-                if (tree != null) {
-                    if (tree.point != null) positions.push(tree.point);
-                    else buildStack(tree);
-                }
-            }
-        }
-
         @Override
         public boolean hasNext() {
             return !positions.isEmpty();
@@ -246,6 +243,15 @@ public class OctTree implements PosTree {
         public BlockPos next() {
             if (!hasNext()) throw new NoSuchElementException();
             return positions.pop();
+        }
+
+        private void buildStack(OctTree parent) {
+            for (OctTree tree : parent.octTrees.values()) {
+                if (tree != null) {
+                    if (tree.point != null) positions.push(tree.point);
+                    else buildStack(tree);
+                }
+            }
         }
     }
 

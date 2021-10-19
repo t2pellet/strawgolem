@@ -7,8 +7,6 @@ import com.commodorethrawn.strawgolem.storage.StrawgolemSaveData;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,9 +20,9 @@ public class Strawgolem implements ModInitializer, ClientModInitializer {
 
     @Override
     public void onInitialize() {
-        config = StrawgolemConfig.init();
         CommonRegistry.register();
         registerSaveData();
+        config = StrawgolemConfig.init();
     }
 
     @Override
@@ -33,20 +31,19 @@ public class Strawgolem implements ModInitializer, ClientModInitializer {
     }
 
     public void registerSaveData() {
-        ServerWorldEvents.LOAD.register((minecraftServer, serverWorld) -> {
-            data = new StrawgolemSaveData(minecraftServer);
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            data = new StrawgolemSaveData(server);
             try {
-                data.loadData(serverWorld);
-                config.load();
+                data.loadData(server);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-        ServerWorldEvents.UNLOAD.register((minecraftServer, serverWorld) -> {
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             try {
-                data.saveData(serverWorld);
-            } catch (Exception e) {
-                e.printStackTrace();
+                data.saveData(server);
+            } catch (IOException e) {
+                e.printStackTrace();;
             }
         });
     }
