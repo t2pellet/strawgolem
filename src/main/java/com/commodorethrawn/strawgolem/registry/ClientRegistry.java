@@ -18,7 +18,7 @@ public class ClientRegistry {
 
     @Environment(EnvType.CLIENT)
     public static void register() {
-        ClientTickEvents.END_WORLD_TICK.register(ActionScheduler.INSTANCE::tick);
+        ClientTickEvents.END_WORLD_TICK.register(ActionScheduler.INSTANCE::tickClient);
         StrawgolemParticles.register();
         registerEntityRenderer();
     }

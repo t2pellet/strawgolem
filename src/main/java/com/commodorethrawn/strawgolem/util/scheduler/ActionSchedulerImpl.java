@@ -1,5 +1,7 @@
 package com.commodorethrawn.strawgolem.util.scheduler;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
@@ -16,13 +18,19 @@ class ActionSchedulerImpl implements ActionScheduler {
     }
 
     @Override
-    public void tick(World world) {
-        if (world instanceof ClientWorld) {
+    @Environment(EnvType.CLIENT)
+    public void tickClient(ClientWorld world) {
+        if (world != null) {
             while (!clientQueue.isEmpty() && clientQueue.peek().getRunTick() <= ticks) {
                 clientQueue.remove().execute();
             }
             ++ticks;
-        } else if (world instanceof ServerWorld) {
+        }
+    }
+
+    @Override
+    public void tickServer(ServerWorld world) {
+        if (world != null) {
             while (!serverQueue.isEmpty() && serverQueue.peek().getRunTick() <= ticks) {
                 serverQueue.remove().execute();
             }
