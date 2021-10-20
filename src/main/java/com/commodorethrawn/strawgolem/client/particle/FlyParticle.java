@@ -37,8 +37,8 @@ public class FlyParticle extends SpriteBillboardParticle {
             thetaHoriz += 0.05;
             thetaVert += 0.05;
             this.velocityX = Math.sin(thetaHoriz) / 14;
-            this.velocityY =  Math.cos(thetaHoriz) / 14;
-            this.velocityZ = (Math.sin(2 * thetaVert)) / 12 + 0.025;
+            this.velocityZ =  Math.cos(thetaHoriz) / 14;
+            this.velocityY = (Math.sin(2 * thetaVert)) / 12 + 0.025;
         }
     }
 
