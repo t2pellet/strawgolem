@@ -48,6 +48,7 @@ public abstract class Config {
                 Section section = aClass.getAnnotation(Section.class);
                 IniFile.Section s = iniFile.addSection(section.value());
                 for (Field declaredField : aClass.getDeclaredFields()) {
+                    declaredField.setAccessible(true);
                     s.add(declaredField.getName(), declaredField.get(null));
                     if (declaredField.isAnnotationPresent(Section.Comment.class)) {
                         Section.Comment comment = declaredField.getAnnotation(Section.Comment.class);
@@ -65,7 +66,9 @@ public abstract class Config {
      * @throws IllegalAccessException if there is an error accessing config elements
      */
     public void load() throws IOException, IllegalAccessException {
-        if (configFile.createNewFile()) save();
+        if (configFile.createNewFile()) {
+            save();
+        }
         iniFile.load(configFile);
         Class<?>[] declaredClasses = this.getClass().getDeclaredClasses();
         for (Class<?> declaredClass : declaredClasses) {
