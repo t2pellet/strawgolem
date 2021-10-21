@@ -47,12 +47,6 @@ public class GolemTetherGoal<T extends PathAwareEntity & IHasTether> extends Mov
     }
 
     @Override
-    public boolean shouldContinue() {
-        final double currentDistance = entity.getTether().distanceTo(entity);
-        return currentDistance > desiredDistance;
-    }
-
-    @Override
     protected boolean isTargetPos(WorldView worldIn, BlockPos pos) {
         return worldIn.getBlockState(pos).getBlock() != Blocks.AIR;
     }
@@ -79,6 +73,11 @@ public class GolemTetherGoal<T extends PathAwareEntity & IHasTether> extends Mov
         } else {
             tryingTime = 0;
         }
+    }
+
+    @Override
+    public double getDesiredSquaredDistanceToTarget() {
+        return desiredDistance;
     }
 
     private double getTetherDistance() {
