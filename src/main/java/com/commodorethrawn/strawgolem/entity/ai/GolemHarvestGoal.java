@@ -67,7 +67,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
 
     @Override
     public boolean shouldContinue() {
-        return super.shouldContinue() && !strawgolem.hasVehicle();
+        return !strawgolem.hasVehicle() && super.shouldContinue();
     }
 
     @Override

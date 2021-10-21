@@ -33,7 +33,7 @@ public class GolemDeliverGoal extends MoveToTargetPosGoal {
 
     @Override
     public boolean shouldContinue() {
-        return !strawGolem.isHandEmpty() && super.shouldResetPath();
+        return !strawGolem.isHandEmpty() && super.shouldContinue();
     }
 
     @Override
