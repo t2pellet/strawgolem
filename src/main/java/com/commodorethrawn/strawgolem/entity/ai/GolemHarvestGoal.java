@@ -167,7 +167,7 @@ public class GolemHarvestGoal extends MoveToTargetPosGoal {
         IntProperty ageProperty = CropRegistry.INSTANCE.getAgeProperty(block);
         if (block instanceof SweetBerryBushBlock) {
             worldIn.setBlockState(pos, block.getDefaultState().with(ageProperty, 2));
-        } else if (block instanceof StemBlock) {
+        } else if (block instanceof GourdBlock) {
             worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
         } else {
             worldIn.setBlockState(pos, state.with(ageProperty, 1));

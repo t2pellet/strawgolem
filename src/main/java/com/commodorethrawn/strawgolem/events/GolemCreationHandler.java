@@ -32,18 +32,20 @@ public class GolemCreationHandler {
      * Handles golem building based on block placement
      */
     public static ActionResult onGolemBuilt(PlayerEntity player, World worldIn, Hand hand, BlockHitResult result) {
-        BlockPos pos = result.getBlockPos();
-        Item heldItem = player.getMainHandStack().getItem();
-        if (heldItem instanceof BlockItem) {
-            Block heldBlock = ((BlockItem) heldItem).getBlock();
-            Direction direction = result.getSide();
-            BlockPos placementPos = pos.add(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
-            if (heldBlock == Blocks.CARVED_PUMPKIN) {
-                BlockPos hayPos = placementPos.down();
-                if (worldIn.getBlockState(hayPos).getBlock() == Blocks.HAY_BLOCK) spawnStrawGolem(worldIn, hayPos, placementPos, result.getSide());
-            } else if (heldBlock == Blocks.HAY_BLOCK) {
-                BlockPos pumpkinPos = placementPos.up();
-                if (worldIn.getBlockState(pumpkinPos).getBlock() == Blocks.CARVED_PUMPKIN) spawnStrawGolem(worldIn, placementPos, pumpkinPos, result.getSide());
+        if (!worldIn.isClient) {
+            BlockPos pos = result.getBlockPos();
+            Item heldItem = player.getMainHandStack().getItem();
+            if (heldItem instanceof BlockItem) {
+                Block heldBlock = ((BlockItem) heldItem).getBlock();
+                Direction direction = result.getSide();
+                BlockPos placementPos = pos.add(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
+                if (heldBlock == Blocks.CARVED_PUMPKIN) {
+                    BlockPos hayPos = placementPos.down();
+                    if (worldIn.getBlockState(hayPos).getBlock() == Blocks.HAY_BLOCK) spawnStrawGolem(worldIn, hayPos, placementPos, result.getSide());
+                } else if (heldBlock == Blocks.HAY_BLOCK) {
+                    BlockPos pumpkinPos = placementPos.up();
+                    if (worldIn.getBlockState(pumpkinPos).getBlock() == Blocks.CARVED_PUMPKIN) spawnStrawGolem(worldIn, placementPos, pumpkinPos, result.getSide());
+                }
             }
         }
         return ActionResult.PASS;
@@ -53,15 +55,17 @@ public class GolemCreationHandler {
      * Handles golem building based on shearing the pumpkin
      */
     public static ActionResult onGolemBuiltAlternate(PlayerEntity player, World worldIn, Hand hand, BlockHitResult result) {
-        BlockPos pos = result.getBlockPos();
-        if (player.getMainHandStack().getItem() == Items.SHEARS
-                && worldIn.getBlockState(pos).getBlock() == Blocks.PUMPKIN
-                && worldIn.getBlockState(pos.down()).getBlock() == Blocks.HAY_BLOCK) {
-            Direction facing = result.getSide();
-            worldIn.setBlockState(result.getBlockPos(), Blocks.CARVED_PUMPKIN.getDefaultState().with(HorizontalFacingBlock.FACING, facing));
-            worldIn.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F, true);
-            player.getMainHandStack().damage(1, player, p -> p.sendToolBreakStatus(Hand.MAIN_HAND));
-            return spawnStrawGolem(worldIn, pos.down(), pos, result.getSide());
+        if (!worldIn.isClient) {
+            BlockPos pos = result.getBlockPos();
+            if (player.getMainHandStack().getItem() == Items.SHEARS
+                    && worldIn.getBlockState(pos).getBlock() == Blocks.PUMPKIN
+                    && worldIn.getBlockState(pos.down()).getBlock() == Blocks.HAY_BLOCK) {
+                Direction facing = result.getSide();
+                worldIn.setBlockState(result.getBlockPos(), Blocks.CARVED_PUMPKIN.getDefaultState().with(HorizontalFacingBlock.FACING, facing));
+                worldIn.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F, true);
+                player.getMainHandStack().damage(1, player, p -> p.sendToolBreakStatus(Hand.MAIN_HAND));
+                return spawnStrawGolem(worldIn, pos.down(), pos, result.getSide());
+            }
         }
         return ActionResult.PASS;
     }
