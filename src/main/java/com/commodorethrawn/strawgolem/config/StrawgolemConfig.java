@@ -3,6 +3,7 @@ package com.commodorethrawn.strawgolem.config;
 import com.commodorethrawn.strawgolem.Strawgolem;
 import com.commodorethrawn.strawgolem.util.io.Config;
 import net.minecraft.block.Block;
+import net.minecraft.util.registry.Registry;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,11 +38,12 @@ public class StrawgolemConfig extends Config {
 
         @Section.Comment("The golem filtration mode. Enter 'whitelist' or 'blacklist'")
         private static String filterMode = FILTER_MODE_BLACKLIST;
+        @Section.Comment("Format Example: whitelist = [minecraft:carrots, minecraft:wheat]")
         private static ArrayList<String> whitelist = new ArrayList<>();
         private static ArrayList<String> blacklist = new ArrayList<>();
 
         public static boolean isHarvestAllowed(Block block) {
-            String blockStr = block.getLootTableId().getNamespace() + ":" + block.getLootTableId().getPath();
+            String blockStr = Registry.BLOCK.getId(block).toString();
             switch (filterMode) {
                 case FILTER_MODE_WHITELIST:
                     return whitelist.stream().anyMatch(s -> s.equals(blockStr));
