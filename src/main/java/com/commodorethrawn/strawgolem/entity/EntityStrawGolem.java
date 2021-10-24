@@ -271,7 +271,7 @@ public class EntityStrawGolem extends GolemEntity implements IHasHunger, IHasTet
         if (getPos().y % 1F != 0) golemPos = golemPos.add(0, 0.5, 0);
         Vec3d blockPos = new Vec3d(pos.getX(), pos.getY() + 0.5, pos.getZ());
         RaycastContext ctx = new RaycastContext(golemPos, blockPos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this);
-        return worldIn.raycast(ctx).getPos().isInRange(blockPos, 2.5D);
+        return worldIn.raycast(ctx).getPos().isInRange(blockPos, 1D);
     }
 
     public void setHarvesting(boolean isHarvesting) {
