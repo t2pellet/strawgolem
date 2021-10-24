@@ -32,7 +32,7 @@ public abstract class Config {
 
     public Config(String modId) throws IOException, IllegalAccessException {
         iniFile = IniFile.newInstance();
-        String configPath = FabricLoader.getInstance().getConfigDir().toString() + "\\" + modId + ".ini";
+        String configPath = FabricLoader.getInstance().getConfigDir().toString() + "/" + modId + ".ini";
         configFile = new File(configPath);
         load();
     }
