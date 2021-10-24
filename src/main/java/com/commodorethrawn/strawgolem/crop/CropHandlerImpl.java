@@ -47,12 +47,28 @@ class CropHandlerImpl implements CropHandler {
             if (closest == null || pos.getManhattanDistance(closest) > maxRange) return null;
             return closest;
         }
-        return null;
+        // Half range for scanning, improves performance
+        return scanForNearestCrop(world, pos, maxRange / 2);
     }
 
     @Override
     public Iterator<BlockPos> getCrops(World world) {
         if (treeMap.containsKey(world.getRegistryKey())) return treeMap.get(world.getRegistryKey()).iterator();
         return Collections.emptyIterator();
+    }
+
+    private BlockPos scanForNearestCrop(World world, BlockPos pos, int maxRange) {
+        BlockPos currPos;
+        for (int i = -maxRange; i < maxRange; ++i) {
+            for (int j = -maxRange; j < maxRange; ++j) {
+                for (int k = -maxRange; k < maxRange; ++k) {
+                    currPos = pos.add(i, j, k);
+                    if (CropValidator.isGrownCrop(world.getBlockState(currPos))) {
+                        return currPos;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
