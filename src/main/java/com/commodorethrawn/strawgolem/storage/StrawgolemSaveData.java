@@ -22,7 +22,7 @@ public class StrawgolemSaveData {
     private final File worldDataDir;
 
     public StrawgolemSaveData(MinecraftServer server) {
-        worldDataDir = new File(server.getSavePath(WorldSavePath.ROOT) + "\\strawgolem");
+        worldDataDir = new File(server.getSavePath(WorldSavePath.ROOT) + "/strawgolem");
         if (!worldDataDir.exists()) worldDataDir.mkdirs();
     }
 
