@@ -38,7 +38,7 @@ public class StrawgolemConfig extends Config {
 
         @Section.Comment("The golem filtration mode. Enter 'whitelist' or 'blacklist'")
         private static String filterMode = FILTER_MODE_BLACKLIST;
-        @Section.Comment("Format Example: whitelist = [minecraft:carrots, minecraft:wheat]")
+        @Section.Comment("Format Example: whitelist = [minecraft:carrots,minecraft:wheat]")
         private static ArrayList<String> whitelist = new ArrayList<>();
         private static ArrayList<String> blacklist = new ArrayList<>();
 
@@ -46,9 +46,9 @@ public class StrawgolemConfig extends Config {
             String blockStr = Registry.BLOCK.getId(block).toString();
             switch (filterMode) {
                 case FILTER_MODE_WHITELIST:
-                    return whitelist.stream().anyMatch(s -> s.equals(blockStr));
+                    return whitelist.stream().anyMatch(s -> s.trim().equals(blockStr));
                 case FILTER_MODE_BLACKLIST:
-                    return blacklist.stream().noneMatch(s -> s.equals(blockStr));
+                    return blacklist.stream().noneMatch(s -> s.trim().equals(blockStr));
                 default:
                     return true;
             }
