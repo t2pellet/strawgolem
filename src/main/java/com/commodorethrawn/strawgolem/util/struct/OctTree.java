@@ -120,6 +120,7 @@ public class OctTree implements PosTree {
     public void delete(BlockPos pos) {
         if (pos == null) return;
         OctTree result = search(pos);
+
         if (pos.equals(result.point)) {
             result.point = null;
             while (result.parent != null && result.isEmpty()) {
@@ -133,16 +134,23 @@ public class OctTree implements PosTree {
     @Override
     public BlockPos findNearest(final BlockPos pos) {
         if (isEmpty()) return null;
-        if (pos.equals(point)) return pos;
-        OctTree octTree = getOctTree(getOctant(pos));
-        if (octTree == null) {
-            PriorityQueue<OctTree> closestPQ = new PriorityQueue<>((o1, o2) -> {
-                return Float.compare(o1.getManhattanDistance(pos), o2.getManhattanDistance(pos));
-            });
-            closestPQ.offer(this);
-            return findNearest(closestPQ, pos);
+        OctTree closestTree = search(pos);
+        if (pos.equals(closestTree.point)) return pos;
+
+        PriorityQueue<BlockPos> closestPQ = new PriorityQueue<>((o1, o2) -> {
+            return Float.compare(o1.getManhattanDistance(pos), o2.getManhattanDistance(pos));
+        });
+
+        closestTree.buildPQ(closestPQ);
+        return closestPQ.poll();
+    }
+
+    private void buildPQ(PriorityQueue<BlockPos> pq) {
+        for (Octant octant : Octant.values()) {
+            OctTree child = getOctTree(octant);
+            if (child.isLeaf()) pq.offer(child.point);
+            else child.buildPQ(pq);
         }
-        return octTree.findNearest(pos);
     }
 
     @Override
@@ -224,37 +232,13 @@ public class OctTree implements PosTree {
 
         OctTree posTree = new OctTree(tree, posOctant);
         posTree.point = pos;
-        setOctTree(posOctant, posTree);
+        tree.setOctTree(posOctant, posTree);
 
         OctTree pointTree = new OctTree(tree, pointOctant);
         pointTree.point = point;
-        setOctTree(pointOctant, pointTree);
+        tree.setOctTree(pointOctant, pointTree);
 
         point = null;
-    }
-
-    private static BlockPos findNearest(PriorityQueue<OctTree> closestPQ, final BlockPos pos) {
-        OctTree closest = closestPQ.poll();
-        if (closest.point != null) {
-            return closest.point;
-        }
-        for (OctTree tree : closest.octTrees.values()) {
-            if (tree != null) {
-                closestPQ.offer(tree);
-            }
-        }
-        return findNearest(closestPQ, pos);
-    }
-
-    private float getManhattanDistance(BlockPos pos) {
-        if (point != null) return (float) point.getManhattanDistance(pos);
-        float minDistance = Float.MAX_VALUE;
-        for (OctTree tree : octTrees.values()) {
-            if (tree == null) continue;
-            float distance = tree.getManhattanDistance(pos);
-            if (distance < minDistance) minDistance = distance;
-        }
-        return minDistance;
     }
 
     // Iterator class
