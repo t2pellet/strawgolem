@@ -146,10 +146,12 @@ public class OctTree implements PosTree {
     }
 
     private void buildPQ(PriorityQueue<BlockPos> pq) {
-        for (Octant octant : Octant.values()) {
-            OctTree child = getOctTree(octant);
-            if (child.isLeaf()) pq.offer(child.point);
-            else child.buildPQ(pq);
+        if (isLeaf()) pq.offer(point);
+        else {
+            for (Octant octant : Octant.values()) {
+                OctTree child = getOctTree(octant);
+                if (child != null) child.buildPQ(pq);
+            }
         }
     }
 
