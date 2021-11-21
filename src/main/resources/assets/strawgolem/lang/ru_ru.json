@@ -1,10 +1,14 @@
 {
   "entity.strawgolem.strawgolem": "Соломенный голем",
+  "entity.strawgolem.strawnggolem": "Сологменный голем",
   "strawgolem.subtitle.golemAmbient": "Соломенный голем бормочет",
-  "strawgolem.subtitle.golemHurt": "Соломенному голему больно",
-  "strawgolem.subtitle.golemDeath": "Соломенный голем умирает",
-  "strawgolem.subtitle.golemHeal": "Соломенный голем исцелился",
-  "strawgolem.subtitle.golemScared": "Соломенный голем испугался",
+  "strawgolem.subtitle.golemHurt": "Соломенный голем ранен",
+  "strawgolem.subtitle.golemDeath": "Соломенный голем погиб",
+  "strawgolem.subtitle.golemHeal": "Соломенный голем исцелён",
+  "strawgolem.subtitle.golemScared": "Соломенный голем испуган",
   "strawgolem.subtitle.golemInterested": "Соломенный голем заинтересован",
-  "strawgolem.lifespan": "Оставшаяся жизнь: %s дней"
+  "strawgolem.lifespan": "Продолжительность жизни: %s дней",
+  "strawgolem.hunger": "Уровень голода: %s",
+  "strawgolem.deliver": "%s теперь будет доставлять в этот контейнер.",
+  "strawgolem.order": "Распределение: %s"
 }
