@@ -4,6 +4,8 @@ This is a spiritual successor to the original Straw Golem mod.
 This mod adds a spawnable straw golem. It's a very weak golem and flees whenever hostile mobs come nearby.
 It can harvest and deliver crops to a nearby chest
 
+Check it out over at [Curseforge](https://www.curseforge.com/minecraft/mc-mods/strawgolem-reborn)!
+
 ## Lifespan
 It has a limited lifespan (7 ingame days), which goes down faster when in the rain or cold, or when carrying a heavy object (shivering indicates the prior two conditions, a custom animation the latter)
 
