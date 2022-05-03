@@ -13,26 +13,35 @@ To create a straw golem, stand near the crops or farm where you want it to do it
 ![strawGolem_creating](https://user-images.githubusercontent.com/26723535/166479651-7c970834-3a87-40c7-aca3-27ca87e9bc2b.gif)
 
 ## Chest Usage
-Once a golem gathers an crop item, it will seek out a chest to store the item. Such a chest should be placed near the crops where the golem does its work, and the chest should have enough space inside to hold the gathered crops. Your golem is usually clever enough to locate an available chest on its own. If you have more than one chest in the vicinity, the golem will choose a chest on its own. 
+Once a golem gathers an crop item, it will seek out a chest to store the item. Such a chest should be placed near the crops where the golem does its work, and the chest should have enough space inside to hold the gathered crops. 
+- Your golem is usually clever enough to locate an available chest on its own. 
+- If you have more than one chest in the vicinity, the golem will choose a chest on its own. 
 
 You can also "order" a golem to use a particular chest:
 - If using **Fabric**, shift-right-click on the golem with an *empty hand,* then immediately shift-right-click on the desired chest.
 - If using **Forge**, do the same thing, except do it while *holding wheat.*
 
 ## Lifespan
-It has a limited lifespan (7 in-game days), which goes down faster when in the rain or cold, or when carrying a heavy object, such as a pumpkin. Shivering indicates the prior two conditions, a custom animation the latter.
+The straw golem has a limited lifespan of 7 in-game days. 
+- This lifespan goes down faster when the golem is exposed to the rain or cold, when it stands in water, or when it carries a heavy object, such as a pumpkin. 
+- Shivering indicates the prior two conditions, a custom animation the latter.
+- Lifespan is restored by feeding the golem wheat, which also heals it. 
 
-As it decays, there are visual changes to the texture, and the golem's max health is capped. You may also start to see flies hovering about.
-
-Lifespan is increased by feeding the golem wheat. This also heals it. Lifespan can be increased up to 25% above the default (7 in-game days).
+As your golem approaches old age, it will begin to to decay, and you will see visual changes to its texture. You may also start to see flies hovering about.
 
 ## Hunger
-The golem gets hungry over time as well. When it is hungry, it will sit down, display a cute animation and pout until it is fed.
+In the **Fabric** edition, the golem gets hungry over time. 
+- When it is hungry, it will sit down, display a cute animation and pout until it is fed.
+- Golems are fed using apples. If you are holding an apple, it might beg you for it.
 
-Golems are fed using apples, and can also be tempted using an apple (they'll follow you when you're holding one)
+In the **Forge** edition, the golem doesn't exhibit hunger.
+- They cannot be fed apples.
+- However, they will get excited if you hold an apple, and they'll follow you around while you hold it.
 
 ## Miscellaneous
-If struck by lightning, the golems can turn into a 'strawng golem', which functions similar to an iron golem, except protecting other straw golems instead of villagers
+- As mentioned above, there are currently differences between the **Fabric** and **Forge** editions. We expect these differences to diminish over time,
+- In the **Fabric** edition, a straw golem may change into a large 'strawng golem' if struck by lightning, which functions similarly to an iron golem; these mobs will protect the little straw golems from hostile creatures.
+- In both editions, you might find it helpful to surround your crops with a fence. This protects the straw golems from mobs, and it helps to keep them from wandering too far.
 
 ## Config
 The mod is made to be highly configurable. Users can toggle optional features (like lifespan, hunger), set whitelisted and blacklisted crops, tweak lifespan and hunger lengths, etc.
