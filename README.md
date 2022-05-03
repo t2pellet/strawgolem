@@ -1,17 +1,23 @@
 # Straw Golem
 This is a spiritual successor to the original Straw Golem mod.
 
-This mod adds a spawnable straw golem. It's a very weak golem and flees whenever hostile mobs come nearby.
-It can harvest and deliver crops to a nearby chest
+This mod adds a spawnable straw golem. It's a very weak golem and flees whenever hostile mobs come nearby. It can harvest, replant and deliver crops to a nearby chest.
 
 Check it out over at [Curseforge](https://www.curseforge.com/minecraft/mc-mods/strawgolem-reborn)!
 
+## Chest Usage
+Once a golem gathers an crop item, it will seek out a chest to store the item. Such a chest should be near the crops where the golem does its work, and the chest should have enough space inside to hold the gathered crops. The golem is usually clever enough to locate an available chest on its own. If you have more than one chest in the vicinity, the golem will choose a chest on its own. 
+
+You can also "order" a golem to use a particular chest:
+- If using Fabric, shift-right-click on the golem with an *empty hand,* then immediately shift-right-click on the desired chest.
+- If using Forge, do the same thing, except do it while *holding wheat.*
+
 ## Lifespan
-It has a limited lifespan (7 ingame days), which goes down faster when in the rain or cold, or when carrying a heavy object (shivering indicates the prior two conditions, a custom animation the latter)
+It has a limited lifespan (7 in-game days), which goes down faster when in the rain or cold, or when carrying a heavy object, such as a pumpkin. Shivering indicates the prior two conditions, a custom animation the latter.
 
-As it decays, there are visual changes to the texture, and the golem's max health is capped.
+As it decays, there are visual changes to the texture, and the golem's max health is capped. You may also start to see flies hovering about.
 
-Lifespan is increased by feeding the golem wheat. This also heals it. Lifespan can be increased up to 25% above the default (7 ingame days).
+Lifespan is increased by feeding the golem wheat. This also heals it. Lifespan can be increased up to 25% above the default (7 in-game days).
 
 ## Hunger
 The golem gets hungry over time as well. When it is hungry, it will sit down, display a cute animation and pout until it is fed.
