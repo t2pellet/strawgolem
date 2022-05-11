@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "strawgolem",
+  "version": "2.0.0",
+
+  "name": "Strawgolem",
+  "description": "Straw Golem! It's a farmer!",
+  "authors": [
+    "CommodoreThrawn"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/strawgolem-reborn",
+    "sources": "https://github.com/t2pellet/strawgolem"
+  },
+
+  "license": "All Rights Reserved",
+  "icon": "assets/strawgolem/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.t2pellet.strawgolem.StrawgolemFabric"
+    ],
+    "client": [
+      "com.t2pellet.strawgolem.StrawgolemFabric"
+    ]
+  },
+  "mixins": [
+    "strawgolem.fabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.13",
+    "fabric": "*",
+    "minecraft": "1.18.x",
+    "java": ">=17"
+  },
+  "custom": {
+    "waila:plugins": {
+      "id": "strawgolem",
+      "initializer": "com.t2pellet.strawgolem.client.compat.CompatHwyla"
+    }
+  }
+}
+  
