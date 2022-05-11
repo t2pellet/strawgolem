@@ -158,10 +158,13 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
         if (heldItem == Items.WHEAT) {
             // Check condition
             int newLifespan = lifespan.get() + 12000;
-            if (newLifespan > maxLifespan) return InteractionResult.FAIL;
+            if (newLifespan > maxLifespan) {
+                setHealth(getHealth() + 0.5F);
+                return InteractionResult.FAIL;
+            }
             // Compute
             if (!level.isClientSide()) {
-                if (getHealth() < getMaxHealth()) setHealth(getMaxHealth());
+                setHealth(getHealth() + 0.5F);
                 if (StrawgolemConfig.Health.getLifespan() > -1) lifespan.set(newLifespan);
                 if (!player.isCreative()) player.getItemInHand(hand).shrink(1);
                 Services.PACKETS.sendInRange(new HealthPacket(this), this, 25.0F);
