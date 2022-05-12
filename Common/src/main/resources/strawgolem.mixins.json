@@ -12,6 +12,7 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "refmap": "${refmap_target}refmap.json"
 }
   

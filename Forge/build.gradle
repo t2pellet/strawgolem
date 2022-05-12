@@ -84,6 +84,7 @@ dependencies {
     compileOnly project(":Common")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     compileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-4.10.1")
+    testCompileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-4.10.1")
     runtimeOnly fg.deobf("mcp.mobius.waila:wthit:forge-4.10.1")
     runtimeOnly fg.deobf("lol.bai:badpackets:forge-0.1.2")
 }
