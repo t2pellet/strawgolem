@@ -15,11 +15,11 @@ To create a Straw Golem, stand near the crops or farm where you want it to do it
 ## Chest Usage
 Once a Straw Golem gathers a crop item, it will seek out a chest to store the item. Thus, a chest should be placed near the crops where the golem does its work, and you should make sure the chest have available space inside to hold the soon-to-be harvested crops. 
 - Your golem is usually clever enough to locate an available chest on its own. 
-- If you have more than one chest in the vicinity, the golem will choose a chest on its own. 
+- If you have more than one chest in the vicinity, the golem will choose a chest on its own
+- A golem will prioritize the first chest it used, unless you direct it otherwise
 
 You can also "order" a golem to use a particular chest:
-- If using **Fabric**, shift-right-click on the golem with an *empty hand,* then immediately shift-right-click on the desired chest.
-- If using **Forge**, do the same thing, except do it while *holding wheat.*
+Shift-right-click on the golem with an *empty hand,* then immediately shift-right-click on the desired chest.
 
 ## Lifespan
 The Straw Golem has a limited lifespan of 7 in-game days. 
@@ -27,20 +27,15 @@ The Straw Golem has a limited lifespan of 7 in-game days.
 - Shivering indicates the prior two conditions, a custom animation the latter.
 - Lifespan is restored by feeding the golem wheat, which also heals it. 
 
-As your golem approaches old age, it will begin to to decay, and you will see visual changes to its texture. You may also start to see flies hovering about.
+As your golem approaches old age, it will begin to to decay, and you will see visual changes to its texture. You may also start to see flies hovering about. Moreover, as it ages, its max lifespan is lowered.
 
 ## Hunger
-In the **Fabric** edition, the Straw Golem gets hungry over time. 
+- Farming is hard labour, and the Straw Golems will get hungry over time.
 - When it is hungry, it will sit down, display a cute animation and pout until it is fed.
-- Golems are fed using apples. If you are holding an apple, it might beg you for it.
-
-In the **Forge** edition, the golem doesn't exhibit hunger.
-- They cannot be fed apples.
-- However, they will get excited if you hold an apple, and they'll follow you around while you hold it.
+- Golems are fed using apples. If you are holding an apple, it will beg you for it, and follow you around while you hold it.
 
 ## Miscellaneous
-- As already mentioned, there are currently differences between the **Fabric** and **Forge** editions, but we expect these differences to diminish over time.
-- The **Fabric** edition has a bonus mod: A Straw Golem may change into a large 'Strawng Golem' if struck by lightning. It functions similarly to an iron golem; these mobs will protect their little relatives from hostile creatures.
+- A Straw Golem may change into a large 'Strawng Golem' if struck by lightning. It functions similarly to an iron golem; these mobs will protect their little relatives from hostile creatures.
 - In both editions, you might find it helpful to surround your crops with a fence. This protects the golems from mobs. It also helps to keep them from wandering too far.
 
 ## Config
