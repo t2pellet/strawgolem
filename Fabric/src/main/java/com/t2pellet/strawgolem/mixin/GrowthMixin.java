@@ -1,12 +1,12 @@
 package com.t2pellet.strawgolem.mixin;
 
-import com.t2pellet.strawgolem.crop.CropValidator;
+import com.t2pellet.strawgolem.crop.CropRegistry;
 import com.t2pellet.strawgolem.events.CropGrowthCallback;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AttachedStemBlock;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,11 +20,11 @@ public class GrowthMixin {
 	public void grow(BlockPos pos, BlockState newState, int i, CallbackInfoReturnable<Boolean> info) {
 		if ((Object) this instanceof ServerLevel world) {
 			BlockPos cropPos = pos;
-			Block block = newState.getBlock();
-			if (CropValidator.isStem(block)) {
+			if (newState.getBlock() instanceof AttachedStemBlock) {
 				cropPos = pos.offset(newState.getValue(AttachedStemBlock.FACING).getNormal());
 			}
-			if (CropValidator.isGrownCrop(newState) || CropValidator.isGrownCrop(world.getBlockEntity(pos))) {
+			BlockEntity entity = world.getBlockEntity(cropPos);
+			if (CropRegistry.INSTANCE.isGrownCrop(newState) || CropRegistry.INSTANCE.isGrownCrop(entity)) {
 				CropGrowthCallback.EVENT.invoker().grow(world, cropPos);
 			}
 		}

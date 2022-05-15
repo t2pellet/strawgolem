@@ -3,7 +3,7 @@ package com.t2pellet.strawgolem.entity;
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.crop.CropHandler;
-import com.t2pellet.strawgolem.crop.CropValidator;
+import com.t2pellet.strawgolem.crop.CropRegistry;
 import com.t2pellet.strawgolem.entity.ai.*;
 import com.t2pellet.strawgolem.entity.capability.CapabilityHandler;
 import com.t2pellet.strawgolem.entity.capability.hunger.Hunger;
@@ -253,7 +253,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
                 for (int j = -maxRange; j < maxRange; ++j) {
                     for (int k = -maxRange; k < maxRange; ++k) {
                         currPos = blockPosition().offset(i, j, k);
-                        if (CropValidator.isGrownCrop(level.getBlockState(currPos))) {
+                        if (CropRegistry.INSTANCE.isGrownCrop(level.getBlockState(currPos))) {
                             CropHandler.INSTANCE.addCrop(level, currPos);
                         }
                     }

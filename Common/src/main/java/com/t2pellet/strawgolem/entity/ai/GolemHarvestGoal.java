@@ -5,7 +5,6 @@ import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.crop.CropHandler;
 import com.t2pellet.strawgolem.crop.CropRegistry;
-import com.t2pellet.strawgolem.crop.CropValidator;
 import com.t2pellet.strawgolem.entity.EntityStrawGolem;
 import com.t2pellet.strawgolem.network.HoldingPacket;
 import com.t2pellet.strawgolem.platform.Services;
@@ -24,8 +23,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -35,7 +34,6 @@ import java.util.UUID;
 public class GolemHarvestGoal extends MoveToBlockGoal {
 
     private final EntityStrawGolem strawgolem;
-    private int failedTryTicks;
 
     public GolemHarvestGoal(EntityStrawGolem strawgolem) {
         super(strawgolem, 0.7D, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
@@ -51,7 +49,9 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         } else if (strawgolem.isHandEmpty() && !strawgolem.getHunger().isHungry()) {
             blockPos = CropHandler.INSTANCE.getNearestCrop(strawgolem.level, strawgolem.blockPosition(), StrawgolemConfig.Harvest.getSearchRange());
             if (blockPos != null) {
-                if (CropValidator.isGrownCrop(strawgolem.level.getBlockState(blockPos))) return true;
+                BlockState state = strawgolem.level.getBlockState(blockPos);
+                BlockEntity entity = strawgolem.level.getBlockEntity(blockPos);
+                if (CropRegistry.INSTANCE.isGrownCrop(state) || CropRegistry.INSTANCE.isGrownCrop(entity)) return true;
                 CropHandler.INSTANCE.removeCrop(strawgolem.level, blockPos);
             }
         }
@@ -61,7 +61,6 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     @Override
     public void start() {
         this.nextStartTick = nextStartTick(this.mob);
-        this.failedTryTicks = 0;
         CropHandler.INSTANCE.removeCrop(strawgolem.level, blockPos); // Remove crop from handler, as its being harvested now
     }
 
@@ -80,8 +79,6 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         // If we stopped while still harvesting, restore the crop and clear harvesting flag
         CropHandler.INSTANCE.addCrop(strawgolem.level, blockPos);
     }
-
-
 
     /* Almost copied from the vanilla tick() method, just calling harvestCrop when it gets to the block and some tweaks for different kinds of blocks */
     @Override
@@ -110,7 +107,9 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean isValidTarget(LevelReader worldIn,  BlockPos pos) {
-        return CropValidator.isGrownCrop(worldIn.getBlockState(pos)) && strawgolem.isHandEmpty();
+        BlockState state = worldIn.getBlockState(pos);
+        BlockEntity entity = worldIn.getBlockEntity(pos);
+        return (CropRegistry.INSTANCE.isGrownCrop(state) || CropRegistry.INSTANCE.isGrownCrop(entity)) && strawgolem.isHandEmpty();
     }
 
     /**
@@ -126,7 +125,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         if (isValidTarget(worldIn, pos)) {
             worldIn.playSound(null, pos, SoundEvents.CROP_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
             if (StrawgolemConfig.Harvest.isDeliveryEnabled()) pickupCrop(worldIn, pos, state, block);
-            if (StrawgolemConfig.Harvest.isReplantEnabled()) replantCrop(worldIn, pos, state, block);
+            if (StrawgolemConfig.Harvest.isReplantEnabled()) replantCrop(worldIn, pos);
             else worldIn.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         }
     }
@@ -162,18 +161,9 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
      * Handles the replanting logic
      * @param worldIn : the world
      * @param pos : the position of the crop
-     * @param state : the BlockState of the crop
-     * @param block : the Block of the crop
      */
-    private void replantCrop(ServerLevel worldIn, BlockPos pos, BlockState state, Block block) {
-        IntegerProperty ageProperty = CropRegistry.INSTANCE.getAgeProperty(block);
-        if (block instanceof SweetBerryBushBlock) {
-            worldIn.setBlockAndUpdate(pos, block.defaultBlockState().setValue(ageProperty, 2));
-        } else if (block instanceof StemGrownBlock) {
-            worldIn.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-        } else {
-            worldIn.setBlockAndUpdate(pos, state.setValue(ageProperty, 1));
-        }
+    private void replantCrop(ServerLevel worldIn, BlockPos pos) {
+        CropRegistry.INSTANCE.handleReplant(worldIn, pos);
     }
 
     /**

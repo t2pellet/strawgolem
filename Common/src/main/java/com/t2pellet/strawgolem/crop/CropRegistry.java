@@ -1,53 +1,103 @@
 package com.t2pellet.strawgolem.crop;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+
+import java.util.Collections;
 
 public interface CropRegistry {
 
     CropRegistry INSTANCE = new CropRegistryImpl();
 
     /**
-     * Register a Block as a valid crop
+     * Register a Block as a crop
      * @param id the block to register
-     * @param ageProperty the age property for that crop
      */
-    void register(Block id, IntegerProperty ageProperty);
+    <T extends BlockState> void register(Block id, IHarvestData<T> harvestData);
 
     /**
-     * Register a BlockEntity as a valid crop
+     * Register a Block as a crop
      * @param id the block to register
-     * @param ageProperty the age property for that crop
+     * @param harvestData the data to register for the block
      */
-    void register(BlockEntity id, IntegerProperty ageProperty);
+    <T extends BlockEntity> void register(T id, IHarvestData<T> harvestData);
 
     /**
-     * Determine if a block is a registered crop
-     * @param id the block to check
-     * @return true if the block is in the registry, false otherwise
+     * Determine if crop is grown
+     * @param state the state to check
+     * @return whether the BlockState represents a grown crop
      */
-    boolean containsCrop(Block id);
+    <T extends BlockState> boolean isGrownCrop(T state);
 
     /**
-     * Determine if a BlockEntity is a registered crop
-     * @param id the block to check
-     * @return true if the block is in the registry, false otherwise
+     * Determine if crop is grown
+     * @param block the blockentity to check
+     * @return whether the BlockEntity represents a grown crop
      */
-    boolean containsCrop(BlockEntity id);
+    <T extends BlockEntity> boolean isGrownCrop(T block);
 
     /**
-     * Gets the associated age property with the given block
-     * @param id the block to check for
-     * @return the associated age property
+     * Handle replant for the given crop, if registered
+     * @param level the world
+     * @param pos the crop position
      */
-    IntegerProperty getAgeProperty(Block id);
+    <T extends BlockState> void handleReplant(Level level, BlockPos pos);
 
     /**
-     * Gets the associated age property with the given BlockEntity
-     * @param id the BlockEntity to check for
-     * @return the associated age property
+     * Harvest data for a registered crop
+     * @param <T>
      */
-    IntegerProperty getAgeProperty(BlockEntity id);
+    interface IHarvestData<T> {
+
+        /**
+         * @param input the input data
+         * @return whether the crop is mature, based on the input
+         */
+        boolean isMature(T input);
+
+        /**
+         * Replant logic for the registered crop
+         * @param level the world
+         * @param pos the crop position
+         * @param input input data
+         */
+        void doReplant(Level level, BlockPos pos, T input);
+    }
+
+    /**
+     * Default implementation of IHarvestData, for convenience with blocks that use IntegerProperty for age
+     */
+    class DefaultHarvestData implements IHarvestData<BlockState> {
+
+        private IntegerProperty property;
+        private int harvestValue;
+        private int replantValue;
+
+        public DefaultHarvestData(IntegerProperty property) {
+            this(property, Collections.max(property.getPossibleValues()), Collections.min(property.getPossibleValues()));
+        }
+
+        public DefaultHarvestData(IntegerProperty property, int maxValue, int replantValue) {
+            this.property = property;
+            this.harvestValue = maxValue;
+            this.replantValue = replantValue;
+        }
+
+        @Override
+        public boolean isMature(BlockState input) {
+            return input.getValue(property).equals(harvestValue);
+        }
+
+        @Override
+        public void doReplant(Level level, BlockPos pos, BlockState input) {
+            level.setBlockAndUpdate(pos, input.getBlock().defaultBlockState().setValue(property, replantValue));
+        }
+    }
+
+
 
 }

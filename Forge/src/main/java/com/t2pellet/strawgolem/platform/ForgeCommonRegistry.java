@@ -1,7 +1,6 @@
 package com.t2pellet.strawgolem.platform;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
-import com.t2pellet.strawgolem.crop.CropValidator;
 import com.t2pellet.strawgolem.events.CropGrowthHandler;
 import com.t2pellet.strawgolem.events.StrawGolemEvents;
 import com.t2pellet.strawgolem.events.WorldInteractHandler;
@@ -20,9 +19,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

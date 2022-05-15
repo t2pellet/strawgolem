@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.mixin;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
-import com.t2pellet.strawgolem.crop.CropValidator;
+import com.t2pellet.strawgolem.crop.CropRegistry;
 import com.t2pellet.strawgolem.events.StrawGolemEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -22,10 +22,10 @@ public class GrowthMixin {
 		if ((Object) this instanceof ServerLevel world) {
 			BlockPos cropPos = pos;
 			Block block = newState.getBlock();
-			if (CropValidator.isStem(block)) {
+			if (block instanceof AttachedStemBlock) {
 				cropPos = pos.offset(newState.getValue(AttachedStemBlock.FACING).getNormal());
 			}
-			if (CropValidator.isGrownCrop(newState) || CropValidator.isGrownCrop(world.getBlockEntity(pos))) {
+			if (CropRegistry.INSTANCE.isGrownCrop(newState) || CropRegistry.INSTANCE.isGrownCrop(world.getBlockEntity(cropPos))) {
 				StrawgolemCommon.LOG.info("CROP GROWN");
 				StrawGolemEvents.onCropGrowth(world, cropPos, newState);
 			}
