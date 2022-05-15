@@ -15,15 +15,15 @@ public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
     @Override
     public void register(IRegistrar registrar) {
         StrawgolemCommon.LOG.info("Registering StrawGolem HWYLA Compat");
-        registrar.addConfig(LIFESPAN, true);
-        registrar.addConfig(HUNGER, true);
+        registrar.addConfig(LIFESPAN, StrawgolemConfig.Health.getLifespan() > 0);
+        registrar.addConfig(HUNGER, StrawgolemConfig.Health.getHunger() > 0);
         registrar.addComponent(this, TooltipPosition.BODY, EntityStrawGolem.class);
     }
 
     @Override
     public void appendBody(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
         if (accessor.getEntity() instanceof EntityStrawGolem golem) {
-            if (config.getBoolean(LIFESPAN)) {
+            if (config.getBoolean(LIFESPAN) && StrawgolemConfig.Health.getLifespan() > 0) {
                 float daysLeftLife = golem.getLifespan().get() / 24000F;
                 if (daysLeftLife >= 1) {
                     tooltip.addLine(new TranslatableComponent("strawgolem.lifespan", Math.round(daysLeftLife)));
@@ -33,7 +33,7 @@ public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
                     tooltip.addLine(new TranslatableComponent("strawgolem.lifespan", "<1"));
                 }
             }
-            if (config.getBoolean(HUNGER)) {
+            if (config.getBoolean(HUNGER) && StrawgolemConfig.Health.getHunger() > 0) {
                 float hungerLeft = golem.getHunger().get();
                 if (hungerLeft >= StrawgolemConfig.Health.getHunger()) {
                     tooltip.addLine(new TranslatableComponent("strawgolem.hunger", "Not At All Hungry"));

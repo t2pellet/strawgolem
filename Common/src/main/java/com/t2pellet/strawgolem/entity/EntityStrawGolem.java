@@ -134,8 +134,10 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             if (lifespan.isOver()) {
                 hurt(DamageSource.MAGIC, getMaxHealth() * 100);
             }
-            if (hunger.get() * 4 < StrawgolemConfig.Health.getHunger() && hunger.get() > 0 && random.nextInt(120) == 0) playSound(GOLEM_STRAINED, 1.0F, 1.0F);
-        } else if (lifespan.get() * 4 < StrawgolemConfig.Health.getLifespan() && lifespan.get() >= 0 && random.nextInt(80) == 0) {
+            if (StrawgolemConfig.Health.getHunger() > 0 && hunger.get() * 4 < StrawgolemConfig.Health.getHunger() && random.nextInt(120) == 0) {
+                playSound(GOLEM_STRAINED, 1.0F, 1.0F);
+            }
+        } else if (StrawgolemConfig.Health.getLifespan() > 0 && lifespan.get() * 4 < StrawgolemConfig.Health.getLifespan() && random.nextInt(80) == 0) {
             level.addParticle((ParticleOptions) getFlyParticle(), getX(), getY(), getZ(),
                     0, 0, 0);
         }
