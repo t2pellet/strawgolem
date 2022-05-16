@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.crop;
 
+import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -25,12 +26,12 @@ class CropRegistryImpl implements CropRegistry {
 
     @Override
     public <T extends BlockState> boolean isGrownCrop(T state) {
-        return isGrownCrop(new CropKey<>(state.getBlock()), state);
+        return isGrownCrop(new CropKey<>(state.getBlock()), state) && StrawgolemConfig.Harvest.isHarvestAllowed(state.getBlock());
     }
 
     @Override
     public <T extends BlockEntity> boolean isGrownCrop(T block) {
-        return isGrownCrop(new CropKey<>(block), block);
+        return isGrownCrop(new CropKey<>(block), block) && StrawgolemConfig.Harvest.isHarvestAllowed(block.getBlockState().getBlock());
     }
 
     public void handleReplant(Level level, BlockPos pos) {
