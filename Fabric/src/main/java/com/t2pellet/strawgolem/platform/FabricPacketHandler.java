@@ -51,7 +51,8 @@ public class FabricPacketHandler implements IPacketHandler {
             try {
                 T packet = packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(packetByteBuf);
                 Services.SIDE.scheduleServer(packet.getExecutor());
-            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                     InvocationTargetException ex) {
                 StrawgolemCommon.LOG.error("Error: Failed to instantiate packet - " + id);
             }
         });

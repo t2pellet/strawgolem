@@ -52,10 +52,12 @@ public class WorldInteractHandler {
                 BlockPos placementPos = pos.offset(direction.getStepX(), direction.getStepY(), direction.getStepZ());
                 if (heldBlock == Blocks.CARVED_PUMPKIN) {
                     BlockPos hayPos = placementPos.below();
-                    if (worldIn.getBlockState(hayPos).getBlock() == Blocks.HAY_BLOCK) spawnStrawGolem(worldIn, hayPos, placementPos, result.getDirection());
+                    if (worldIn.getBlockState(hayPos).getBlock() == Blocks.HAY_BLOCK)
+                        spawnStrawGolem(worldIn, hayPos, placementPos, result.getDirection());
                 } else if (heldBlock == Blocks.HAY_BLOCK) {
                     BlockPos pumpkinPos = placementPos.above();
-                    if (worldIn.getBlockState(pumpkinPos).getBlock() == Blocks.CARVED_PUMPKIN) spawnStrawGolem(worldIn, placementPos, pumpkinPos, result.getDirection());
+                    if (worldIn.getBlockState(pumpkinPos).getBlock() == Blocks.CARVED_PUMPKIN)
+                        spawnStrawGolem(worldIn, placementPos, pumpkinPos, result.getDirection());
                 }
             }
         }
@@ -85,7 +87,7 @@ public class WorldInteractHandler {
     public static InteractionResult setPriorityChest(Player Player, Level world, InteractionHand hand, BlockHitResult blockHitResult) {
         if (!world.isClientSide) {
             BlockEntity blockEntity = world.getBlockEntity(blockHitResult.getBlockPos());
-            if (hand == InteractionHand.MAIN_HAND.MAIN_HAND
+            if (hand == InteractionHand.MAIN_HAND
                     && blockEntity instanceof Container
                     && Player.isShiftKeyDown()
                     && Player.getMainHandItem().isEmpty()
@@ -112,10 +114,11 @@ public class WorldInteractHandler {
 
     /**
      * Spawns the strawgolem in the given world
+     *
      * @param worldIn the world
      * @param hay     position of hay
      * @param pumpkin position of pumpkin
-     * @param facing the facing direction for the golem
+     * @param facing  the facing direction for the golem
      * @return the ActionResult
      */
     private static InteractionResult spawnStrawGolem(Level worldIn, BlockPos hay, BlockPos pumpkin, Direction facing) {

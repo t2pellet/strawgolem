@@ -16,6 +16,7 @@ public class SheepMixin extends Mob {
     protected SheepMixin(EntityType<? extends Mob> $$0, Level $$1) {
         super($$0, $$1);
     }
+
     @Inject(method = "registerGoals", at = @At("TAIL"))
     public void registerGoals(CallbackInfo ci) {
         goalSelector.addGoal(2, new MunchGolemGoal((Animal) (Object) this, 0.8D));

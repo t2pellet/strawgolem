@@ -35,7 +35,8 @@ public class ForgeCommonRegistry implements ICommonRegistry {
 
     @Override
     public Supplier<ParticleType<SimpleParticleType>> registerParticle(ResourceLocation id) {
-        return PARTICLES.register(id.getPath(), () -> new SimpleParticleType(true) {});
+        return PARTICLES.register(id.getPath(), () -> new SimpleParticleType(true) {
+        });
     }
 
     @Override
@@ -43,9 +44,7 @@ public class ForgeCommonRegistry implements ICommonRegistry {
         var result = ENTITIES.register(name, () -> EntityType.Builder.of(factory, MobCategory.CREATURE)
                 .clientTrackingRange(48).updateInterval(3).sized(width, height)
                 .build(name));
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((Consumer<EntityAttributeCreationEvent>)event -> {
-            event.put(result.get(), builder.get().build());
-        });
+        FMLJavaModLoadingContext.get().getModEventBus().addListener((Consumer<EntityAttributeCreationEvent>) event -> event.put(result.get(), builder.get().build()));
         return result;
     }
 
@@ -57,13 +56,9 @@ public class ForgeCommonRegistry implements ICommonRegistry {
     @Override
     public void registerEvents() {
         // Crop Registry
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, (Consumer<RegistryEvent.Register<Block>>) event -> {
-            ICommonRegistry.registerCrop(event.getRegistry().getValue(event.getName()));
-        });
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, (Consumer<RegistryEvent.Register<Block>>) event -> ICommonRegistry.registerCrop(event.getRegistry().getValue(event.getName())));
         //Crop growth handling
-        MinecraftForge.EVENT_BUS.addListener((Consumer<StrawGolemEvents.CropGrowthEvent>) event -> {
-            CropGrowthHandler.onCropGrowth((Level) event.getWorld(), event.getPos());
-        });
+        MinecraftForge.EVENT_BUS.addListener((Consumer<StrawGolemEvents.CropGrowthEvent>) event -> CropGrowthHandler.onCropGrowth((Level) event.getWorld(), event.getPos()));
         MinecraftForge.EVENT_BUS.addListener((Consumer<PlayerInteractEvent.RightClickBlock>) event -> {
             // Golem Creation Handling
             if (WorldInteractHandler.onGolemBuilt(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec()) == InteractionResult.CONSUME) {

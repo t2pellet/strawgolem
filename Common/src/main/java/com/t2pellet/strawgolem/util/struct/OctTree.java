@@ -34,6 +34,7 @@ public class OctTree implements PosTree {
 
     private static final OctBox DEFAULT = new OctBox(-2147483645, -2147483645, -2147483645, 2147483645, 2147483645, 2147483645);
     private static final HashMap<Triplet<Boolean, Boolean, Boolean>, Octant> octants = new HashMap<>();
+
     static {
         octants.put(new Triplet<>(true, true, true), Octant.FIRST);
         octants.put(new Triplet<>(true, true, false), Octant.SECOND);
@@ -42,7 +43,7 @@ public class OctTree implements PosTree {
         octants.put(new Triplet<>(true, false, true), Octant.FIFTH);
         octants.put(new Triplet<>(true, false, false), Octant.SIXTH);
         octants.put(new Triplet<>(false, false, true), Octant.SEVENTH);
-        octants.put(new Triplet<>(false, false, false), Octant.EIGHTH);  
+        octants.put(new Triplet<>(false, false, false), Octant.EIGHTH);
     }
 
     private final OctTree parent;
@@ -65,14 +66,22 @@ public class OctTree implements PosTree {
     public OctTree(final OctTree parent, final Octant octant) {
         this.parent = parent;
         switch (octant) {
-            case FIRST -> boundary = new OctBox(parent.boundary.minX, parent.boundary.minY, parent.boundary.minZ, parent.center.getX(), parent.center.getY(), parent.center.getZ());
-            case SECOND -> boundary = new OctBox(parent.boundary.minX, parent.boundary.minY, parent.center.getZ(), parent.center.getX(), parent.center.getY(), parent.boundary.maxZ);
-            case THIRD -> boundary = new OctBox(parent.center.getX(), parent.boundary.minY, parent.boundary.minZ, parent.boundary.maxX, parent.center.getY(), parent.center.getZ());
-            case FOURTH -> boundary = new OctBox(parent.center.getX(), parent.boundary.minY, parent.center.getZ(), parent.boundary.maxX , parent.center.getY(), parent.boundary.maxZ);
-            case FIFTH -> boundary = new OctBox(parent.boundary.minX, parent.center.getY(), parent.boundary.minZ, parent.center.getX(), parent.boundary.maxY, parent.center.getZ());
-            case SIXTH -> boundary = new OctBox(parent.boundary.minX, parent.center.getY(), parent.center.getZ(), parent.center.getX(), parent.boundary.maxY, parent.boundary.maxZ);
-            case SEVENTH -> boundary = new OctBox(parent.center.getX(), parent.center.getY(), parent.boundary.minZ, parent.boundary.maxX, parent.boundary.maxY, parent.center.getZ());
-            default -> boundary = new OctBox(parent.center.getX(), parent.center.getY(), parent.center.getZ(), parent.boundary.maxX, parent.boundary.maxY, parent.boundary.maxZ);
+            case FIRST ->
+                    boundary = new OctBox(parent.boundary.minX, parent.boundary.minY, parent.boundary.minZ, parent.center.getX(), parent.center.getY(), parent.center.getZ());
+            case SECOND ->
+                    boundary = new OctBox(parent.boundary.minX, parent.boundary.minY, parent.center.getZ(), parent.center.getX(), parent.center.getY(), parent.boundary.maxZ);
+            case THIRD ->
+                    boundary = new OctBox(parent.center.getX(), parent.boundary.minY, parent.boundary.minZ, parent.boundary.maxX, parent.center.getY(), parent.center.getZ());
+            case FOURTH ->
+                    boundary = new OctBox(parent.center.getX(), parent.boundary.minY, parent.center.getZ(), parent.boundary.maxX, parent.center.getY(), parent.boundary.maxZ);
+            case FIFTH ->
+                    boundary = new OctBox(parent.boundary.minX, parent.center.getY(), parent.boundary.minZ, parent.center.getX(), parent.boundary.maxY, parent.center.getZ());
+            case SIXTH ->
+                    boundary = new OctBox(parent.boundary.minX, parent.center.getY(), parent.center.getZ(), parent.center.getX(), parent.boundary.maxY, parent.boundary.maxZ);
+            case SEVENTH ->
+                    boundary = new OctBox(parent.center.getX(), parent.center.getY(), parent.boundary.minZ, parent.boundary.maxX, parent.boundary.maxY, parent.center.getZ());
+            default ->
+                    boundary = new OctBox(parent.center.getX(), parent.center.getY(), parent.center.getZ(), parent.boundary.maxX, parent.boundary.maxY, parent.boundary.maxZ);
         }
         center = boundary.center;
         buildMaps();
@@ -119,9 +128,7 @@ public class OctTree implements PosTree {
         OctTree closestTree = search(pos);
         if (pos.equals(closestTree.point)) return pos;
 
-        PriorityQueue<BlockPos> closestPQ = new PriorityQueue<>((o1, o2) -> {
-            return Float.compare(o1.distManhattan(pos), o2.distManhattan(pos));
-        });
+        PriorityQueue<BlockPos> closestPQ = new PriorityQueue<>((o1, o2) -> Float.compare(o1.distManhattan(pos), o2.distManhattan(pos)));
 
         closestTree.buildPQ(closestPQ);
         return closestPQ.poll();
@@ -149,8 +156,7 @@ public class OctTree implements PosTree {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof OctTree)) return false;
-        OctTree tree = (OctTree) obj;
+        if (!(obj instanceof OctTree tree)) return false;
         return boundary.equals(tree.boundary);
     }
 

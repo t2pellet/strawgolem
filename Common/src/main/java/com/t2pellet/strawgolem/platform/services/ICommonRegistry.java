@@ -19,7 +19,6 @@ import java.util.function.Supplier;
 
 public interface ICommonRegistry {
 
-
     Supplier<ParticleType<SimpleParticleType>> registerParticle(ResourceLocation id);
 
     <T extends LivingEntity> Supplier<EntityType<T>> registerEntity(String name, EntityType.EntityFactory<T> factory, float width, float height, Supplier<AttributeSupplier.Builder> builder);
@@ -47,9 +46,7 @@ public interface ICommonRegistry {
             IntegerProperty[] ageProperties = {BlockStateProperties.AGE_2, BlockStateProperties.AGE_3, BlockStateProperties.AGE_5, BlockStateProperties.AGE_7};
             Arrays.stream(ageProperties)
                     .filter(age -> block.defaultBlockState().hasProperty(age))
-                    .findFirst().ifPresent(integerProperty -> {
-                        CropRegistry.INSTANCE.register(block, new CropRegistry.DefaultHarvestData(integerProperty));
-                    });
+                    .findFirst().ifPresent(integerProperty -> CropRegistry.INSTANCE.register(block, new CropRegistry.DefaultHarvestData(integerProperty)));
         }
     }
 

@@ -19,7 +19,7 @@ public class IronGolemFlowerLayer extends RenderLayer<IronGolem, ModelIronGolem<
     }
 
     @Override
-    public void render( PoseStack matrices,  MultiBufferSource vertexConsumers, int light, IronGolem entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+    public void render(PoseStack matrices, MultiBufferSource vertexConsumers, int light, IronGolem entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         if (entity.getOfferFlowerTick() != 0) {
             matrices.pushPose();
             ModelPart armHoldingRose = this.getParentModel().getRightArm();

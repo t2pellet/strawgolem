@@ -22,14 +22,14 @@ public class RenderIronGolem extends MobRenderer<IronGolem, ModelIronGolem<IronG
     }
 
     @Override
-    public ResourceLocation getTextureLocation( IronGolem ironGolemEntity) {
+    public ResourceLocation getTextureLocation(IronGolem ironGolemEntity) {
         return TEXTURE;
     }
 
     @Override
     protected void setupRotations(IronGolem ironGolemEntity, PoseStack matrixStack, float f, float g, float h) {
         super.setupRotations(ironGolemEntity, matrixStack, f, g, h);
-        if (!((double)ironGolemEntity.animationSpeed < 0.01D)) {
+        if (!((double) ironGolemEntity.animationSpeed < 0.01D)) {
             float i = 13.0F;
             float j = ironGolemEntity.animationPosition - ironGolemEntity.animationSpeed * (1.0F - h) + 6.0F;
             float k = (Math.abs(j % 13.0F - 6.5F) - 3.25F) / 3.25F;

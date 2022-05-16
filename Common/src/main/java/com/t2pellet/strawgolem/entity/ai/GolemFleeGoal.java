@@ -24,7 +24,8 @@ public class GolemFleeGoal extends AvoidEntityGoal<Monster> {
     @Override
     public void start() {
         this.pathNav.moveTo(this.path, SLOW_SPEED * strawGolem.getHunger().getPercentage());
-        if (StrawgolemConfig.Miscellaneous.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
+        if (StrawgolemConfig.Miscellaneous.isSoundsEnabled())
+            strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
     }
 
     @Override

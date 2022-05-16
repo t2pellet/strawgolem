@@ -29,7 +29,7 @@ public class GolemTetherGoal<T extends PathfinderMob & IHasTether> extends MoveT
             return false;
         }
         final double currentDistance = getTetherDistance();
-        if(currentDistance > StrawgolemConfig.Tether.getTetherMaxRange()) {
+        if (currentDistance > StrawgolemConfig.Tether.getTetherMaxRange()) {
             this.blockPos = entity.getTether().get().getPos();
             return true;
         }
@@ -45,7 +45,7 @@ public class GolemTetherGoal<T extends PathfinderMob & IHasTether> extends MoveT
     }
 
     @Override
-    protected boolean isValidTarget(LevelReader world,  BlockPos pos) {
+    protected boolean isValidTarget(LevelReader world, BlockPos pos) {
         return world.getBlockState(pos).getBlock() != Blocks.AIR;
     }
 

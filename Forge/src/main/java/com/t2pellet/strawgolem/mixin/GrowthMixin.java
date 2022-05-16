@@ -17,18 +17,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Level.class)
 public class GrowthMixin {
 
-	@Inject(method = "setBlock", at = @At("TAIL"))
-	public void grow(BlockPos pos, BlockState newState, int i, CallbackInfoReturnable<Boolean> info) {
-		if ((Object) this instanceof ServerLevel world) {
-			BlockPos cropPos = pos;
-			Block block = newState.getBlock();
-			if (block instanceof AttachedStemBlock) {
-				cropPos = pos.offset(newState.getValue(AttachedStemBlock.FACING).getNormal());
-			}
-			if (CropRegistry.INSTANCE.isGrownCrop(newState) || CropRegistry.INSTANCE.isGrownCrop(world.getBlockEntity(cropPos))) {
-				StrawgolemCommon.LOG.info("CROP GROWN");
-				StrawGolemEvents.onCropGrowth(world, cropPos, newState);
-			}
-		}
-	}
+    @Inject(method = "setBlock", at = @At("TAIL"))
+    public void grow(BlockPos pos, BlockState newState, int i, CallbackInfoReturnable<Boolean> info) {
+        if ((Object) this instanceof ServerLevel world) {
+            BlockPos cropPos = pos;
+            Block block = newState.getBlock();
+            if (block instanceof AttachedStemBlock) {
+                cropPos = pos.offset(newState.getValue(AttachedStemBlock.FACING).getNormal());
+            }
+            if (CropRegistry.INSTANCE.isGrownCrop(newState) || CropRegistry.INSTANCE.isGrownCrop(world.getBlockEntity(cropPos))) {
+                StrawgolemCommon.LOG.info("CROP GROWN");
+                StrawGolemEvents.onCropGrowth(world, cropPos, newState);
+            }
+        }
+    }
 }

@@ -34,12 +34,12 @@ public class FlyParticle extends TextureSheetParticle {
             thetaVert += 0.05;
             this.xd = Math.sin(thetaHoriz) / 14;
             this.yd = (Math.sin(2 * thetaVert)) / 12 + 0.025;
-            this.zd =  Math.cos(thetaHoriz) / 14;
+            this.zd = Math.cos(thetaHoriz) / 14;
         }
     }
 
     @Override
-    public  ParticleRenderType getRenderType() {
+    public ParticleRenderType getRenderType() {
         return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }
 
@@ -51,9 +51,9 @@ public class FlyParticle extends TextureSheetParticle {
             spriteSet = sprite;
         }
 
-        
+
         @Override
-        public Particle createParticle( SimpleParticleType parameters,  ClientLevel world, double x, double y, double z, double vX, double vY, double vZ) {
+        public Particle createParticle(SimpleParticleType parameters, ClientLevel world, double x, double y, double z, double vX, double vY, double vZ) {
             FlyParticle flyParticle = new FlyParticle(world, x, y, z, vX, vY, vZ);
             flyParticle.setColor(1.0F, 1.0F, 1.0F);
             flyParticle.pickSprite(spriteSet);

@@ -59,18 +59,14 @@ class TetherImpl implements Tether {
     public Tag writeTag() {
         CompoundTag tag = new CompoundTag();
         tag.put("pos", NbtUtils.writeBlockPos(tetherPos.getPos()));
-        ResourceLocation.CODEC.encodeStart(NbtOps.INSTANCE, tetherPos.getWorld().location()).result().ifPresent(dim -> {
-            tag.put("world", dim);
-        });
+        ResourceLocation.CODEC.encodeStart(NbtOps.INSTANCE, tetherPos.getWorld().location()).result().ifPresent(dim -> tag.put("world", dim));
         return tag;
     }
 
     @Override
     public void readTag(Tag nbt) {
-        CompoundTag tag = (CompoundTag)  nbt;
-        ResourceKey<Level> dim = DimensionType.parseLegacy(new Dynamic<>(NbtOps.INSTANCE, tag.get("world"))).result().orElseThrow(() -> {
-            return new IllegalArgumentException("Invalid map dimension: " + tag.get("world"));
-        });
+        CompoundTag tag = (CompoundTag) nbt;
+        ResourceKey<Level> dim = DimensionType.parseLegacy(new Dynamic<>(NbtOps.INSTANCE, tag.get("world"))).result().orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + tag.get("world")));
         if (dim == null) return;
         BlockPos pos = NbtUtils.readBlockPos(tag.getCompound("pos"));
         set(dim, pos);
@@ -78,11 +74,11 @@ class TetherImpl implements Tether {
 
     static class TetherPosImpl implements TetherPos {
 
-        private ResourceKey<Level> world;
-        private BlockPos pos;
+        private final ResourceKey<Level> world;
+        private final BlockPos pos;
 
         public TetherPosImpl(Level world, BlockPos pos) {
-           this(world.dimension(), pos);
+            this(world.dimension(), pos);
         }
 
         public TetherPosImpl(ResourceKey<Level> world, BlockPos pos) {

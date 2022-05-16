@@ -56,7 +56,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     }
 
     @Override
-    public void render(EntityStrawGolem mobEntity, float f, float g,  PoseStack matrixStack,  MultiBufferSource vertexConsumerProvider, int i) {
+    public void render(EntityStrawGolem mobEntity, float f, float g, PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i) {
         this.getModel().setHoldingBlock(mobEntity.holdingFullBlock());
         this.getModel().setHoldingItem(!mobEntity.isHandEmpty());
         this.getModel().setHungry(mobEntity.getHunger().isHungry());
@@ -77,7 +77,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     }
 
     @Override
-    public  ResourceLocation getTextureLocation(EntityStrawGolem golem) {
+    public ResourceLocation getTextureLocation(EntityStrawGolem golem) {
         int lifespan = golem.getLifespan().get();
         int maxLifespan = StrawgolemConfig.Health.getLifespan();
         if (lifespan * 4 < maxLifespan && lifespan >= 0) return TEXTURE_DYING;
@@ -91,7 +91,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     }
 
     @Override
-    protected void renderNameTag(EntityStrawGolem entity,  Component text,  PoseStack matrices,  MultiBufferSource vertexConsumers, int light) {
+    protected void renderNameTag(EntityStrawGolem entity, Component text, PoseStack matrices, MultiBufferSource vertexConsumers, int light) {
         if (!(entity.hasCustomName() && TEXTURE_MAP.containsKey(entity.getDisplayName().getString().toLowerCase()))) {
             super.renderNameTag(entity, text, matrices, vertexConsumers, light);
         }

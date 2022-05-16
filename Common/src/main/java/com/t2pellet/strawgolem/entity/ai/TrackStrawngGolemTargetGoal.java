@@ -34,7 +34,8 @@ public class TrackStrawngGolemTargetGoal extends TargetGoal {
 
         if (this.target == null) {
             return false;
-        } else return !(this.target instanceof Player) || !this.target.isSpectator() && !((Player) this.target).isCreative();
+        } else
+            return !(this.target instanceof Player) || !this.target.isSpectator() && !((Player) this.target).isCreative();
     }
 
     public void start() {

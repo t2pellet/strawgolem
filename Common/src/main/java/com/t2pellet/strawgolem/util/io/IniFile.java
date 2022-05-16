@@ -49,16 +49,18 @@ public interface IniFile {
 
         /**
          * Adds a comment to a given KVP
-         * @param key the key to comment on
+         *
+         * @param key     the key to comment on
          * @param comment the comment
          */
         void comment(String key, String comment);
 
         /**
          * Gets the value of the given key
-         * @param key the key to search
+         *
+         * @param key   the key to search
          * @param clazz the class object
-         * @param <T> the object type
+         * @param <T>   the object type
          * @return the value of the given key
          */
         <T> T get(String key, Class<T> clazz);

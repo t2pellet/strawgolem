@@ -21,7 +21,8 @@ public interface CropRegistry {
 
     /**
      * Register a Block as a crop
-     * @param id the block to register
+     *
+     * @param id          the block to register
      * @param harvestData the data to register for the block
      */
     <T extends BlockEntity> void register(T id, IHarvestData<T> harvestData);
@@ -42,10 +43,11 @@ public interface CropRegistry {
 
     /**
      * Handle replant for the given crop, if registered
+     *
      * @param level the world
-     * @param pos the crop position
+     * @param pos   the crop position
      */
-    <T extends BlockState> void handleReplant(Level level, BlockPos pos);
+    void handleReplant(Level level, BlockPos pos);
 
     /**
      * Harvest data for a registered crop
@@ -61,8 +63,9 @@ public interface CropRegistry {
 
         /**
          * Replant logic for the registered crop
+         *
          * @param level the world
-         * @param pos the crop position
+         * @param pos   the crop position
          * @param input input data
          */
         void doReplant(Level level, BlockPos pos, T input);
@@ -73,9 +76,9 @@ public interface CropRegistry {
      */
     class DefaultHarvestData implements IHarvestData<BlockState> {
 
-        private IntegerProperty property;
-        private int harvestValue;
-        private int replantValue;
+        private final IntegerProperty property;
+        private final int harvestValue;
+        private final int replantValue;
 
         public DefaultHarvestData(IntegerProperty property) {
             this(property, Collections.max(property.getPossibleValues()), Collections.min(property.getPossibleValues()));
@@ -97,7 +100,6 @@ public interface CropRegistry {
             level.setBlockAndUpdate(pos, input.getBlock().defaultBlockState().setValue(property, replantValue));
         }
     }
-
 
 
 }

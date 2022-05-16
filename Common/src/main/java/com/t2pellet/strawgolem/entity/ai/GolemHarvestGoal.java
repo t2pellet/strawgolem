@@ -106,7 +106,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     }
 
     @Override
-    protected boolean isValidTarget(LevelReader worldIn,  BlockPos pos) {
+    protected boolean isValidTarget(LevelReader worldIn, BlockPos pos) {
         BlockState state = worldIn.getBlockState(pos);
         BlockEntity entity = worldIn.getBlockEntity(pos);
         return (CropRegistry.INSTANCE.isGrownCrop(state) || CropRegistry.INSTANCE.isGrownCrop(entity)) && strawgolem.isHandEmpty();
@@ -132,10 +132,11 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     /**
      * Handles the logic for picking up the harvests
+     *
      * @param worldIn : the world
-     * @param pos : the position of the crop
-     * @param state : the BlockState of the crop
-     * @param block : the Block of the crop
+     * @param pos     : the position of the crop
+     * @param state   : the BlockState of the crop
+     * @param block   : the Block of the crop
      */
     private void pickupCrop(ServerLevel worldIn, BlockPos pos, BlockState state, Block block) {
         if (block instanceof StemGrownBlock) {
@@ -146,7 +147,8 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
             for (ItemStack drop : drops) {
                 if (isCropDrop(drop)) {
                     strawgolem.getInventory().addItem(drop);
-                    if (drop.getItem() == Items.POISONOUS_POTATO) strawgolem.addEffect(new MobEffectInstance(MobEffects.POISON, 10, 1));
+                    if (drop.getItem() == Items.POISONOUS_POTATO)
+                        strawgolem.addEffect(new MobEffectInstance(MobEffects.POISON, 10, 1));
                 } else if (drop.getItem() instanceof BlockItem && !(drop.getItem() instanceof ItemNameBlockItem)) {
                     strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
                     strawgolem.getInventory().addItem(drop);
@@ -159,8 +161,9 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     /**
      * Handles the replanting logic
+     *
      * @param worldIn : the world
-     * @param pos : the position of the crop
+     * @param pos     : the position of the crop
      */
     private void replantCrop(ServerLevel worldIn, BlockPos pos) {
         CropRegistry.INSTANCE.handleReplant(worldIn, pos);

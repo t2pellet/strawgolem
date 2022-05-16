@@ -5,7 +5,6 @@ import com.t2pellet.strawgolem.events.CropGrowthCallback;
 import com.t2pellet.strawgolem.events.CropGrowthHandler;
 import com.t2pellet.strawgolem.events.WorldInteractHandler;
 import com.t2pellet.strawgolem.platform.services.ICommonRegistry;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -25,7 +24,8 @@ public class FabricCommonRegistry implements ICommonRegistry {
 
     @Override
     public Supplier<ParticleType<SimpleParticleType>> registerParticle(ResourceLocation id) {
-        SimpleParticleType type = new SimpleParticleType(true) {};
+        SimpleParticleType type = new SimpleParticleType(true) {
+        };
         Registry.register(Registry.PARTICLE_TYPE, id, type);
         return () -> type;
     }

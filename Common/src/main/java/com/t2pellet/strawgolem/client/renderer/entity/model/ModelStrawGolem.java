@@ -51,7 +51,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Ar
         modelPartData.addOrReplaceChild("head",
                 CubeListBuilder.create()
                         .texOffs(26, 24).addBox(-2.0F, -4.0F, -2.0F, 4.0F, 4.0F, 4.0F)
-                        .texOffs(11, 32).addBox( -2.0F, -5.0F, -2.0F, 4.0F, 1.0F, 4.0F),
+                        .texOffs(11, 32).addBox(-2.0F, -5.0F, -2.0F, 4.0F, 1.0F, 4.0F),
                 PartPose.offset(0.0F, 11.0F, 0.0F));
         modelPartData.addOrReplaceChild("body",
                 CubeListBuilder.create().texOffs(20, 32).addBox(-4.0F, -13.0F, -3.0F, 8.0F, 10.0F, 6.0F),
@@ -67,7 +67,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Ar
     }
 
     @Override
-    public void setupAnim( EntityStrawGolem entity, float limbAngle, float limbDistance, float tickDelta, float headYaw, float headPitch) {
+    public void setupAnim(EntityStrawGolem entity, float limbAngle, float limbDistance, float tickDelta, float headYaw, float headPitch) {
         //Head rotation
         this.head.yRot = headYaw * 0.017453292F;
         this.head.xRot = headPitch * 0.017453292F;
@@ -102,7 +102,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Ar
     }
 
     @Override
-    public void renderToBuffer( PoseStack matrices,  VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
         head.render(matrices, vertices, light, overlay, red, green, blue, alpha);
         body.render(matrices, vertices, light, overlay, red, green, blue, alpha);
         leftArm.render(matrices, vertices, light, overlay, red, green, blue, alpha);
@@ -143,6 +143,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Ar
 
     /**
      * Greedy arms animation
+     *
      * @param tickDelta the animation progress
      */
     private void greedyArms(float tickDelta) {
@@ -154,6 +155,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Ar
 
     /**
      * Idle arm swinging
+     *
      * @param animationProgress the animation progress
      */
     private void idleArms(float animationProgress) {

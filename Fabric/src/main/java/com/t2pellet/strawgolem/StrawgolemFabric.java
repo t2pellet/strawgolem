@@ -21,7 +21,7 @@ public class StrawgolemFabric implements ModInitializer, ClientModInitializer {
         StrawgolemCommon.preInit();
         StrawgolemCommon.init();
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-            this.server = server;
+            StrawgolemFabric.server = server;
             StrawgolemCommon.data = new StrawgolemSaveData(server);
             try {
                 StrawgolemCommon.data.loadData(server);
@@ -33,7 +33,7 @@ public class StrawgolemFabric implements ModInitializer, ClientModInitializer {
             try {
                 StrawgolemCommon.data.saveData(server);
             } catch (IOException e) {
-                e.printStackTrace();;
+                e.printStackTrace();
             }
         });
     }

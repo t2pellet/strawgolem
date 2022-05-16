@@ -17,7 +17,7 @@ public class RenderStrawngGolem extends MobRenderer<EntityStrawngGolem, ModelStr
     }
 
     @Override
-    public  ResourceLocation getTextureLocation( EntityStrawngGolem entity) {
+    public ResourceLocation getTextureLocation(EntityStrawngGolem entity) {
         return TEXTURE;
     }
 

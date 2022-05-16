@@ -16,17 +16,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Level.class)
 public class GrowthMixin {
 
-	@Inject(method = "setBlock", at = @At("TAIL"))
-	public void grow(BlockPos pos, BlockState newState, int i, CallbackInfoReturnable<Boolean> info) {
-		if ((Object) this instanceof ServerLevel world) {
-			BlockPos cropPos = pos;
-			if (newState.getBlock() instanceof AttachedStemBlock) {
-				cropPos = pos.offset(newState.getValue(AttachedStemBlock.FACING).getNormal());
-			}
-			BlockEntity entity = world.getBlockEntity(cropPos);
-			if (CropRegistry.INSTANCE.isGrownCrop(newState) || CropRegistry.INSTANCE.isGrownCrop(entity)) {
-				CropGrowthCallback.EVENT.invoker().grow(world, cropPos);
-			}
-		}
-	}
+    @Inject(method = "setBlock", at = @At("TAIL"))
+    public void grow(BlockPos pos, BlockState newState, int i, CallbackInfoReturnable<Boolean> info) {
+        if ((Object) this instanceof ServerLevel world) {
+            BlockPos cropPos = pos;
+            if (newState.getBlock() instanceof AttachedStemBlock) {
+                cropPos = pos.offset(newState.getValue(AttachedStemBlock.FACING).getNormal());
+            }
+            BlockEntity entity = world.getBlockEntity(cropPos);
+            if (CropRegistry.INSTANCE.isGrownCrop(newState) || CropRegistry.INSTANCE.isGrownCrop(entity)) {
+                CropGrowthCallback.EVENT.invoker().grow(world, cropPos);
+            }
+        }
+    }
 }

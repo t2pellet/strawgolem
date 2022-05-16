@@ -1,7 +1,6 @@
 package com.t2pellet.strawgolem.platform;
 
 import com.t2pellet.strawgolem.platform.services.IPlatformHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class FabricPlatformHelper implements IPlatformHelper {

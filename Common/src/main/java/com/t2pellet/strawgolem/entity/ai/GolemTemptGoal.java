@@ -30,13 +30,14 @@ public class GolemTemptGoal extends TemptGoal {
     @Override
     public void start() {
         super.start();
-        if (StrawgolemConfig.Miscellaneous.isSoundsEnabled()) strawGolem.playSound(EntityStrawGolem.GOLEM_INTERESTED, 1.0F, 1.0F);
+        if (StrawgolemConfig.Miscellaneous.isSoundsEnabled())
+            strawGolem.playSound(EntityStrawGolem.GOLEM_INTERESTED, 1.0F, 1.0F);
         Services.PACKETS.sendInRange(new GreedyPacket(strawGolem, true), strawGolem, 25.0F);
     }
 
     @Override
     public void tick() {
-        this.mob.getLookControl().setLookAt(this.player, (float)(this.mob.getXRot() + 20), (float)this.mob.getYHeadRot());
+        this.mob.getLookControl().setLookAt(this.player, this.mob.getXRot() + 20, this.mob.getYHeadRot());
         if (this.mob.distanceToSqr(this.player) < 6.25D) {
             this.mob.getNavigation().stop();
         } else {

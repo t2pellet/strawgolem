@@ -154,7 +154,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     /* Interaction */
 
     @Override
-    protected  InteractionResult mobInteract(Player player,  InteractionHand hand) {
+    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         Item heldItem = player.getItemInHand(hand).getItem();
 
         if (heldItem == Items.WHEAT) {
@@ -185,7 +185,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             if (!level.isClientSide()) {
                 hunger.set(newHunger);
                 if (!player.isCreative()) player.getItemInHand(hand).shrink(1);
-                Services.PACKETS.sendInRange(new HealthPacket(this), this,25.0F);
+                Services.PACKETS.sendInRange(new HealthPacket(this), this, 25.0F);
                 // Feedback
                 playSound(GOLEM_HEAL, 1.0F, 1.0F);
             }
@@ -224,7 +224,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     }
 
     @Override
-    public void thunderHit( ServerLevel world,  LightningBolt bolt) {
+    public void thunderHit(ServerLevel world, LightningBolt bolt) {
         if (random.nextInt(10) == 0 && !level.isClientSide()) {
             EntityStrawngGolem strawngGolem = CommonRegistry.Entities.getStrawngGolemType().create(level);
             if (hasCustomName()) {
@@ -243,7 +243,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     }
 
     @Override
-    protected void actuallyHurt( DamageSource source, float $$1) {
+    protected void actuallyHurt(DamageSource source, float $$1) {
         super.actuallyHurt(source, $$1);
         // Profile nearby crops when hit and idling
         if (source.getDirectEntity() instanceof Player && !isRunningGoal(GolemHarvestGoal.class, GolemDeliverGoal.class, GolemFleeGoal.class, GolemTemptGoal.class, GolemPoutGoal.class, GolemTetherGoal.class)) {
@@ -270,13 +270,13 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     }
 
     @Override
-    public boolean hurt( DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         if (source == DamageSource.SWEET_BERRY_BUSH) return false;
         return super.hurt(source, amount);
     }
 
     @Override
-    protected void dropCustomDeathLoot( DamageSource source, int lootingMultiplier, boolean allowDrops) {
+    protected void dropCustomDeathLoot(DamageSource source, int lootingMultiplier, boolean allowDrops) {
         super.dropCustomDeathLoot(source, lootingMultiplier, allowDrops);
         if (!level.isClientSide()) {
             level.addFreshEntity(new ItemEntity(level, getX(), getY(), getZ(), inventory.getItem(0).copy()));
@@ -297,7 +297,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
         }
         return false;
     }
-    
+
     public boolean isHarvesting() {
         return isRunningGoal(GolemHarvestGoal.class);
     }
@@ -317,7 +317,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     }
 
     @Override
-    public  ItemStack getItemBySlot( EquipmentSlot slot) {
+    public ItemStack getItemBySlot(EquipmentSlot slot) {
         if (slot == EquipmentSlot.MAINHAND) {
             return inventory.getItem(0);
         }
@@ -446,7 +446,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     }
 
     @Override
-    protected SoundEvent getHurtSound( DamageSource damageSourceIn) {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return StrawgolemConfig.Miscellaneous.isSoundsEnabled() ? GOLEM_HURT : null;
     }
 

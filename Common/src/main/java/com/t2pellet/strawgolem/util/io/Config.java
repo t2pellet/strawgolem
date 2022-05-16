@@ -13,8 +13,8 @@ public class Config {
 
     private static final String CONFIG_DIR = Services.PLATFORM.getGameDir() + "/config/";
 
-    private IniFile iniFile;
-    private File file;
+    private final IniFile iniFile;
+    private final File file;
 
 
     protected Config(String modid) {
@@ -24,7 +24,8 @@ public class Config {
 
     /**
      * Save the Config to disk
-     * @throws IOException if there is an error writing to disk
+     *
+     * @throws IOException            if there is an error writing to disk
      * @throws IllegalAccessException if there is an error accessing config elements
      */
     void save() throws IOException, IllegalAccessException {
@@ -47,7 +48,8 @@ public class Config {
 
     /**
      * Loads the Config from disk
-     * @throws IOException if there is an error reading from disk
+     *
+     * @throws IOException            if there is an error reading from disk
      * @throws IllegalAccessException if there is an error accessing config elements
      */
     void load() throws IOException, IllegalAccessException {

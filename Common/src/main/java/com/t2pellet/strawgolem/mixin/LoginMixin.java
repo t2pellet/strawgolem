@@ -1,6 +1,5 @@
 package com.t2pellet.strawgolem.mixin;
 
-import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.entity.EntityStrawGolem;
 import com.t2pellet.strawgolem.entity.ai.GolemTemptGoal;
 import com.t2pellet.strawgolem.network.GreedyPacket;

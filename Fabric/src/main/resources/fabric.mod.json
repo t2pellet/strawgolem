@@ -2,8 +2,7 @@
   "schemaVersion": 1,
   "id": "strawgolem",
   "version": "2.0.0a2",
-
-  "name": "Strawgolem",
+  "name": "Straw Golem",
   "description": "Straw Golem! It's a farmer!",
   "authors": [
     "CommodoreThrawn"
@@ -12,10 +11,8 @@
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/strawgolem-reborn",
     "sources": "https://github.com/t2pellet/strawgolem"
   },
-
   "license": "All Rights Reserved",
   "icon": "assets/strawgolem/icon.png",
-
   "environment": "*",
   "entrypoints": {
     "main": [

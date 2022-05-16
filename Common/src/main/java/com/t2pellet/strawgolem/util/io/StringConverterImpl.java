@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.util.io;
 
 
-class StringConverterImpl implements StringConverter{
+class StringConverterImpl implements StringConverter {
 
     private static final String INTEGER = "int";
     private static final String BOOLEAN = "boolean";
@@ -17,20 +17,14 @@ class StringConverterImpl implements StringConverter{
 
     @SuppressWarnings("unchecked")
     public <T> T convert(Class<T> clazz) {
-        switch (clazz.getTypeName()) {
-            case INTEGER:
-                return (T) (Object) Integer.parseInt(value);
-            case BOOLEAN:
-                return (T) (Object) Boolean.parseBoolean(value);
-            case FLOAT:
-                return (T) (Object) Float.parseFloat(value);
-            case DOUBLE:
-                return (T) (Object) Double.parseDouble(value);
-            case STRING:
-                return (T) value;
-            default:
-                throw new IllegalArgumentException("Invalid type: " + clazz.getTypeName());
-        }
+        return switch (clazz.getTypeName()) {
+            case INTEGER -> (T) (Object) Integer.parseInt(value);
+            case BOOLEAN -> (T) (Object) Boolean.parseBoolean(value);
+            case FLOAT -> (T) (Object) Float.parseFloat(value);
+            case DOUBLE -> (T) (Object) Double.parseDouble(value);
+            case STRING -> (T) value;
+            default -> throw new IllegalArgumentException("Invalid type: " + clazz.getTypeName());
+        };
     }
 
 }

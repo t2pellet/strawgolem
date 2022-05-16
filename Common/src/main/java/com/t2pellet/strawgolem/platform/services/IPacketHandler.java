@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 
 import java.lang.reflect.Field;
 
+@SuppressWarnings("unchecked")
 public interface IPacketHandler {
 
 
@@ -67,17 +68,19 @@ public interface IPacketHandler {
 
     /**
      * Register server-executing packet
-     * @param id the packet ResourceLocation
+     *
+     * @param id          the packet ResourceLocation
      * @param packetClass the packet class
-     * @param <T> the packet type
+     * @param <T>         the packet type
      */
     <T extends Packet<T>> void registerServerPacket(ResourceLocation id, Class<T> packetClass);
 
     /**
      * Register client-executing packet
-     * @param id the packet ResourceLocation
+     *
+     * @param id          the packet ResourceLocation
      * @param packetClass the packet class
-     * @param <T> the packet type
+     * @param <T>         the packet type
      */
     <T extends Packet<T>> void registerClientPacket(ResourceLocation id, Class<T> packetClass);
 
@@ -98,7 +101,8 @@ public interface IPacketHandler {
 
     /**
      * Sends packet from server to the given players
-     * @param packet the packet to send
+     *
+     * @param packet  the packet to send
      * @param players the players to send to
      */
     <T extends Packet<T>> void sendTo(Packet<T> packet, ServerPlayer... players);
@@ -106,17 +110,17 @@ public interface IPacketHandler {
     /**
      * Sends packet to all players in range of the given entity
      * @param packet the packet to send
-     * @param e the entity in question
-     * @param range the range around the entity
+     * @param e      the entity in question
+     * @param range  the range around the entity
      */
     <T extends Packet<T>> void sendInRange(Packet<T> packet, Entity e, float range);
 
     /**
      * Sends packet to all players in a given area
      * @param packet the packet to send
-     * @param world the world to send in
-     * @param pos the position to center around
-     * @param range the range around the position
+     * @param world  the world to send in
+     * @param pos    the position to center around
+     * @param range  the range around the position
      */
     <T extends Packet<T>> void sendInArea(Packet<T> packet, Level world, BlockPos pos, float range);
 }

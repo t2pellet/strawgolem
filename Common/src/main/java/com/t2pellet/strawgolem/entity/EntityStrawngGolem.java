@@ -49,7 +49,7 @@ public class EntityStrawngGolem extends AbstractGolem implements IHasTether {
     }
 
     @Override
-    protected  ResourceLocation getDefaultLootTable() {
+    protected ResourceLocation getDefaultLootTable() {
         return LOOT;
     }
 
@@ -65,9 +65,7 @@ public class EntityStrawngGolem extends AbstractGolem implements IHasTether {
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         targetSelector.addGoal(1, new TrackStrawngGolemTargetGoal(this));
-        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 5, false, false, e -> {
-            return e instanceof Enemy && !(e instanceof Creeper);
-        }));
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 5, false, false, e -> e instanceof Enemy && !(e instanceof Creeper)));
     }
 
     @Override
@@ -79,9 +77,9 @@ public class EntityStrawngGolem extends AbstractGolem implements IHasTether {
     }
 
     @Override
-    public boolean doHurtTarget( Entity target) {
+    public boolean doHurtTarget(Entity target) {
         this.attackAnimationTick = 10;
-        this.level.broadcastEntityEvent(this, (byte)4);
+        this.level.broadcastEntityEvent(this, (byte) 4);
         return super.doHurtTarget(target);
     }
 

@@ -3,7 +3,6 @@ package com.t2pellet.strawgolem.platform;
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.network.Packet;
 import com.t2pellet.strawgolem.platform.services.IPacketHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -11,12 +10,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
-import net.minecraftforge.server.ServerLifecycleHooks;
-import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -54,7 +50,7 @@ public class ForgePacketHandler implements IPacketHandler {
             try {
                 return packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                    InvocationTargetException ex) {
+                     InvocationTargetException ex) {
                 StrawgolemCommon.LOG.error("Error: Failed to instantiate packet - " + id);
             }
             return null;

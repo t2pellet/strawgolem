@@ -9,7 +9,8 @@ import net.minecraft.world.level.Level;
  */
 public class CropGrowthHandler {
 
-    private CropGrowthHandler() {}
+    private CropGrowthHandler() {
+    }
 
     public static void onCropGrowth(Level world, BlockPos cropPos) {
         if (!world.isClientSide()) {

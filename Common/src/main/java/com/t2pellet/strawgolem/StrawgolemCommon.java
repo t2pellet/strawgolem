@@ -7,8 +7,8 @@ import com.t2pellet.strawgolem.entity.capability.lifespan.Lifespan;
 import com.t2pellet.strawgolem.entity.capability.memory.Memory;
 import com.t2pellet.strawgolem.entity.capability.tether.Tether;
 import com.t2pellet.strawgolem.platform.Services;
-import com.t2pellet.strawgolem.platform.services.IPacketHandler;
 import com.t2pellet.strawgolem.platform.services.ICommonRegistry;
+import com.t2pellet.strawgolem.platform.services.IPacketHandler;
 import com.t2pellet.strawgolem.registry.ClientRegistry;
 import com.t2pellet.strawgolem.registry.CommonRegistry;
 import com.t2pellet.strawgolem.storage.StrawgolemSaveData;
@@ -29,7 +29,7 @@ public class StrawgolemCommon {
 
     public static void preInit() {
         try {
-            ConfigHelper.INSTANCE.register(MODID, new StrawgolemConfig());
+            ConfigHelper.register(new StrawgolemConfig());
             LOG.debug("Registered config");
         } catch (IOException | IllegalAccessException e) {
             LOG.debug("Failed to register config");
@@ -66,7 +66,6 @@ public class StrawgolemCommon {
     private static void registerCrops() {
         Registry.BLOCK.forEach(ICommonRegistry::registerCrop);
     }
-
 
 
 }

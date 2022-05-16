@@ -13,9 +13,17 @@ public class Triplet<T1, T2, T3> {
         this.third = third;
     }
 
-    public T1 getFirst() { return first; }
-    public T2 getSecond() { return second; }
-    public T3 getThird() { return third; }
+    public T1 getFirst() {
+        return first;
+    }
+
+    public T2 getSecond() {
+        return second;
+    }
+
+    public T3 getThird() {
+        return third;
+    }
 
     @Override
     public int hashCode() {
@@ -30,8 +38,7 @@ public class Triplet<T1, T2, T3> {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Triplet)) return false;
-        Triplet<?,?,?> other = (Triplet<?,?,?>) obj;
+        if (!(obj instanceof Triplet<?, ?, ?> other)) return false;
         return Objects.equals(first, other.first)
                 && Objects.equals(second, other.second)
                 && Objects.equals(third, other.third);

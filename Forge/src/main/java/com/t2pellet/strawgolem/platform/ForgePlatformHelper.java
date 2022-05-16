@@ -2,7 +2,6 @@ package com.t2pellet.strawgolem.platform;
 
 import com.t2pellet.strawgolem.platform.services.IPlatformHelper;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
 

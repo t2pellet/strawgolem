@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 class CropHandlerImpl implements CropHandler {
-    
+
     HashMap<ResourceKey<Level>, PosTree> treeMap;
 
     CropHandlerImpl() {

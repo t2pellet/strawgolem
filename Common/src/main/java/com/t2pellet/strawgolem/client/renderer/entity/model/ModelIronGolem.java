@@ -32,7 +32,7 @@ public class ModelIronGolem<T extends IronGolem> extends HierarchicalModel<T> {
     }
 
     @Override
-    public void setupAnim( T ironGolemEntity, float f, float g, float h, float yaw, float pitch) {
+    public void setupAnim(T ironGolemEntity, float f, float g, float h, float yaw, float pitch) {
         this.head.yRot = yaw * 0.017453292F;
         this.head.xRot = pitch * 0.017453292F;
         this.rightLeg.xRot = -1.5F * Mth.triangleWave(f, 13.0F) * g;
@@ -45,18 +45,18 @@ public class ModelIronGolem<T extends IronGolem> extends HierarchicalModel<T> {
     public void prepareMobModel(T entity, float f, float g, float h) {
         int i = entity.getAttackAnimationTick();
         if (i > 0) {
-            this.rightArm.xRot = -2.0F + 1.5F * Mth.triangleWave((float)i - h, 10.0F);
-            this.leftArm.xRot = -2.0F + 1.5F * Mth.triangleWave((float)i - h, 10.0F);
+            this.rightArm.xRot = -2.0F + 1.5F * Mth.triangleWave((float) i - h, 10.0F);
+            this.leftArm.xRot = -2.0F + 1.5F * Mth.triangleWave((float) i - h, 10.0F);
         } else {
             int j = entity.getOfferFlowerTick();
             if (j > 0) {
-                this.rightArm.xRot = -0.8F + 0.025F * Mth.triangleWave((float)j, 70.0F);
+                this.rightArm.xRot = -0.8F + 0.025F * Mth.triangleWave((float) j, 70.0F);
                 this.leftArm.xRot = 0.0F;
             } else if (entity.hasPassenger(e -> e instanceof EntityStrawGolem) && entity.getPassengers().size() == 1) {
-              leftArm.xRot = -0.45F * (float) Math.PI;
-              rightArm.xRot = -0.45F * (float) Math.PI;
-              leftArm.yRot = 0.18F;
-              rightArm.yRot = -0.18F;
+                leftArm.xRot = -0.45F * (float) Math.PI;
+                rightArm.xRot = -0.45F * (float) Math.PI;
+                leftArm.yRot = 0.18F;
+                rightArm.yRot = -0.18F;
             } else {
                 this.rightArm.xRot = (-0.2F + 1.5F * Mth.triangleWave(f, 13.0F)) * g;
                 this.leftArm.xRot = (-0.2F - 1.5F * Mth.triangleWave(f, 13.0F)) * g;

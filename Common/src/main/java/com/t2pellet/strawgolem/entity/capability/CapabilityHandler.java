@@ -11,15 +11,17 @@ public interface CapabilityHandler {
 
     /**
      * Registers the given capability.
-     * @param cap : the capability class
+     *
+     * @param cap     : the capability class
      * @param factory : the capability factory
-     * @param <T> the capability parameter
-     * @param <R> the factory parameter
+     * @param <T>     the capability parameter
+     * @param <R>     the factory parameter
      */
     <T extends Capability, R extends CapabilityFactory<T>> void register(Class<T> cap, R factory);
 
     /**
      * Instantiates the given capability, if registered
+     *
      * @param cap the capability class
      * @param <T> the capability parameter
      * @return an optional for the instance of the capability. Optional is empty if the capability is not registered

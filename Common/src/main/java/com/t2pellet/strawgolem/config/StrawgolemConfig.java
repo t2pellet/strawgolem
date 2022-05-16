@@ -2,7 +2,6 @@ package com.t2pellet.strawgolem.config;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.util.io.Config;
-import com.t2pellet.strawgolem.util.io.ConfigHelper;
 import com.t2pellet.strawgolem.util.io.ConfigHelper.Section;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.block.Block;
@@ -35,14 +34,11 @@ public class StrawgolemConfig extends Config {
 
         public static boolean isHarvestAllowed(Block block) {
             String blockStr = Registry.BLOCK.getResourceKey(block).toString();
-            switch (filterMode) {
-                case FILTER_MODE_WHITELIST:
-                    return whitelist.stream().anyMatch(s -> s.trim().equals(blockStr));
-                case FILTER_MODE_BLACKLIST:
-                    return blacklist.stream().noneMatch(s -> s.trim().equals(blockStr));
-                default:
-                    return true;
-            }
+            return switch (filterMode) {
+                case FILTER_MODE_WHITELIST -> whitelist.stream().anyMatch(s -> s.trim().equals(blockStr));
+                case FILTER_MODE_BLACKLIST -> blacklist.stream().noneMatch(s -> s.trim().equals(blockStr));
+                default -> true;
+            };
         }
 
         public static boolean isReplantEnabled() {

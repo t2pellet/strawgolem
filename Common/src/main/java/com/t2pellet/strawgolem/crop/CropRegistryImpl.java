@@ -33,7 +33,7 @@ class CropRegistryImpl implements CropRegistry {
         return isGrownCrop(new CropKey<>(block), block);
     }
 
-    public <T extends BlockState> void handleReplant(Level level, BlockPos pos) {
+    public void handleReplant(Level level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         BlockEntity entity = level.getBlockEntity(pos);
         if (contains(new CropKey<>(state.getBlock()))) {
@@ -43,6 +43,7 @@ class CropRegistryImpl implements CropRegistry {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T> void handleReplant(CropKey<?> key, Level level, BlockPos pos, T val) {
         if (contains(key)) {
             IHarvestData<T> data = (IHarvestData<T>) entries.get(key);
@@ -50,6 +51,7 @@ class CropRegistryImpl implements CropRegistry {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T> boolean isGrownCrop(CropKey<?> key, T val) {
         if (contains(key)) {
             IHarvestData<T> data = (IHarvestData<T>) entries.get(key);
@@ -85,8 +87,7 @@ class CropRegistryImpl implements CropRegistry {
             if (obj == null) return false;
             if (obj instanceof CropKey<?> entry) {
                 return get().equals(entry.get());
-            }
-            else return get().equals(obj);
+            } else return get().equals(obj);
         }
     }
 }

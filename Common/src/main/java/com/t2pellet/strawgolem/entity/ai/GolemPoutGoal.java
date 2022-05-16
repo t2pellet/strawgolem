@@ -37,7 +37,7 @@ public class GolemPoutGoal extends Goal {
     @Override
     public void tick() {
         Optional<Player> player = golem.level.getEntitiesOfClass(Player.class, golem.getBoundingBox().inflate(10.0F), e -> true)
-                                        .stream().filter(p -> p.getMainHandItem().getItem() == Items.APPLE).findFirst();
+                .stream().filter(p -> p.getMainHandItem().getItem() == Items.APPLE).findFirst();
         if (player.isPresent()) {
             golem.getLookControl().setLookAt(player.get().position().add(0, 2.0F, 0));
         } else {
