@@ -15,9 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -56,7 +54,7 @@ public class ForgeCommonRegistry implements ICommonRegistry {
     @Override
     public void registerEvents() {
         // Crop Registry
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, (Consumer<RegistryEvent.Register<Block>>) event -> ICommonRegistry.registerCrop(event.getRegistry().getValue(event.getName())));
+        MinecraftForge.EVENT_BUS.addListener((Consumer<StrawGolemEvents.BlockRegisteredEvent>) event -> ICommonRegistry.registerCrop(event.block));
         //Crop growth handling
         MinecraftForge.EVENT_BUS.addListener((Consumer<StrawGolemEvents.CropGrowthEvent>) event -> CropGrowthHandler.onCropGrowth((Level) event.getWorld(), event.getPos()));
         MinecraftForge.EVENT_BUS.addListener((Consumer<PlayerInteractEvent.RightClickBlock>) event -> {
