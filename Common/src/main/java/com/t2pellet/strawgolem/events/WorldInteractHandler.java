@@ -50,14 +50,16 @@ public class WorldInteractHandler {
                 Block heldBlock = ((BlockItem) heldItem).getBlock();
                 Direction direction = result.getDirection();
                 BlockPos placementPos = pos.offset(direction.getStepX(), direction.getStepY(), direction.getStepZ());
-                if (heldBlock == Blocks.CARVED_PUMPKIN) {
-                    BlockPos hayPos = placementPos.below();
-                    if (worldIn.getBlockState(hayPos).getBlock() == Blocks.HAY_BLOCK)
-                        spawnStrawGolem(worldIn, hayPos, placementPos, result.getDirection());
-                } else if (heldBlock == Blocks.HAY_BLOCK) {
-                    BlockPos pumpkinPos = placementPos.above();
-                    if (worldIn.getBlockState(pumpkinPos).getBlock() == Blocks.CARVED_PUMPKIN)
-                        spawnStrawGolem(worldIn, placementPos, pumpkinPos, result.getDirection());
+                if (StrawgolemConfig.Creation.isHeadBlock(heldBlock)) {
+                    BlockPos bodyPos = placementPos.below();
+                    if (StrawgolemConfig.Creation.isBodyBlock(worldIn.getBlockState(bodyPos).getBlock())) {
+                        spawnStrawGolem(worldIn, bodyPos, placementPos, result.getDirection());
+                    }
+                } else if (StrawgolemConfig.Creation.isBodyBlock(heldBlock)) {
+                    BlockPos headPos = placementPos.above();
+                    if (StrawgolemConfig.Creation.isHeadBlock(worldIn.getBlockState(headPos).getBlock())) {
+                        spawnStrawGolem(worldIn, placementPos, headPos, result.getDirection());
+                    }
                 }
             }
         }
@@ -68,11 +70,11 @@ public class WorldInteractHandler {
      * Handles golem building based on shearing the pumpkin
      */
     public static InteractionResult onGolemBuiltAlternate(Player player, Level worldIn, InteractionHand hand, BlockHitResult result) {
-        if (!worldIn.isClientSide) {
+        if (!worldIn.isClientSide && StrawgolemConfig.Creation.isShearConstructionEnabled()) {
             BlockPos pos = result.getBlockPos();
             if (player.getMainHandItem().getItem() == Items.SHEARS
                     && worldIn.getBlockState(pos).getBlock() == Blocks.PUMPKIN
-                    && worldIn.getBlockState(pos.below()).getBlock() == Blocks.HAY_BLOCK) {
+                    && StrawgolemConfig.Creation.isBodyBlock(worldIn.getBlockState(pos.below()).getBlock())) {
                 worldIn.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.PUMPKIN_CARVE, SoundSource.BLOCKS, 1.0F, 1.0F, true);
                 player.getMainHandItem().hurtAndBreak(1, player, p -> p.broadcastBreakEvent(InteractionHand.MAIN_HAND));
                 return spawnStrawGolem(worldIn, pos.below(), pos, result.getDirection());

@@ -14,7 +14,7 @@ public class ForgePlatformHelper implements IPlatformHelper {
 
     @Override
     public String getGameDir() {
-        return FMLPaths.GAMEDIR.name();
+        return FMLPaths.GAMEDIR.get().toString();
     }
 
     @Override

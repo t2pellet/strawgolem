@@ -7,6 +7,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StrawgolemConfig extends Config {
 
@@ -15,6 +16,28 @@ public class StrawgolemConfig extends Config {
 
     public StrawgolemConfig() {
         super(StrawgolemCommon.MODID);
+    }
+
+    @Section("Creating")
+    public static class Creation {
+        @Section.Comment("Potential head blocks to make a golem")
+        private static List<String> headBlocks = new ArrayList<>(List.of("minecraft:carved_pumpkin"));
+        @Section.Comment("Potential body blocks to make a golem")
+        private static List<String> bodyBlocks = new ArrayList<>(List.of("minecraft:hay_block"));
+        @Section.Comment("Allow constructing head by shearing a pumpkin")
+        private static boolean shearConstructionEnabled = true;
+
+        public static boolean isHeadBlock(Block block) {
+            return blockMatchesFilter(block, headBlocks, false);
+        }
+
+        public static boolean isBodyBlock(Block block) {
+            return blockMatchesFilter(block, bodyBlocks, false);
+        }
+
+        public static boolean isShearConstructionEnabled() {
+            return shearConstructionEnabled;
+        }
     }
 
     @Section("Harvesting")
@@ -29,16 +52,10 @@ public class StrawgolemConfig extends Config {
         @Section.Comment("The golem filtration mode. Enter 'whitelist' or 'blacklist'")
         private static String filterMode = FILTER_MODE_BLACKLIST;
         @Section.Comment("Format Example: whitelist = [minecraft:carrots,minecraft:wheat]")
-        private static ArrayList<String> whitelist = new ArrayList<>();
-        private static ArrayList<String> blacklist = new ArrayList<>();
+        private static List<String> filterList = new ArrayList<>();
 
         public static boolean isHarvestAllowed(Block block) {
-            String blockStr = Registry.BLOCK.getResourceKey(block).toString();
-            return switch (filterMode) {
-                case FILTER_MODE_WHITELIST -> whitelist.stream().anyMatch(s -> s.trim().equals(blockStr));
-                case FILTER_MODE_BLACKLIST -> blacklist.stream().noneMatch(s -> s.trim().equals(blockStr));
-                default -> true;
-            };
+            return blockMatchesFilter(block, filterList, filterMode.equals(FILTER_MODE_BLACKLIST));
         }
 
         public static boolean isReplantEnabled() {
@@ -142,6 +159,14 @@ public class StrawgolemConfig extends Config {
         public static boolean isHeavyPenalty() {
             return heavyPenalty;
         }
+    }
+
+    private static boolean blockMatchesFilter(Block block, List<String> filter, boolean invert) {
+        String blockStr = Registry.BLOCK.getResourceKey(block).get().location().toString();
+        if (invert) {
+            return filter.stream().noneMatch(str -> str.trim().equalsIgnoreCase(blockStr));
+        }
+        return filter.stream().anyMatch(str -> str.trim().equalsIgnoreCase(blockStr));
     }
 
 }
