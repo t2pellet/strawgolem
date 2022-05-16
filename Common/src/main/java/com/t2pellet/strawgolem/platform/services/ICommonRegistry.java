@@ -1,20 +1,22 @@
 package com.t2pellet.strawgolem.platform.services;
 
 import com.t2pellet.strawgolem.crop.CropRegistry;
-import net.minecraft.core.BlockPos;
+import com.t2pellet.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 public interface ICommonRegistry {
@@ -29,24 +31,17 @@ public interface ICommonRegistry {
 
     static void registerCrop(Block block) {
         if (block instanceof StemGrownBlock) {
-            CropRegistry.INSTANCE.register(block, new CropRegistry.IHarvestData<>() {
-                @Override
-                public boolean isMature(BlockState input) {
-                    return true;
-                }
-
-                @Override
-                public void doReplant(Level level, BlockPos pos, BlockState input) {
-                    level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-                }
-            });
+            CropRegistry.INSTANCE.register(block, input -> true, (level, golem, pos, input) -> {
+                golem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
+                return List.of(new ItemStack(Item.BY_BLOCK.getOrDefault(block, Items.AIR)));
+            }, (level, pos, input) -> level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
         } else if (block instanceof SweetBerryBushBlock) {
-            CropRegistry.INSTANCE.register(block, new CropRegistry.DefaultHarvestData(SweetBerryBushBlock.AGE, 3, 1));
+            CropRegistry.INSTANCE.register(block, CropRegistry.IHarvestChecker.getDefault(SweetBerryBushBlock.AGE, 3), CropRegistry.IHarvestLogic.RIGHT_CLICK, CropRegistry.IReplantLogic.getDefault(SweetBerryBushBlock.AGE, 1));
         } else if (block instanceof BushBlock && (block instanceof BonemealableBlock || block instanceof NetherWartBlock)) {
             IntegerProperty[] ageProperties = {BlockStateProperties.AGE_2, BlockStateProperties.AGE_3, BlockStateProperties.AGE_5, BlockStateProperties.AGE_7};
             Arrays.stream(ageProperties)
                     .filter(age -> block.defaultBlockState().hasProperty(age))
-                    .findFirst().ifPresent(integerProperty -> CropRegistry.INSTANCE.register(block, new CropRegistry.DefaultHarvestData(integerProperty)));
+                    .findFirst().ifPresent(integerProperty -> CropRegistry.INSTANCE.register(block, CropRegistry.IHarvestChecker.getDefault(integerProperty), CropRegistry.IHarvestLogic.DEFAULT, CropRegistry.IReplantLogic.getDefault(integerProperty)));
         }
     }
 
