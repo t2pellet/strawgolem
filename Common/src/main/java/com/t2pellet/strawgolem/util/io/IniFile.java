@@ -65,6 +65,7 @@ public interface IniFile {
          */
         <T> T get(String key, Class<T> clazz);
 
+
         <T> List<T> getAll(String key, Class<T> clazz);
 
     }

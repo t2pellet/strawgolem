@@ -30,9 +30,9 @@ public class StrawgolemCommon {
     public static void preInit() {
         try {
             ConfigHelper.register(new StrawgolemConfig());
-            LOG.debug("Registered config");
+            LOG.info("Registered config");
         } catch (IOException | IllegalAccessException e) {
-            LOG.debug("Failed to register config");
+            LOG.error("Failed to register config");
         }
         Services.COMMON_REGISTRY.registerEvents();
         CommonRegistry.Particles.register();
