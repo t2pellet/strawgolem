@@ -29,6 +29,9 @@ public class ConfigHandler {
             StrawgolemConfig.shiverEnabled = ConfigHolder.COMMON_CONFIG.shiverEnabled.get();
             StrawgolemConfig.golemInteract = ConfigHolder.COMMON_CONFIG.golemInteract.get();
             StrawgolemConfig.enableHwyla = ConfigHolder.COMMON_CONFIG.enableHwyla.get();
+            StrawgolemConfig.bodyBlocks = ConfigHolder.COMMON_CONFIG.bodyBlocks.get();
+            StrawgolemConfig.headBlocks = ConfigHolder.COMMON_CONFIG.headBlocks.get();
+            StrawgolemConfig.shearsConstructionEnabled = ConfigHolder.COMMON_CONFIG.shearsConstructionEnabled.get();
 
             StrawgolemConfig.tetherEnabled = ConfigHolder.COMMON_CONFIG.tetherEnabled.get();
             StrawgolemConfig.temptResetsTether = ConfigHolder.COMMON_CONFIG.tetherToTemptEnabled.get();
