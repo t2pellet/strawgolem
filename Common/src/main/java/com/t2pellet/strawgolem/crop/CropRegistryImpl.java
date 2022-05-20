@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.HashMap;
@@ -24,7 +25,7 @@ class CropRegistryImpl implements CropRegistry {
     }
 
     @Override
-    public <T extends BlockEntity> void register(T id, IHarvestChecker<T> harvestChecker, IHarvestLogic<T> harvestLogic, IReplantLogic<T> replantLogic) {
+    public <T extends BlockEntity> void register(BlockEntityType<T> id, IHarvestChecker<T> harvestChecker, IHarvestLogic<T> harvestLogic, IReplantLogic<T> replantLogic) {
         entries.put(new CropKey<>(id), new CropVal<>(harvestChecker, harvestLogic, replantLogic));
     }
 
@@ -35,27 +36,35 @@ class CropRegistryImpl implements CropRegistry {
 
     @Override
     public <T extends BlockEntity> boolean isGrownCrop(T block) {
-        return isGrownCrop(new CropKey<>(block), block) && StrawgolemConfig.Harvest.isHarvestAllowed(block.getBlockState().getBlock());
+        return isGrownCrop(new CropKey<>(block.getType()), block) && StrawgolemConfig.Harvest.isHarvestAllowed(block.getBlockState().getBlock());
     }
 
     public void handleReplant(Level level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
-        BlockEntity entity = level.getBlockEntity(pos);
-        if (contains(new CropKey<>(state.getBlock()))) {
-            handleReplant(new CropKey<>(state.getBlock()), level, pos, state);
-        } else if (contains(new CropKey<>(entity))) {
-            handleReplant(new CropKey<>(entity), level, pos, entity);
+        CropKey<Block> blockKey = new CropKey<>(state.getBlock());
+        if (contains(blockKey)) {
+            handleReplant(blockKey, level, pos, state);
+        } else {
+            BlockEntity entity = level.getBlockEntity(pos);
+            CropKey<BlockEntityType> entityKey = new CropKey<>(entity.getType());
+            if (contains(entityKey)) {
+                handleReplant(entityKey, level, pos, entity);
+            }
         }
     }
 
     @Override
     public List<ItemStack> handleHarvest(ServerLevel level, EntityStrawGolem golem, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
-        BlockEntity entity = level.getBlockEntity(pos);
-        if (contains(new CropKey<>(state.getBlock()))) {
-            return handleHarvest(new CropKey<>(state.getBlock()), level, golem, pos, state);
-        } else if (contains(new CropKey<>(entity))) {
-            return handleHarvest(new CropKey<>(entity), level, golem, pos, entity);
+        CropKey<Block> blockKey = new CropKey<>(state.getBlock());
+        if (contains(blockKey)) {
+            return handleHarvest(blockKey, level, golem, pos, state);
+        } else {
+            BlockEntity entity = level.getBlockEntity(pos);
+            CropKey<BlockEntityType> entityKey = new CropKey<>(entity.getType());
+            if (contains(entityKey)) {
+                return handleHarvest(entityKey, level, golem, pos, entity);
+            }
         }
         return List.of();
     }
