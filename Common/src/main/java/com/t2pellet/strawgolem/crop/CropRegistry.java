@@ -16,6 +16,7 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.AABB;
@@ -42,7 +43,7 @@ public interface CropRegistry {
      *
      * @param id the block to register
      */
-    <T extends BlockEntity> void register(T id, IHarvestChecker<T> harvestChecker, IHarvestLogic<T> harvestLogic, IReplantLogic<T> replantLogic);
+    <T extends BlockEntity> void register(BlockEntityType<T> id, IHarvestChecker<T> harvestChecker, IHarvestLogic<T> harvestLogic, IReplantLogic<T> replantLogic);
 
     /**
      * Determine if crop is grown
