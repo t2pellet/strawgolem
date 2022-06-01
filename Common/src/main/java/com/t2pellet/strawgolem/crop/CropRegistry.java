@@ -147,7 +147,7 @@ public interface CropRegistry {
                 List<ItemEntity> itemList = worldIn.getEntitiesOfClass(ItemEntity.class, new AABB(pos).inflate(2.5F), e -> true);
                 return itemList.stream().map(ItemEntity::getItem).collect(Collectors.toList());
             } catch (NullPointerException ex) {
-                StrawgolemCommon.LOG.error(String.format("Golem could not harvest block at: %s", pos));
+                StrawgolemCommon.LOG.error("Golem could not harvest block at position: {}", pos);
             } finally {
                 fake.remove(Entity.RemovalReason.DISCARDED);
             }

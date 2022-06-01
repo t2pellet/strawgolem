@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.platform.services;
 
+import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.network.Packet;
 import com.t2pellet.strawgolem.network.StrawgolemPackets;
 import com.t2pellet.strawgolem.platform.Services;
@@ -16,6 +17,7 @@ public interface IPacketHandler {
 
 
     static void registerIDs() {
+        StrawgolemCommon.LOG.info("Registering packet IDs");
         for (Field declaredField : StrawgolemPackets.Client.class.getDeclaredFields()) {
             try {
                 StrawgolemPackets.PacketKey<?> id = (StrawgolemPackets.PacketKey<?>) declaredField.get(null);
@@ -38,6 +40,7 @@ public interface IPacketHandler {
      * Register client packets
      */
     static void registerClient() {
+        StrawgolemCommon.LOG.info("Registering client packets");
         for (Field declaredField : StrawgolemPackets.Client.class.getDeclaredFields()) {
             try {
                 StrawgolemPackets.PacketKey<?> id = (StrawgolemPackets.PacketKey<?>) declaredField.get(null);
@@ -52,6 +55,7 @@ public interface IPacketHandler {
      * Register server packets
      */
     static void registerServer() {
+        StrawgolemCommon.LOG.info("Registering server packets");
         for (Field declaredField : StrawgolemPackets.Common.class.getDeclaredFields()) {
             try {
                 StrawgolemPackets.PacketKey<?> id = (StrawgolemPackets.PacketKey<?>) declaredField.get(null);

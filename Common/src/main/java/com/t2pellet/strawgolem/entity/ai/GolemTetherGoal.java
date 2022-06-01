@@ -82,7 +82,7 @@ public class GolemTetherGoal<T extends PathfinderMob & IHasTether> extends MoveT
         // Set tether if unset
         if (entity.getTether().get() == Tether.TetherPos.ORIGIN) {
             // if anchor is unset, this is a new golem, set it
-            StrawgolemCommon.LOG.debug(entity.getId() + " has no anchor, setting " + entity.blockPosition());
+            StrawgolemCommon.LOG.debug("Golem {} has no anchor, setting to: {}", entity.getId(), entity.blockPosition());
             entity.getTether().set(entity.level, entity.blockPosition());
             return 0.0;
         }

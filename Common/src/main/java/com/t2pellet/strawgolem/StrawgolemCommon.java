@@ -7,13 +7,11 @@ import com.t2pellet.strawgolem.entity.capability.lifespan.Lifespan;
 import com.t2pellet.strawgolem.entity.capability.memory.Memory;
 import com.t2pellet.strawgolem.entity.capability.tether.Tether;
 import com.t2pellet.strawgolem.platform.Services;
-import com.t2pellet.strawgolem.platform.services.ICommonRegistry;
 import com.t2pellet.strawgolem.platform.services.IPacketHandler;
 import com.t2pellet.strawgolem.registry.ClientRegistry;
 import com.t2pellet.strawgolem.registry.CommonRegistry;
 import com.t2pellet.strawgolem.storage.StrawgolemSaveData;
 import com.t2pellet.strawgolem.util.io.ConfigHelper;
-import net.minecraft.core.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,9 +26,10 @@ public class StrawgolemCommon {
     public static StrawgolemSaveData data;
 
     public static void preInit() {
+        StrawgolemCommon.LOG.info("Pre-init started!");
         try {
+            LOG.info("Registering config");
             ConfigHelper.register(new StrawgolemConfig());
-            LOG.info("Registered config");
         } catch (IOException | IllegalAccessException e) {
             LOG.error("Failed to register config");
         }
@@ -42,29 +41,28 @@ public class StrawgolemCommon {
     }
 
     public static void preInitClient() {
+        StrawgolemCommon.LOG.info("Client pre-init started!");
         ClientRegistry.Particles.register();
         ClientRegistry.Entities.register();
     }
 
     public static void init() {
-        registerCrops();
+        StrawgolemCommon.LOG.info("Init started!");
         IPacketHandler.registerIDs();
         IPacketHandler.registerServer();
     }
 
     public static void initClient() {
+        StrawgolemCommon.LOG.info("Client init started!");
         IPacketHandler.registerClient();
     }
 
     private static void registerCapabilities() {
+        StrawgolemCommon.LOG.info("Registering capabilities");
         CapabilityHandler.INSTANCE.register(Hunger.class, Hunger::getInstance);
         CapabilityHandler.INSTANCE.register(Lifespan.class, Lifespan::getInstance);
         CapabilityHandler.INSTANCE.register(Memory.class, Memory::getInstance);
         CapabilityHandler.INSTANCE.register(Tether.class, Tether::getInstance);
-    }
-
-    private static void registerCrops() {
-        Registry.BLOCK.forEach(ICommonRegistry::registerCrop);
     }
 
 

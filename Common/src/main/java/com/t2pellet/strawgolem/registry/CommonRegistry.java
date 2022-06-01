@@ -24,6 +24,7 @@ public class CommonRegistry {
         public static final ResourceLocation GOLEM_DISGUSTED_ID = new ResourceLocation(StrawgolemCommon.MODID, "golem_disgusted");
 
         public static void register() {
+            StrawgolemCommon.LOG.info("Registering sounds");
             registerSounds(GOLEM_AMBIENT_ID,
                     GOLEM_STRAINED_ID,
                     GOLEM_HURT_ID,
@@ -54,6 +55,7 @@ public class CommonRegistry {
         }
 
         public static void register() {
+            StrawgolemCommon.LOG.info("Registering entities");
             STRAW_GOLEM_TYPE = Services.COMMON_REGISTRY.registerEntity("strawgolem", EntityStrawGolem::new, 0.6F, 0.9F, EntityStrawGolem::createMob);
             STRAWNG_GOLEM_TYPE = Services.COMMON_REGISTRY.registerEntity("strawnggolem", EntityStrawngGolem::new, 1.25F, 3.5F, EntityStrawngGolem::createMob);
         }
@@ -68,6 +70,7 @@ public class CommonRegistry {
         }
 
         public static void register() {
+            StrawgolemCommon.LOG.info("Registering particles");
             FLY_PARTICLE = Services.COMMON_REGISTRY.registerParticle(new ResourceLocation(StrawgolemCommon.MODID, "fly"));
         }
 

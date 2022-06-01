@@ -26,7 +26,7 @@ public class GrowthMixin {
                 cropPos = pos.offset(newState.getValue(AttachedStemBlock.FACING).getNormal());
             }
             if (CropRegistry.INSTANCE.isGrownCrop(newState) || CropRegistry.INSTANCE.isGrownCrop(world.getBlockEntity(cropPos))) {
-                StrawgolemCommon.LOG.debug("CROP GROWN");
+                StrawgolemCommon.LOG.debug("Crop grown in world: {}, at pos: {}", world.toString(), pos.toShortString());
                 StrawGolemEvents.onCropGrowth(world, cropPos, newState);
             }
         }

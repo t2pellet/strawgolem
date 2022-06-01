@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.registry;
 
+import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.client.particle.FlyParticle;
 import com.t2pellet.strawgolem.client.renderer.entity.RenderStrawGolem;
 import com.t2pellet.strawgolem.client.renderer.entity.RenderStrawngGolem;
@@ -33,6 +34,7 @@ public class ClientRegistry {
         }
 
         public static void register() {
+            StrawgolemCommon.LOG.info("Registering entity renderers");
             Services.CLIENT_REGISTRY.registerEntityRenderer(STRAW_GOLEM_TYPE, RenderStrawGolem::new, Entities::getStrawGolemModel, ModelStrawGolem.createModelData());
             Services.CLIENT_REGISTRY.registerEntityRenderer(STRAWNG_GOLEM_TYPE, RenderStrawngGolem::new, Entities::getStrawngGolemModel, ModelStrawngGolem.createModelData());
         }
@@ -41,6 +43,7 @@ public class ClientRegistry {
     public static class Particles {
 
         public static void register() {
+            StrawgolemCommon.LOG.info("Registering particle factory");
             Services.CLIENT_REGISTRY.registerParticleFactory(CommonRegistry.Particles::getFlyParticle, FlyParticle.Factory::new);
         }
 
