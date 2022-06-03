@@ -7,11 +7,13 @@ import com.t2pellet.strawgolem.entity.capability.lifespan.Lifespan;
 import com.t2pellet.strawgolem.entity.capability.memory.Memory;
 import com.t2pellet.strawgolem.entity.capability.tether.Tether;
 import com.t2pellet.strawgolem.platform.Services;
+import com.t2pellet.strawgolem.platform.services.ICommonRegistry;
 import com.t2pellet.strawgolem.platform.services.IPacketHandler;
 import com.t2pellet.strawgolem.registry.ClientRegistry;
 import com.t2pellet.strawgolem.registry.CommonRegistry;
 import com.t2pellet.strawgolem.storage.StrawgolemSaveData;
 import com.t2pellet.strawgolem.util.io.ConfigHelper;
+import net.minecraft.core.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,6 +35,7 @@ public class StrawgolemCommon {
         } catch (IOException | IllegalAccessException e) {
             LOG.error("Failed to register config");
         }
+        Registry.BLOCK.forEach(ICommonRegistry::registerCrop);
         Services.COMMON_REGISTRY.registerEvents();
         CommonRegistry.Particles.register();
         CommonRegistry.Entities.register();

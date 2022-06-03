@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.mixin;
 
+import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.crop.CropRegistry;
 import com.t2pellet.strawgolem.events.CropGrowthCallback;
 import net.minecraft.core.BlockPos;
@@ -25,6 +26,7 @@ public class GrowthMixin {
             }
             BlockEntity entity = world.getBlockEntity(cropPos);
             if (CropRegistry.INSTANCE.isGrownCrop(newState) || CropRegistry.INSTANCE.isGrownCrop(entity)) {
+                StrawgolemCommon.LOG.debug("Crop grown in world: {}, at pos: {}", world.toString(), pos.toShortString());
                 CropGrowthCallback.EVENT.invoker().grow(world, cropPos);
             }
         }

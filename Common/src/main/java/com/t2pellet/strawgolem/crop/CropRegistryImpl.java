@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.crop;
 
+import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.core.BlockPos;
@@ -21,11 +22,13 @@ class CropRegistryImpl implements CropRegistry {
 
     @Override
     public <T extends BlockState> void register(Block id, IHarvestChecker<T> harvestChecker, IHarvestLogic<T> harvestLogic, IReplantLogic<T> replantLogic) {
+        StrawgolemCommon.LOG.debug("Registering crop block: {}", id);
         entries.put(new CropKey<>(id), new CropVal<>(harvestChecker, harvestLogic, replantLogic));
     }
 
     @Override
     public <T extends BlockEntity> void register(BlockEntityType<T> id, IHarvestChecker<T> harvestChecker, IHarvestLogic<T> harvestLogic, IReplantLogic<T> replantLogic) {
+        StrawgolemCommon.LOG.debug("Registering crop block: {}", id);
         entries.put(new CropKey<>(id), new CropVal<>(harvestChecker, harvestLogic, replantLogic));
     }
 
