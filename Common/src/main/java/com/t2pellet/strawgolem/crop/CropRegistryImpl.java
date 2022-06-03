@@ -31,12 +31,12 @@ class CropRegistryImpl implements CropRegistry {
 
     @Override
     public <T extends BlockState> boolean isGrownCrop(T state) {
-        return isGrownCrop(new CropKey<>(state.getBlock()), state) && StrawgolemConfig.Harvest.isHarvestAllowed(state.getBlock());
+        return state != null && isGrownCrop(new CropKey<>(state.getBlock()), state) && StrawgolemConfig.Harvest.isHarvestAllowed(state.getBlock());
     }
 
     @Override
     public <T extends BlockEntity> boolean isGrownCrop(T block) {
-        return isGrownCrop(new CropKey<>(block.getType()), block) && StrawgolemConfig.Harvest.isHarvestAllowed(block.getBlockState().getBlock());
+        return block != null && isGrownCrop(new CropKey<>(block.getType()), block) && StrawgolemConfig.Harvest.isHarvestAllowed(block.getBlockState().getBlock());
     }
 
     public void handleReplant(Level level, BlockPos pos) {
