@@ -40,8 +40,8 @@ public class StrawgolemCommon {
         registerCapabilities();
     }
 
-    public static void preInitClient() {
-        StrawgolemCommon.LOG.info("Client pre-init started!");
+    public static void initClient() {
+        StrawgolemCommon.LOG.info("Client init started!");
         ClientRegistry.Particles.register();
         ClientRegistry.Entities.register();
     }
@@ -49,12 +49,7 @@ public class StrawgolemCommon {
     public static void init() {
         StrawgolemCommon.LOG.info("Init started!");
         IPacketHandler.registerIDs();
-        IPacketHandler.registerServer();
-    }
-
-    public static void initClient() {
-        StrawgolemCommon.LOG.info("Client init started!");
-        IPacketHandler.registerClient();
+        IPacketHandler.registerPackets();
     }
 
     private static void registerCapabilities() {

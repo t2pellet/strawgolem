@@ -4,8 +4,11 @@ import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.network.Packet;
 import com.t2pellet.strawgolem.platform.services.IPacketHandler;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +37,13 @@ public class FabricPacketHandler implements IPacketHandler {
 
     @Override
     public <T extends Packet<T>> void registerClientPacket(ResourceLocation id, Class<T> packetClass) {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            _registerClientPacket(id, packetClass);
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private <T extends Packet<T>> void _registerClientPacket(ResourceLocation id, Class<T> packetClass) {
         ClientPlayNetworking.registerGlobalReceiver(id, (client, handler, buf, responseSender) -> {
             try {
                 T packet = packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(buf);

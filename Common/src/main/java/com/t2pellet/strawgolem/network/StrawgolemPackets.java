@@ -9,19 +9,18 @@ public class StrawgolemPackets {
     }
 
     public static class Client {
-        public static final PacketKey<HealthPacket> LIFESPAN_PACKET = new PacketKey<>(HealthPacket.class, "message_lifespan");
+        public static final PacketKey<HealthPacket> HEALTH_PACKET = new PacketKey<>(HealthPacket.class, "message_health");
         public static final PacketKey<HoldingPacket> HOLDING_PACKET = new PacketKey<>(HoldingPacket.class, "message_item");
         public static final PacketKey<GreedyPacket> GREEDY_PACKET = new PacketKey<>(GreedyPacket.class, "message_greedy");
     }
 
-    public static class Common {
+    public static class Server {
     }
 
+    public static class PacketKey<T extends Packet<T>> {
 
-    public static class PacketKey<T extends Packet> {
-
-        private Class<T> clazz;
-        private ResourceLocation id;
+        private final Class<T> clazz;
+        private final ResourceLocation id;
 
         private PacketKey(Class<T> clazz, String id) {
             this.clazz = clazz;

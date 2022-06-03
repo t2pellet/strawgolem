@@ -40,7 +40,6 @@ public class StrawgolemFabric implements ModInitializer, ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        StrawgolemCommon.preInitClient();
         StrawgolemCommon.initClient();
     }
 }

@@ -7,7 +7,6 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -21,7 +20,6 @@ public class StrawgolemForge {
     public StrawgolemForge() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::onCommonSetup);
-        bus.addListener(this::onClientSetup);
         // Pre-init
         StrawgolemCommon.preInit();
         // Deferred Registers
@@ -30,7 +28,7 @@ public class StrawgolemForge {
         ForgeCommonRegistry.ENTITIES.register(bus);
         // Client pre-init
         if (FMLLoader.getDist().isClient()) {
-            StrawgolemCommon.preInitClient();
+            StrawgolemCommon.initClient();
         }
         // Save Data
         MinecraftForge.EVENT_BUS.addListener((Consumer<ServerStartingEvent>) event -> {
@@ -48,10 +46,6 @@ public class StrawgolemForge {
                 e.printStackTrace();
             }
         });
-    }
-
-    private void onClientSetup(FMLClientSetupEvent event) {
-        StrawgolemCommon.initClient();
     }
 
     private void onCommonSetup(FMLCommonSetupEvent event) {

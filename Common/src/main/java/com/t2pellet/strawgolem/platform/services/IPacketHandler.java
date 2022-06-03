@@ -12,7 +12,6 @@ import net.minecraft.world.level.Level;
 
 import java.lang.reflect.Field;
 
-@SuppressWarnings("unchecked")
 public interface IPacketHandler {
 
 
@@ -26,7 +25,7 @@ public interface IPacketHandler {
                 e.printStackTrace();
             }
         }
-        for (Field declaredField : StrawgolemPackets.Common.class.getDeclaredFields()) {
+        for (Field declaredField : StrawgolemPackets.Server.class.getDeclaredFields()) {
             try {
                 StrawgolemPackets.PacketKey<?> id = (StrawgolemPackets.PacketKey<?>) declaredField.get(null);
                 Services.PACKETS.registerPacketID(id.getId(), id.getClazz());
@@ -37,10 +36,10 @@ public interface IPacketHandler {
     }
 
     /**
-     * Register client packets
+     * Register packets
      */
-    static void registerClient() {
-        StrawgolemCommon.LOG.info("Registering client packets");
+    static void registerPackets() {
+        StrawgolemCommon.LOG.info("Registering packets");
         for (Field declaredField : StrawgolemPackets.Client.class.getDeclaredFields()) {
             try {
                 StrawgolemPackets.PacketKey<?> id = (StrawgolemPackets.PacketKey<?>) declaredField.get(null);
@@ -49,14 +48,7 @@ public interface IPacketHandler {
                 e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * Register server packets
-     */
-    static void registerServer() {
-        StrawgolemCommon.LOG.info("Registering server packets");
-        for (Field declaredField : StrawgolemPackets.Common.class.getDeclaredFields()) {
+        for (Field declaredField : StrawgolemPackets.Server.class.getDeclaredFields()) {
             try {
                 StrawgolemPackets.PacketKey<?> id = (StrawgolemPackets.PacketKey<?>) declaredField.get(null);
                 Services.PACKETS.registerServerPacket(id.getId(), id.getClazz());
