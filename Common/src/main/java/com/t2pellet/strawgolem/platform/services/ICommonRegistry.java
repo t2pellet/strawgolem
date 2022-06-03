@@ -37,7 +37,7 @@ public interface ICommonRegistry {
             }, (level, pos, input) -> level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
         } else if (block instanceof SweetBerryBushBlock) {
             CropRegistry.INSTANCE.register(block, CropRegistry.IHarvestChecker.getDefault(SweetBerryBushBlock.AGE, 3), CropRegistry.IHarvestLogic.RIGHT_CLICK, CropRegistry.IReplantLogic.getDefault(SweetBerryBushBlock.AGE, 1));
-        } else if (block instanceof BushBlock && (block instanceof BonemealableBlock || block instanceof NetherWartBlock)) {
+        } else if (block instanceof BushBlock && (block instanceof BonemealableBlock || block instanceof NetherWartBlock) && !(block instanceof StemBlock)) {
             IntegerProperty[] ageProperties = {BlockStateProperties.AGE_2, BlockStateProperties.AGE_3, BlockStateProperties.AGE_5, BlockStateProperties.AGE_7};
             Arrays.stream(ageProperties)
                     .filter(age -> block.defaultBlockState().hasProperty(age))
