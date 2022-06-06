@@ -78,7 +78,7 @@ public class ConfigHelper {
 
             case StrawgolemConfig.FILTER_MODE_BLACKLIST:
                 // prioritise blacklist
-                StrawgolemConfig.FilterMatch blacklistMatch = blockMatchesFilter(block, StrawgolemConfig.whitelist);
+                StrawgolemConfig.FilterMatch blacklistMatch = blockMatchesFilter(block, StrawgolemConfig.blacklist);
                 // if we got a blacklist match by mod, check if we're whitelisted by item
                 if (blacklistMatch == StrawgolemConfig.FilterMatch.Mod)
                     return blockMatchesFilter(block, StrawgolemConfig.whitelist) == StrawgolemConfig.FilterMatch.Exact;
