@@ -107,6 +107,9 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         if (shouldMoveTo(worldIn, pos)) {
             worldIn.playSound(null, pos, SoundEvents.BLOCK_CROP_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
             doPickup(worldIn, pos, state, block);
+            /* Update new block state, if changed in doPickup() */
+            state = worldIn.getBlockState(pos);
+            block = state.getBlock();
             doReplant(worldIn, pos, state, block);
         }
     }
@@ -152,8 +155,16 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                 worldIn.setBlockState(pos, crop.getDefaultState());
             } else if (block instanceof NetherWartBlock) {
                 worldIn.setBlockState(pos, block.getDefaultState().with(NetherWartBlock.AGE, 0));
-            } else if (state.func_235901_b_(BlockStateProperties.AGE_0_3) && block instanceof BushBlock) { // Bushes
-                worldIn.setBlockState(pos, block.getDefaultState().with(BlockStateProperties.AGE_0_3, 2));
+            } else if (block instanceof BushBlock) { // Bushes
+                if (state.func_235901_b_(BlockStateProperties.AGE_0_2) && state.get(BlockStateProperties.AGE_0_2) == 2) {
+                    worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+                } else if (state.func_235901_b_(BlockStateProperties.AGE_0_3) && state.get(BlockStateProperties.AGE_0_3) == 3) {
+                    worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+                } else if (state.func_235901_b_(BlockStateProperties.AGE_0_5) && state.get(BlockStateProperties.AGE_0_5) == 5) {
+                    worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+                } else if (state.func_235901_b_(BlockStateProperties.AGE_0_7) && state.get(BlockStateProperties.AGE_0_7) == 7) {
+                    worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+                } // else Don't change block state, doPickup() / fakePlayerClick() has already handled it
             } else {
                 worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
             }

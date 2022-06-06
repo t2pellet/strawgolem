@@ -131,9 +131,16 @@ public class CropGrowthHandler {
             } else if (state.getBlock() instanceof NetherWartBlock) {
                 return state.get(NetherWartBlock.AGE) == 3;
             } else if (state.getBlock() instanceof BushBlock
-                    && state.getBlock() instanceof IGrowable
-                    && state.func_235901_b_(BlockStateProperties.AGE_0_3)) {
-                return state.get(BlockStateProperties.AGE_0_3) == 3;
+                    && state.getBlock() instanceof IGrowable) {
+                if (state.func_235901_b_(BlockStateProperties.AGE_0_2)) {
+                    return state.get(BlockStateProperties.AGE_0_2) == 2;
+                } else if (state.func_235901_b_(BlockStateProperties.AGE_0_3)) {
+                    return state.get(BlockStateProperties.AGE_0_3) == 3;
+                } else if (state.func_235901_b_(BlockStateProperties.AGE_0_5)) {
+                    return state.get(BlockStateProperties.AGE_0_5) == 5;
+                } else if (state.func_235901_b_(BlockStateProperties.AGE_0_3)) {
+                    return state.get(BlockStateProperties.AGE_0_7) == 7;
+                }
             }
         }
         return false;
