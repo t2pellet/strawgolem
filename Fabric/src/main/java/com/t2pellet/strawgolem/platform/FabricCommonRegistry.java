@@ -43,8 +43,8 @@ public class FabricCommonRegistry implements ICommonRegistry {
     }
 
     @Override
-    public void registerSound(ResourceLocation id) {
-        Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(id));
+    public void registerSound(SoundEvent id) {
+        Registry.register(Registry.SOUND_EVENT, id.getLocation(), id);
     }
 
     @Override

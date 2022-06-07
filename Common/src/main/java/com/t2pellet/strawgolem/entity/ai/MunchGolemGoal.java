@@ -7,6 +7,8 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
 
+import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_HURT;
+
 public class MunchGolemGoal extends Goal {
 
     private static final TargetingConditions predicate = TargetingConditions.forNonCombat().selector(e -> e instanceof EntityStrawGolem).range(10.0D);
@@ -49,7 +51,7 @@ public class MunchGolemGoal extends Goal {
         } else {
             animal.playSound(SoundEvents.HORSE_EAT, 1.0F, 1.0F);
             strawGolem.hurt(DamageSource.mobAttack(animal), 0.5F);
-            strawGolem.playSound(EntityStrawGolem.GOLEM_HURT, 1.0F, 1.0F);
+            strawGolem.playSound(GOLEM_HURT, 1.0F, 1.0F);
             this.munched = true;
         }
     }

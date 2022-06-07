@@ -5,6 +5,8 @@ import com.t2pellet.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.monster.Monster;
 
+import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_SCARED;
+
 public class GolemFleeGoal extends AvoidEntityGoal<Monster> {
     private static final double SLOW_SPEED = 0.8D;
     private static final double FAST_SPEED = 1.1D;
@@ -25,7 +27,7 @@ public class GolemFleeGoal extends AvoidEntityGoal<Monster> {
     public void start() {
         this.pathNav.moveTo(this.path, SLOW_SPEED * strawGolem.getHunger().getPercentage());
         if (StrawgolemConfig.Miscellaneous.isSoundsEnabled())
-            strawGolem.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
+            strawGolem.playSound(GOLEM_SCARED, 1.0F, 1.0F);
     }
 
     @Override

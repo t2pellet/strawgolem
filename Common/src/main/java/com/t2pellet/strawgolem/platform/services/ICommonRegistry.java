@@ -1,10 +1,10 @@
 package com.t2pellet.strawgolem.platform.services;
 
 import com.t2pellet.strawgolem.crop.CropRegistry;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -19,20 +19,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_STRAINED;
+
 public interface ICommonRegistry {
 
     Supplier<ParticleType<SimpleParticleType>> registerParticle(ResourceLocation id);
 
     <T extends LivingEntity> Supplier<EntityType<T>> registerEntity(String name, EntityType.EntityFactory<T> factory, float width, float height, Supplier<AttributeSupplier.Builder> builder);
 
-    void registerSound(ResourceLocation id);
+    void registerSound(SoundEvent id);
 
     void registerEvents();
 
     static void registerCrop(Block block) {
         if (block instanceof StemGrownBlock) {
             CropRegistry.INSTANCE.register(block, input -> true, (level, golem, pos, input) -> {
-                golem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
+                golem.playSound(GOLEM_STRAINED, 1.0F, 1.0F);
                 return List.of(new ItemStack(Item.BY_BLOCK.getOrDefault(block, Items.AIR)));
             }, (level, pos, input) -> level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
         } else if (block instanceof SweetBerryBushBlock) {

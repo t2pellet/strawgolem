@@ -47,8 +47,8 @@ public class ForgeCommonRegistry implements ICommonRegistry {
     }
 
     @Override
-    public void registerSound(ResourceLocation id) {
-        SOUNDS.register(id.getPath(), () -> new SoundEvent(id));
+    public void registerSound(SoundEvent id) {
+        SOUNDS.register(id.getLocation().getPath(), () -> id);
     }
 
     @Override

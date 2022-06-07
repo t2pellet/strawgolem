@@ -50,15 +50,9 @@ import net.minecraft.world.level.block.Blocks;
 import java.util.Arrays;
 
 import static com.t2pellet.strawgolem.registry.CommonRegistry.Particles.getFlyParticle;
+import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.*;
 
 public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasTether {
-    public static final SoundEvent GOLEM_AMBIENT = new SoundEvent(CommonRegistry.Sounds.GOLEM_AMBIENT_ID);
-    public static final SoundEvent GOLEM_STRAINED = new SoundEvent(CommonRegistry.Sounds.GOLEM_STRAINED_ID);
-    public static final SoundEvent GOLEM_HURT = new SoundEvent(CommonRegistry.Sounds.GOLEM_HURT_ID);
-    public static final SoundEvent GOLEM_DEATH = new SoundEvent(CommonRegistry.Sounds.GOLEM_DEATH_ID);
-    public static final SoundEvent GOLEM_HEAL = new SoundEvent(CommonRegistry.Sounds.GOLEM_HEAL_ID);
-    public static final SoundEvent GOLEM_SCARED = new SoundEvent(CommonRegistry.Sounds.GOLEM_SCARED_ID);
-    public static final SoundEvent GOLEM_INTERESTED = new SoundEvent(CommonRegistry.Sounds.GOLEM_INTERESTED_ID);
 
     private static final ResourceLocation ResourceLocation = new ResourceLocation(StrawgolemCommon.MODID, "strawgolem");
     private static final int maxLifespan = StrawgolemConfig.Health.getLifespan() + 12000;

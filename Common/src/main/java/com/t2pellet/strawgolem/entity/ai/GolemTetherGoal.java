@@ -2,7 +2,6 @@ package com.t2pellet.strawgolem.entity.ai;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
 import com.t2pellet.strawgolem.entity.capability.hunger.IHasHunger;
 import com.t2pellet.strawgolem.entity.capability.tether.IHasTether;
 import com.t2pellet.strawgolem.entity.capability.tether.Tether;
@@ -11,6 +10,8 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
+
+import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_SCARED;
 
 public class GolemTetherGoal<T extends PathfinderMob & IHasTether> extends MoveToBlockGoal {
 
@@ -39,7 +40,7 @@ public class GolemTetherGoal<T extends PathfinderMob & IHasTether> extends MoveT
     @Override
     public void start() {
         if (StrawgolemConfig.Miscellaneous.isSoundsEnabled()) {
-            entity.playSound(EntityStrawGolem.GOLEM_SCARED, 1.0F, 1.0F);
+            entity.playSound(GOLEM_SCARED, 1.0F, 1.0F);
         }
         super.start();
     }

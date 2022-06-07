@@ -28,6 +28,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
+import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_STRAINED;
+
 public class GolemHarvestGoal extends MoveToBlockGoal {
 
     private final EntityStrawGolem strawgolem;
@@ -138,7 +140,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
             if (drop.getItem() == Items.POISONOUS_POTATO) {
                 strawgolem.addEffect(new MobEffectInstance(MobEffects.POISON, 10, 1));
             } else if (drop.getItem() instanceof BlockItem && !(drop.getItem() instanceof ItemNameBlockItem)) {
-                strawgolem.playSound(EntityStrawGolem.GOLEM_STRAINED, 1.0F, 1.0F);
+                strawgolem.playSound(GOLEM_STRAINED, 1.0F, 1.0F);
                 break;
             }
         }

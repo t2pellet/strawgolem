@@ -7,6 +7,7 @@ import com.t2pellet.strawgolem.platform.Services;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.function.Supplier;
@@ -14,30 +15,30 @@ import java.util.function.Supplier;
 public class CommonRegistry {
 
     public static class Sounds {
-        public static final ResourceLocation GOLEM_AMBIENT_ID = new ResourceLocation(StrawgolemCommon.MODID, "golem_ambient");
-        public static final ResourceLocation GOLEM_STRAINED_ID = new ResourceLocation(StrawgolemCommon.MODID, "golem_strained");
-        public static final ResourceLocation GOLEM_HURT_ID = new ResourceLocation(StrawgolemCommon.MODID, "golem_hurt");
-        public static final ResourceLocation GOLEM_DEATH_ID = new ResourceLocation(StrawgolemCommon.MODID, "golem_death");
-        public static final ResourceLocation GOLEM_HEAL_ID = new ResourceLocation(StrawgolemCommon.MODID, "golem_heal");
-        public static final ResourceLocation GOLEM_SCARED_ID = new ResourceLocation(StrawgolemCommon.MODID, "golem_scared");
-        public static final ResourceLocation GOLEM_INTERESTED_ID = new ResourceLocation(StrawgolemCommon.MODID, "golem_interested");
-        public static final ResourceLocation GOLEM_DISGUSTED_ID = new ResourceLocation(StrawgolemCommon.MODID, "golem_disgusted");
+        public static final SoundEvent GOLEM_AMBIENT = new SoundEvent(new ResourceLocation(StrawgolemCommon.MODID, "golem_ambient"));
+        public static final SoundEvent GOLEM_STRAINED = new SoundEvent(new ResourceLocation(StrawgolemCommon.MODID, "golem_strained"));
+        public static final SoundEvent GOLEM_HURT = new SoundEvent(new ResourceLocation(StrawgolemCommon.MODID, "golem_hurt"));
+        public static final SoundEvent GOLEM_DEATH = new SoundEvent(new ResourceLocation(StrawgolemCommon.MODID, "golem_death"));
+        public static final SoundEvent GOLEM_HEAL = new SoundEvent(new ResourceLocation(StrawgolemCommon.MODID, "golem_heal"));
+        public static final SoundEvent GOLEM_SCARED = new SoundEvent(new ResourceLocation(StrawgolemCommon.MODID, "golem_scared"));
+        public static final SoundEvent GOLEM_INTERESTED = new SoundEvent(new ResourceLocation(StrawgolemCommon.MODID, "golem_interested"));
+        public static final SoundEvent GOLEM_DISGUSTED = new SoundEvent(new ResourceLocation(StrawgolemCommon.MODID, "golem_disgusted"));
 
         public static void register() {
             StrawgolemCommon.LOG.info("Registering sounds");
-            registerSounds(GOLEM_AMBIENT_ID,
-                    GOLEM_STRAINED_ID,
-                    GOLEM_HURT_ID,
-                    GOLEM_DEATH_ID,
-                    GOLEM_HEAL_ID,
-                    GOLEM_SCARED_ID,
-                    GOLEM_INTERESTED_ID,
-                    GOLEM_DISGUSTED_ID);
+            registerSounds(GOLEM_AMBIENT,
+                    GOLEM_STRAINED,
+                    GOLEM_HURT,
+                    GOLEM_DEATH,
+                    GOLEM_HEAL,
+                    GOLEM_SCARED,
+                    GOLEM_INTERESTED,
+                    GOLEM_DISGUSTED);
         }
 
-        private static void registerSounds(ResourceLocation... ids) {
-            for (ResourceLocation id : ids) {
-                Services.COMMON_REGISTRY.registerSound(id);
+        private static void registerSounds(SoundEvent... events) {
+            for (SoundEvent event : events) {
+                Services.COMMON_REGISTRY.registerSound(event);
             }
         }
     }

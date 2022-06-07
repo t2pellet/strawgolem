@@ -11,6 +11,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 
+import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_INTERESTED;
+
 public class GolemTemptGoal extends TemptGoal {
 
     private static final double SPEED = 0.8D;
@@ -31,7 +33,7 @@ public class GolemTemptGoal extends TemptGoal {
     public void start() {
         super.start();
         if (StrawgolemConfig.Miscellaneous.isSoundsEnabled())
-            strawGolem.playSound(EntityStrawGolem.GOLEM_INTERESTED, 1.0F, 1.0F);
+            strawGolem.playSound(GOLEM_INTERESTED, 1.0F, 1.0F);
         Services.PACKETS.sendInRange(new GreedyPacket(strawGolem, true), strawGolem, 25.0F);
     }
 
