@@ -22,7 +22,7 @@ public class StrawgolemConfig extends Config {
     public static class Creation {
 
         @Section.Comment("Whether creating golems is enabled")
-        private static boolean golemConstructionEnabled;
+        private static boolean golemConstructionEnabled = true;
         @Section.Comment("Allow constructing head by shearing a pumpkin")
         private static boolean shearConstructionEnabled = true;
         @Section.Comment("Potential head blocks to make a golem")
