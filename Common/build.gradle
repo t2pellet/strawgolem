@@ -35,6 +35,13 @@ processResources {
         expand buildProps
     }
 }
+
+build {
+    exec {
+        commandLine "echo", "##[set-output name=version;]${rootProject.version}"
+    }
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
