@@ -38,6 +38,9 @@ processResources {
 
 build {
     exec {
+        commandLine "echo", "##[set-output name=gameVersion;]${minecraft_version}"
+    }
+    exec {
         commandLine "echo", "##[set-output name=version;]${rootProject.version}"
     }
 }
