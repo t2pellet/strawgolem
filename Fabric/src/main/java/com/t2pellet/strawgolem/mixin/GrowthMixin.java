@@ -27,7 +27,7 @@ public class GrowthMixin {
             BlockEntity entity = world.getBlockEntity(cropPos);
             if (CropRegistry.INSTANCE.isGrownCrop(newState) || CropRegistry.INSTANCE.isGrownCrop(entity)) {
                 StrawgolemCommon.LOG.debug("Crop grown in world: {}, at pos: {}", world.toString(), pos.toShortString());
-                CropGrowthCallback.EVENT.invoker().grow(world, cropPos);
+                world.getServer().execute(() -> CropGrowthCallback.EVENT.invoker().grow(world, pos));
             }
         }
     }
