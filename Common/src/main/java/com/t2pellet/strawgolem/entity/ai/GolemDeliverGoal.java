@@ -8,13 +8,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class GolemDeliverGoal extends MoveToBlockGoal {
     private final EntityStrawGolem strawGolem;
@@ -50,8 +52,9 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean isValidTarget(LevelReader worldIn, BlockPos pos) {
-        return (worldIn.getBlockState(pos).getBlock() != Blocks.AIR &&
-                (worldIn.getBlockEntity(pos) instanceof BaseContainerBlockEntity));
+        BlockEntity be = worldIn.getBlockEntity(pos);
+        Block b = worldIn.getBlockState(pos).getBlock();
+        return be instanceof Container && StrawgolemConfig.Delivery.isDeliveryAllowed(b);
     }
 
     @Override

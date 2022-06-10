@@ -121,7 +121,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         /* If its the right block to harvest */
         if (isValidTarget(worldIn, pos)) {
             worldIn.playSound(null, pos, SoundEvents.CROP_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
-            if (StrawgolemConfig.Harvest.isDeliveryEnabled()) pickupCrop(worldIn, pos);
+            if (StrawgolemConfig.Delivery.isDeliveryEnabled()) pickupCrop(worldIn, pos);
             if (StrawgolemConfig.Harvest.isReplantEnabled()) replantCrop(worldIn, pos);
             else worldIn.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         }

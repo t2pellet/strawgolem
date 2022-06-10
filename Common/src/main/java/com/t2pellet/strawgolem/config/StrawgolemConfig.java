@@ -51,8 +51,7 @@ public class StrawgolemConfig extends Config {
     public static class Harvest {
         @Section.Comment("Enables golems replanting crops")
         private static boolean replantEnabled = true;
-        @Section.Comment("Enables golems delivering crops to a chest")
-        private static boolean deliveryEnabled = true;
+
         @Section.Comment("The range of crops golems can detect")
         private static int searchRange = 24;
 
@@ -69,12 +68,27 @@ public class StrawgolemConfig extends Config {
             return replantEnabled;
         }
 
+        public static int getSearchRange() {
+            return searchRange;
+        }
+    }
+
+    @Section("Delivering")
+    public static class Delivery {
+        @Section.Comment("Enables golems delivering crops to a chest")
+        private static boolean deliveryEnabled = true;
+
+        @Section.Comment("The golem filtration mode. Enter 'whitelist' or 'blacklist'")
+        private static String filterMode = FILTER_MODE_BLACKLIST;
+        @Section.Comment("Format Example: whitelist = [minecraft:carrots,minecraft:wheat]")
+        private static List<String> filterList = List.of("quark:pipe");
+
         public static boolean isDeliveryEnabled() {
             return deliveryEnabled;
         }
 
-        public static int getSearchRange() {
-            return searchRange;
+        public static boolean isDeliveryAllowed(Block block) {
+            return blockMatchesFilter(block, filterList, filterMode.equals(FILTER_MODE_BLACKLIST));
         }
     }
 

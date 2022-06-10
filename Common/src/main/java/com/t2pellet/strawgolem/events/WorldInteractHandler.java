@@ -89,8 +89,10 @@ public class WorldInteractHandler {
     public static InteractionResult setPriorityChest(Player Player, Level world, InteractionHand hand, BlockHitResult blockHitResult) {
         if (!world.isClientSide) {
             BlockEntity blockEntity = world.getBlockEntity(blockHitResult.getBlockPos());
+            Block block = world.getBlockState(blockHitResult.getBlockPos()).getBlock();
             if (hand == InteractionHand.MAIN_HAND
                     && blockEntity instanceof Container
+                    && StrawgolemConfig.Delivery.isDeliveryAllowed(block)
                     && Player.isShiftKeyDown()
                     && Player.getMainHandItem().isEmpty()
                     && playerToGolemMap.containsKey(Player.getUUID())) {
@@ -107,7 +109,7 @@ public class WorldInteractHandler {
                         StrawgolemCommon.LOG.debug(golem.getId() + " setting new anchor " + anchorPos);
                         golem.getTether().set(golem.level, anchorPos);
                     }
-                    return InteractionResult.FAIL;
+                    return InteractionResult.CONSUME;
                 }
             }
         }
