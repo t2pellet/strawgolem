@@ -8,8 +8,12 @@ import com.t2pellet.strawgolem.entity.ai.TrackStrawngGolemTargetGoal;
 import com.t2pellet.strawgolem.entity.capability.CapabilityHandler;
 import com.t2pellet.strawgolem.entity.capability.tether.IHasTether;
 import com.t2pellet.strawgolem.entity.capability.tether.Tether;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -21,7 +25,9 @@ import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class EntityStrawngGolem extends AbstractGolem implements IHasTether {
 
@@ -81,6 +87,27 @@ public class EntityStrawngGolem extends AbstractGolem implements IHasTether {
         this.attackAnimationTick = 10;
         this.level.broadcastEntityEvent(this, (byte) 4);
         return super.doHurtTarget(target);
+    }
+
+    @Override
+    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
+        if (player.getItemInHand(hand).getItem() == Items.WHEAT && !level.isClientSide()) {
+            setHealth(getHealth() + 0.5F);
+            if (!player.isCreative()) player.getItemInHand(hand).shrink(1);
+            // Feedback
+            playSound(SoundEvents.GRASS_STEP, 0.5F, 1.0F);
+            spawnHealParticles(getX(), getY(), getZ());
+            // Result
+            return InteractionResult.CONSUME;
+        }
+        return super.interactAt(player, vec, hand);
+    }
+
+    private void spawnHealParticles(double x, double y, double z) {
+        level.addParticle(
+                ParticleTypes.HEART,
+                x + random.nextDouble() - 0.5, y + 0.4D, z + random.nextDouble() - 0.5,
+                this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
     }
 
     @Override
