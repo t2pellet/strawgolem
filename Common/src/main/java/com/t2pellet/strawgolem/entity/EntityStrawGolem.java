@@ -46,6 +46,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.StemGrownBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
 
 import java.util.Arrays;
 
@@ -267,6 +272,20 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     public boolean hurt(DamageSource source, float amount) {
         if (source == DamageSource.SWEET_BERRY_BUSH) return false;
         return super.hurt(source, amount);
+    }
+
+    @Override
+    public boolean isInWall() {
+        if (this.noPhysics) {
+            return false;
+        } else {
+            float scaledWidth = this.getDimensions(Pose.STANDING).width * 0.8F;
+            AABB headBounds = AABB.ofSize(this.getEyePosition(), scaledWidth, 1.0E-6D, scaledWidth);
+            return BlockPos.betweenClosedStream(headBounds).anyMatch((pos) -> {
+                BlockState state = this.level.getBlockState(pos);
+                return !state.isAir() && state.isSuffocating(this.level, pos) && Shapes.joinIsNotEmpty(state.getCollisionShape(this.level, pos).move((double) pos.getX(), (double) pos.getY(), (double) pos.getZ()), Shapes.create(headBounds), BooleanOp.AND) && !(state.getBlock() instanceof StemGrownBlock);
+            });
+        }
     }
 
     @Override
