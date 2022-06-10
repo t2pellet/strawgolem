@@ -28,6 +28,10 @@ jobs:
       - name: "Build with Gradle"
         id: build
         run: "chmod +x gradlew && ./gradlew build"
+      - name: "Create Tag"
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: "v${{steps.build.outputs.version}}"
       - name: Get Changelog
         id: github_release
         uses: mikepenz/release-changelog-builder-action@v3
