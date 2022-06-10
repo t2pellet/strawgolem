@@ -28,20 +28,25 @@ jobs:
       - name: "Build with Gradle"
         id: build
         run: "chmod +x gradlew && ./gradlew build"
-      - name: Get Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v3
+      - name: "Create Tag"
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: "v${{steps.build.outputs.version}}-${{steps.build.outputs.gameVersion}}"
+      - name: Get changelog
+        uses: Bullrich/generate-release-changelog@master
+        id: changelog
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
       - name: "Create Release"
         uses: actions/create-release@v1
         id: create_release
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
-          tag_name: "v${{ steps.build.outputs.version }}"
+          tag_name: "v${{ steps.build.outputs.version }}-${{steps.build.outputs.gameVersion}}"
           release_name: "strawgolem-${{ steps.build.outputs.version }}"
-          body: "${{steps.github_release.outputs.changelog}}"
+          body: |
+            ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: "${{ inputs.releaseType != 'release' }}"
       - name: "Upload Fabric Release Assets"
@@ -66,7 +71,7 @@ jobs:
           display_name: "strawgolem-${{steps.build.outputs.gameVersion}}-${{steps.build.outputs.version}}"
           changelog: "${{steps.github_release.outputs.changelog}}"
           relations: "fabric-api:requiredDependency"
-          game_versions: "${{steps.build.outputs.gameVersion}},Java 17,Fabric"
+          game_versions: "Minecraft ${{steps.build.outputs.gameVersion}}:${{steps.build.outputs.gameVersion}},Java 17,Fabric"
           release_type: "${{ inputs.releaseType }}"
           project_id: "449768"
           token: "${{ secrets.CF_API_TOKEN }}"
@@ -77,7 +82,7 @@ jobs:
           game_endpoint: "minecraft"
           display_name: "strawgolem-${{steps.build.outputs.gameVersion}}-${{steps.build.outputs.version}}"
           changelog: "${{steps.github_release.outputs.changelog}}"
-          game_versions: "${{steps.build.outputs.gameVersion}},Java 17,Forge"
+          game_versions: "Minecraft ${{steps.build.outputs.gameVersion}}:${{steps.build.outputs.gameVersion}},Java 17,Forge"
           release_type: "${{ inputs.releaseType }}"
           project_id: "387580"
           token: "${{ secrets.CF_API_TOKEN }}"
