@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.entity.ai;
 
+import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -28,7 +29,8 @@ public class PickupGolemGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (this.golemEntity.level.isDay()
+        if (StrawgolemConfig.Miscellaneous.isGolemInteract()
+                && this.golemEntity.level.isDay()
                 && this.golemEntity.getRandom().nextInt(6000) == 0
                 && this.golemEntity.getVehicle() == null) {
             if (cooldownTime > 0) {

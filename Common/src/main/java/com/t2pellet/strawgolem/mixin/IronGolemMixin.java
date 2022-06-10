@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.mixin;
 
+import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.ai.PickupGolemGoal;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -19,7 +20,9 @@ public class IronGolemMixin extends Mob {
 
     @Inject(method = "registerGoals", at = @At("TAIL"))
     public void registerGoals(CallbackInfo ci) {
-        goalSelector.addGoal(2, new PickupGolemGoal((IronGolem) (Object) this, 0.8D));
+        if (StrawgolemConfig.Miscellaneous.isGolemInteract()) {
+            goalSelector.addGoal(2, new PickupGolemGoal((IronGolem) (Object) this, 0.8D));
+        }
     }
 
 

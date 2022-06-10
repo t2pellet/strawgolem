@@ -14,10 +14,14 @@ public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
 
     @Override
     public void register(IRegistrar registrar) {
-        StrawgolemCommon.LOG.info("Registering StrawGolem HWYLA Compat");
-        registrar.addConfig(LIFESPAN, StrawgolemConfig.Health.getLifespan() > 0);
-        registrar.addConfig(HUNGER, StrawgolemConfig.Health.getHunger() > 0);
-        registrar.addComponent(this, TooltipPosition.BODY, EntityStrawGolem.class);
+        if (StrawgolemConfig.Miscellaneous.isEnableHwyla()) {
+            StrawgolemCommon.LOG.info("Registering Strawgolem HWYLA Compat");
+            registrar.addConfig(LIFESPAN, StrawgolemConfig.Health.getLifespan() > 0);
+            registrar.addConfig(HUNGER, StrawgolemConfig.Health.getHunger() > 0);
+            registrar.addComponent(this, TooltipPosition.BODY, EntityStrawGolem.class);
+        } else {
+            StrawgolemCommon.LOG.info("Strawgolem HWYLA compat is disabled");
+        }
     }
 
     @Override
