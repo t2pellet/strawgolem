@@ -92,7 +92,7 @@ public class FabricPacketHandler implements IPacketHandler {
 
     @Override
     public <T extends Packet<T>> void sendInRange(Packet<T> packet, Entity e, float range) {
-        sendInArea(packet, e.getLevel(), e.blockPosition(), range);
+        sendInArea(packet, e.level, e.blockPosition(), range);
     }
 
     @Override

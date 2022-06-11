@@ -39,7 +39,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean findNearestBlock() {
-        BlockPos pos = strawGolem.getMemory().getDeliveryChest(strawGolem.getLevel(), strawGolem.blockPosition());
+        BlockPos pos = strawGolem.getMemory().getDeliveryChest(strawGolem.level, strawGolem.blockPosition());
         if (isValidTarget(strawGolem.level, pos)) {
             this.blockPos = pos;
             return true;
@@ -68,7 +68,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
         if (!strawGolem.isRunningGoal(GolemLookAtPlayerGoal.class)) {
             this.strawGolem.getLookControl().setLookAt(Vec3.atCenterOf(this.blockPos));
         }
-        if (!this.blockPos.closerToCenterThan(this.mob.position(), this.acceptedDistance())) {
+        if (!this.blockPos.closerThan(this.mob.position(), this.acceptedDistance())) {
             ++this.tryTicks;
             if (this.canContinueToUse()) {
                 double moveSpeed = strawGolem.holdingFullBlock() ? speedModifier * 2 / 3F : speedModifier;

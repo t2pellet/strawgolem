@@ -155,7 +155,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
      * @return true if the golem is in the cold, false otherwise
      */
     public boolean isInCold() {
-        return level.getBiome(blockPosition()).value().getBaseTemperature() < 0.15F;
+        return level.getBiome(blockPosition()).getBaseTemperature() < 0.15F;
     }
 
     /* Interaction */

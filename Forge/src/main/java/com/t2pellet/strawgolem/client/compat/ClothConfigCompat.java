@@ -9,8 +9,8 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.impl.builders.*;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.client.ConfigGuiHandler;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fmlclient.ConfigGuiHandler;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
