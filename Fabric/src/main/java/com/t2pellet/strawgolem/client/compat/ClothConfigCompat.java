@@ -9,8 +9,7 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.impl.builders.*;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -37,10 +36,10 @@ public class ClothConfigCompat implements ModMenuApi {
 
     /* Disgusting code */
     private static ConfigBuilder createConfigBuilder() throws IllegalAccessException {
-        ConfigBuilder builder = ConfigBuilder.create().setTitle(new TranslatableComponent("title.strawgolem.config"));
+        ConfigBuilder builder = ConfigBuilder.create().setTitle(Component.translatable("title.strawgolem.config"));
         for (Class<?> declaredClass : StrawgolemConfig.class.getDeclaredClasses()) {
             String categoryName = declaredClass.getSimpleName();
-            ConfigCategory category = builder.getOrCreateCategory(new TextComponent(categoryName));
+            ConfigCategory category = builder.getOrCreateCategory(Component.literal(categoryName));
             ConfigEntryBuilder entryBuilder = ConfigEntryBuilder.create();
             for (Field declaredField : declaredClass.getDeclaredFields()) {
                 declaredField.setAccessible(true);
@@ -49,27 +48,27 @@ public class ClothConfigCompat implements ModMenuApi {
                     comment = declaredField.getAnnotation(ConfigHelper.Section.Comment.class);
                 }
                 if (String.class.isAssignableFrom(declaredField.getType())) {
-                    StringFieldBuilder fieldBuilder = entryBuilder.startStrField(new TextComponent(declaredField.getName()), (String) declaredField.get(null))
+                    StringFieldBuilder fieldBuilder = entryBuilder.startStrField(Component.literal(declaredField.getName()), (String) declaredField.get(null))
                             .setDefaultValue((String) declaredField.get(null))
                             .setSaveConsumer(s -> setField(declaredField, s));
                     if (comment != null) {
-                        fieldBuilder.setTooltip(new TextComponent(comment.value()));
+                        fieldBuilder.setTooltip(Component.literal(comment.value()));
                     }
                     category.addEntry(fieldBuilder.build());
                 } else if (Integer.TYPE.isAssignableFrom(declaredField.getType())) {
-                    IntFieldBuilder fieldBuilder = entryBuilder.startIntField(new TextComponent(declaredField.getName()), (int) declaredField.get(null))
+                    IntFieldBuilder fieldBuilder = entryBuilder.startIntField(Component.literal(declaredField.getName()), (int) declaredField.get(null))
                             .setDefaultValue((int) declaredField.get(null))
                             .setSaveConsumer(i -> setField(declaredField, i));
                     if (comment != null) {
-                        fieldBuilder.setTooltip(new TextComponent(comment.value()));
+                        fieldBuilder.setTooltip(Component.literal(comment.value()));
                     }
                     category.addEntry(fieldBuilder.build());
                 } else if (Boolean.TYPE.isAssignableFrom(declaredField.getType())) {
-                    BooleanToggleBuilder toggleBuilder = entryBuilder.startBooleanToggle(new TextComponent(declaredField.getName()), (boolean) declaredField.get(null))
+                    BooleanToggleBuilder toggleBuilder = entryBuilder.startBooleanToggle(Component.literal(declaredField.getName()), (boolean) declaredField.get(null))
                             .setDefaultValue((boolean) declaredField.get(null))
                             .setSaveConsumer(b -> setField(declaredField, b));
                     if (comment != null) {
-                        toggleBuilder.setTooltip(new TextComponent(comment.value()));
+                        toggleBuilder.setTooltip(Component.literal(comment.value()));
                     }
                     category.addEntry(toggleBuilder.build());
                 } else if (List.class.isAssignableFrom(declaredField.getType())) {
@@ -77,21 +76,21 @@ public class ClothConfigCompat implements ModMenuApi {
                     if (listType instanceof ParameterizedType parameterizedType) {
                         Class<?> type = (Class<?>) parameterizedType.getActualTypeArguments()[0];
                         if (String.class.isAssignableFrom(type)) {
-                            StringListBuilder stringListBuilder = entryBuilder.startStrList(new TextComponent(declaredField.getName()), (List<String>) declaredField.get(null))
+                            StringListBuilder stringListBuilder = entryBuilder.startStrList(Component.literal(declaredField.getName()), (List<String>) declaredField.get(null))
                                     .setDefaultValue((List<String>) declaredField.get(null))
                                     .setSaveConsumer(l -> setField(declaredField, l));
                             if (comment != null) {
-                                stringListBuilder.setTooltip(new TextComponent(comment.value()));
+                                stringListBuilder.setTooltip(Component.literal(comment.value()));
                             }
                             category.addEntry(stringListBuilder.build());
                         }
                     }
                 } else if (Double.TYPE.isAssignableFrom(declaredField.getType())) {
-                    DoubleFieldBuilder fieldBuilder = entryBuilder.startDoubleField(new TextComponent(declaredField.getName()), (double) declaredField.get(null))
+                    DoubleFieldBuilder fieldBuilder = entryBuilder.startDoubleField(Component.literal(declaredField.getName()), (double) declaredField.get(null))
                             .setDefaultValue((double) declaredField.get(null))
                             .setSaveConsumer(d -> setField(declaredField, d));
                     if (comment != null) {
-                        fieldBuilder.setTooltip(new TextComponent(comment.value()));
+                        fieldBuilder.setTooltip(Component.literal(comment.value()));
                     }
                     category.addEntry(fieldBuilder.build());
                 }
