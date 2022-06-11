@@ -7,7 +7,6 @@ import com.t2pellet.strawgolem.registry.CommonRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -100,7 +99,7 @@ public class WorldInteractHandler {
                 if (golem != null) {
                     golem.getMemory().setPriorityChest(blockHitResult.getBlockPos());
                     golem.getMemory().addPosition(world, blockHitResult.getBlockPos());
-                    Component text = new TranslatableComponent("strawgolem.deliver", golem.getDisplayName().getString());
+                    Component text = Component.translatable("strawgolem.deliver", golem.getDisplayName().getString());
                     Player.displayClientMessage(text, true);
                     playerToGolemMap.remove(Player.getUUID());
                     // Tether to the priority chest
