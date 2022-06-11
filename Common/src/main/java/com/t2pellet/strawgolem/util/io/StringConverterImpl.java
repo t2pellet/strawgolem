@@ -17,14 +17,20 @@ class StringConverterImpl implements StringConverter {
 
     @SuppressWarnings("unchecked")
     public <T> T convert(Class<T> clazz) {
-        return switch (clazz.getTypeName()) {
-            case INTEGER -> (T) (Object) Integer.parseInt(value);
-            case BOOLEAN -> (T) (Object) Boolean.parseBoolean(value);
-            case FLOAT -> (T) (Object) Float.parseFloat(value);
-            case DOUBLE -> (T) (Object) Double.parseDouble(value);
-            case STRING -> (T) value;
-            default -> throw new IllegalArgumentException("Cannot convert to type: " + clazz.getTypeName());
-        };
+        switch (clazz.getTypeName()) {
+            case INTEGER:
+                return (T) (Object) Integer.parseInt(value);
+            case BOOLEAN:
+                return (T) (Object) Boolean.parseBoolean(value);
+            case FLOAT:
+                return (T) (Object) Float.parseFloat(value);
+            case DOUBLE:
+                return (T) (Object) Double.parseDouble(value);
+            case STRING:
+                return (T) value;
+            default:
+                throw new IllegalArgumentException("Cannot convert to type: " + clazz.getTypeName());
+        }
     }
 
 }

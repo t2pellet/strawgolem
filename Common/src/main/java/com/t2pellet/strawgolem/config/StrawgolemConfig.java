@@ -71,7 +71,7 @@ public class StrawgolemConfig extends Config {
         @Section.Comment("The golem filtration mode. Enter 'whitelist' or 'blacklist'")
         private static String filterMode = FILTER_MODE_BLACKLIST;
         @Section.Comment("Format Example: whitelist = [minecraft:carrots,minecraft:wheat]")
-        private static List<String> filterList = List.of("quark:pipe");
+        private static List<String> filterList = new ArrayList<>();
 
         public static boolean isDeliveryEnabled() {
             return deliveryEnabled;

@@ -13,7 +13,7 @@ import java.util.EnumSet;
  */
 public class PickupGolemGoal extends Goal {
 
-    private static final TargetingConditions predicate = TargetingConditions.forNonCombat().selector(e -> e instanceof StrawGolem).range(10.0D);
+    private static final TargetingConditions predicate = TargetingConditions.DEFAULT.allowNonAttackable().selector(e -> e instanceof StrawGolem).range(10.0D);
     private final double speed;
     private final AbstractGolem golemEntity;
     private StrawGolem strawGolem;

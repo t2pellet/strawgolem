@@ -10,9 +10,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -83,7 +83,7 @@ public class ForgePacketHandler implements IPacketHandler {
 
     @Override
     public <T extends Packet<T>> void sendInRange(Packet<T> packet, Entity e, float range) {
-        sendInArea(packet, e.getLevel(), e.blockPosition(), range);
+        sendInArea(packet, e.level, e.blockPosition(), range);
     }
 
     @Override

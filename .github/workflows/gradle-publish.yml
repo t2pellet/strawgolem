@@ -26,9 +26,9 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v2
         with: { fetch-depth: 0 }
-      - name: "Setup JDK 17"
+      - name: "Setup JDK 11"
         uses: actions/setup-java@v2
-        with: { distribution: "adopt", java-version: "17" }
+        with: { distribution: "adopt", java-version: "11" }
       - name: "Build with Gradle"
         id: build
         run: "chmod +x gradlew && ./gradlew build"
@@ -70,7 +70,7 @@ jobs:
       - name: "Upload Fabric to CurseForge"
         uses: itsmeow/curseforge-upload@v3
         with:
-          file_path: "Fabric/build/libs/Strawgolem-fabric-${{ steps.build.outputs.gameVersion }}-${{ steps.build.outputs.version }}.jar"
+          file_path: "Fabric/build/libs/strawgolem-${{ steps.build.outputs.version }}.jar"
           game_endpoint: "minecraft"
           display_name: "strawgolem-${{steps.build.outputs.gameVersion}}-${{steps.build.outputs.version}}"
           changelog: |
@@ -83,7 +83,7 @@ jobs:
       - name: "Upload Forge to CurseForge"
         uses: itsmeow/curseforge-upload@v3
         with:
-          file_path: "Forge/build/libs/Strawgolem-forge-${{ steps.build.outputs.gameVersion }}-${{ steps.build.outputs.version }}.jar"
+          file_path: "Forge/build/libs/strawgolem-${{ steps.build.outputs.version }}.jar"
           game_endpoint: "minecraft"
           display_name: "strawgolem-${{steps.build.outputs.gameVersion}}-${{steps.build.outputs.version}}"
           changelog: |

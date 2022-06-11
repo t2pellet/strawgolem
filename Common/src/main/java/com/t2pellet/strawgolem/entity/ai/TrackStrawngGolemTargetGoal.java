@@ -14,7 +14,7 @@ import java.util.List;
 public class TrackStrawngGolemTargetGoal extends TargetGoal {
     private final StrawngGolem golem;
     private LivingEntity target;
-    private final TargetingConditions targetPredicate = TargetingConditions.forNonCombat().range(48.0D);
+    private final TargetingConditions targetPredicate = TargetingConditions.DEFAULT.allowNonAttackable().range(48.0D);
 
     public TrackStrawngGolemTargetGoal(StrawngGolem golem) {
         super(golem, false, true);

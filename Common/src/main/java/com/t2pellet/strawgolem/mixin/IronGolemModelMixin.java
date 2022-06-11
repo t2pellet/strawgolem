@@ -17,30 +17,30 @@ public class IronGolemModelMixin {
 
     @Shadow
     @Final
-    private ModelPart rightArm;
+    private ModelPart arm0;
     @Shadow
     @Final
-    private ModelPart leftArm;
+    private ModelPart arm1;
 
     @Inject(method = "prepareMobModel", at = @At("HEAD"), cancellable = true)
     private void prepareMobModel(IronGolem entity, float f, float g, float h, CallbackInfo ci) {
         int i = entity.getAttackAnimationTick();
         if (i > 0) {
-            this.rightArm.xRot = -2.0F + 1.5F * Mth.triangleWave((float) i - h, 10.0F);
-            this.leftArm.xRot = -2.0F + 1.5F * Mth.triangleWave((float) i - h, 10.0F);
+            this.arm0.xRot = -2.0F + 1.5F * Mth.triangleWave((float) i - h, 10.0F);
+            this.arm1.xRot = -2.0F + 1.5F * Mth.triangleWave((float) i - h, 10.0F);
         } else {
             int j = entity.getOfferFlowerTick();
             if (j > 0) {
-                this.rightArm.xRot = -0.8F + 0.025F * Mth.triangleWave((float) j, 70.0F);
-                this.leftArm.xRot = 0.0F;
-            } else if (entity.hasPassenger(e -> e instanceof StrawGolem) && entity.getPassengers().size() == 1) {
-                leftArm.xRot = -0.45F * (float) Math.PI;
-                rightArm.xRot = -0.45F * (float) Math.PI;
-                leftArm.yRot = 0.18F;
-                rightArm.yRot = -0.18F;
+                this.arm0.xRot = -0.8F + 0.025F * Mth.triangleWave((float) j, 70.0F);
+                this.arm1.xRot = 0.0F;
+            } else if (entity.hasPassenger(StrawGolem.class) && entity.getPassengers().size() == 1) {
+                arm1.xRot = -0.45F * (float) Math.PI;
+                arm0.xRot = -0.45F * (float) Math.PI;
+                arm1.yRot = 0.18F;
+                arm0.yRot = -0.18F;
             } else {
-                this.rightArm.xRot = (-0.2F + 1.5F * Mth.triangleWave(f, 13.0F)) * g;
-                this.leftArm.xRot = (-0.2F - 1.5F * Mth.triangleWave(f, 13.0F)) * g;
+                this.arm0.xRot = (-0.2F + 1.5F * Mth.triangleWave(f, 13.0F)) * g;
+                this.arm1.xRot = (-0.2F - 1.5F * Mth.triangleWave(f, 13.0F)) * g;
             }
         }
         ci.cancel();

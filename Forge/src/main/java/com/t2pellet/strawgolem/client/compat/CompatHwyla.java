@@ -7,6 +7,7 @@ import mcp.mobius.waila.api.*;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
+@WailaPlugin(id = StrawgolemCommon.MODID)
 public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
 
     private static final ResourceLocation LIFESPAN = new ResourceLocation(StrawgolemCommon.MODID, "lifespan");
@@ -28,7 +29,7 @@ public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
     public void appendBody(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
         if (accessor.getEntity() instanceof StrawGolem) {
             StrawGolem golem = accessor.getEntity();
-            if (config.getBoolean(LIFESPAN) && StrawgolemConfig.Health.getLifespan() > 0) {
+            if (config.get(LIFESPAN) && StrawgolemConfig.Health.getLifespan() > 0) {
                 float daysLeftLife = golem.getLifespan().get() / 24000F;
                 if (daysLeftLife >= 1) {
                     tooltip.add(new TranslatableComponent("strawgolem.lifespan", Math.round(daysLeftLife)));
@@ -38,7 +39,7 @@ public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
                     tooltip.add(new TranslatableComponent("strawgolem.lifespan", "<1"));
                 }
             }
-            if (config.getBoolean(HUNGER) && StrawgolemConfig.Health.getHunger() > 0) {
+            if (config.get(HUNGER) && StrawgolemConfig.Health.getHunger() > 0) {
                 float hungerLeft = golem.getHunger().get();
                 if (hungerLeft >= StrawgolemConfig.Health.getHunger()) {
                     tooltip.add(new TranslatableComponent("strawgolem.hunger", "Not At All Hungry"));

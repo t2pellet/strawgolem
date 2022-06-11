@@ -24,24 +24,24 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
     private PosTree tree;
 
     WorldCropsImpl(Level level) {
+        super(WorldCrops.DATA_KEY);
         tree = PosTree.create();
         this.level = level;
     }
 
-    static WorldCropsImpl load(Level level, CompoundTag tag) {
+    @Override
+    public void load(CompoundTag tag) {
         StrawgolemCommon.LOG.info("Loading strawgolem save data");
 
-        WorldCropsImpl crops = new WorldCropsImpl(level);
-        if (!tag.contains(TAG_VERSION) || tag.getInt(TAG_VERSION) != VERSION) return crops;
+        if (!tag.contains(TAG_VERSION) || tag.getInt(TAG_VERSION) != VERSION) return;
 
-        ListTag positions = tag.getList(TAG_POS, Tag.TAG_COMPOUND);
+        ListTag positions = tag.getList(TAG_POS, 10);
         for (Tag position : positions) {
             BlockPos pos = NbtUtils.readBlockPos((CompoundTag) position);
             if (CropRegistry.INSTANCE.isGrownCrop(level, pos)) {
-                crops.addCrop(pos);
+                addCrop(pos);
             }
         }
-        return crops;
     }
 
     @Override

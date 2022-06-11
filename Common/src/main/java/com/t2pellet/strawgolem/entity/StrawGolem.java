@@ -47,9 +47,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.StemGrownBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -155,7 +157,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
      * @return true if the golem is in the cold, false otherwise
      */
     public boolean isInCold() {
-        return level.getBiome(blockPosition()).value().getBaseTemperature() < 0.15F;
+        return level.getBiome(blockPosition()).getBaseTemperature() < 0.15F;
     }
 
     /* Interaction */
@@ -269,11 +271,10 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
             if (hasCustomName()) {
                 strawngGolem.setCustomName(getCustomName());
             }
-            strawngGolem.setPos(position());
             strawngGolem.setYHeadRot(yHeadRot);
-            strawngGolem.setXRot(getXRot());
+            strawngGolem.xRot = xRot;
             strawngGolem.setPos(xOld, yOld, zOld);
-            remove(RemovalReason.DISCARDED);
+            remove();
             if (level.getBlockState(blockPosition()).getBlock() == Blocks.FIRE) {
                 level.setBlockAndUpdate(blockPosition(), Blocks.AIR.defaultBlockState());
             }
@@ -320,8 +321,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
             return false;
         } else {
             float scaledWidth = this.getDimensions(Pose.STANDING).width * 0.8F;
-            AABB headBounds = AABB.ofSize(this.getEyePosition(), scaledWidth, 1.0E-6D, scaledWidth);
-            // Don't suffocate from stem grown blocks
+            AABB headBounds = AABB.ofSize(scaledWidth, 0.1F, scaledWidth).move(this.getX(), this.getEyeY(), this.getZ());
             return BlockPos.betweenClosedStream(headBounds).anyMatch((pos) -> {
                 BlockState state = this.level.getBlockState(pos);
                 return !state.isAir() && state.isSuffocating(this.level, pos) && Shapes.joinIsNotEmpty(state.getCollisionShape(this.level, pos).move(pos.getX(), pos.getY(), pos.getZ()), Shapes.create(headBounds), BooleanOp.AND) && !(state.getBlock() instanceof StemGrownBlock);
@@ -392,10 +392,13 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
      */
     public boolean holdingFullBlock() {
         ItemStack item = getMainHandItem();
-        if (!(item.getItem() instanceof BlockItem blockItem)) return false;
-        return blockItem != Items.AIR
-                && blockItem.getBlock().defaultBlockState().canOcclude()
-                && blockItem.getBlock().asItem() == blockItem;
+        if (item.getItem() instanceof BlockItem) {
+            BlockItem blockItem = (BlockItem) item.getItem();
+            return blockItem != Items.AIR
+                    && blockItem.getBlock().defaultBlockState().canOcclude()
+                    && blockItem.getBlock().asItem() == blockItem;
+        }
+        return false;
     }
 
     /* Handles capabilities */

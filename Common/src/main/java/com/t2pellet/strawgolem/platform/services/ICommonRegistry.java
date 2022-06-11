@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -36,7 +37,7 @@ public interface ICommonRegistry {
         if (block instanceof StemGrownBlock) {
             CropRegistry.INSTANCE.register(block, input -> true, (level, golem, pos, input) -> {
                 golem.playSound(GOLEM_STRAINED, 1.0F, 1.0F);
-                return List.of(new ItemStack(Item.BY_BLOCK.getOrDefault(block, Items.AIR)));
+                return Collections.singletonList(new ItemStack(Item.BY_BLOCK.getOrDefault(block, Items.AIR)));
             }, (level, pos, input) -> level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
         } else if (block instanceof SweetBerryBushBlock) {
             CropRegistry.INSTANCE.register(block, CropRegistry.IHarvestChecker.getDefault(SweetBerryBushBlock.AGE, 3), CropRegistry.IHarvestLogic.RIGHT_CLICK, CropRegistry.IReplantLogic.getDefault(SweetBerryBushBlock.AGE, 1));

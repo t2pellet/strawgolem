@@ -38,7 +38,7 @@ public class GolemTemptGoal extends TemptGoal {
 
     @Override
     public void tick() {
-        this.mob.getLookControl().setLookAt(this.player, this.mob.getXRot() + 20, this.mob.getYHeadRot());
+        this.mob.getLookControl().setLookAt(this.player, this.mob.xRot + 20, this.mob.getYHeadRot());
         if (this.mob.distanceToSqr(this.player) < 6.25D) {
             this.mob.getNavigation().stop();
         } else {

@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ class CropRegistryImpl implements CropRegistry {
                 return handleHarvest(entityKey, level, golem, pos, entity);
             }
         }
-        return List.of();
+        return new ArrayList<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -104,7 +105,7 @@ class CropRegistryImpl implements CropRegistry {
             CropVal<T> data = (CropVal<T>) entries.get(key);
             return data.harvestLogic.doHarvest(level, golem, pos, val);
         }
-        return List.of();
+        return new ArrayList<>();
     }
 
     private boolean contains(CropKey<?> id) {
@@ -132,7 +133,8 @@ class CropRegistryImpl implements CropRegistry {
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj == null) return false;
-            if (obj instanceof CropKey<?> entry) {
+            if (obj instanceof CropKey<?>) {
+                CropKey<?> entry = (CropKey<?>) obj;
                 return get().equals(entry.get());
             } else return get().equals(obj);
         }

@@ -39,7 +39,7 @@ public class GolemPoutGoal extends Goal {
         Optional<Player> player = golem.level.getEntitiesOfClass(Player.class, golem.getBoundingBox().inflate(10.0F), e -> true)
                 .stream().filter(p -> p.getMainHandItem().getItem() == StrawgolemConfig.Health.getFoodItem()).findFirst();
         if (player.isPresent()) {
-            golem.getLookControl().setLookAt(player.get());
+            golem.getLookControl().setLookAt(player.get().getEyePosition(player.get().getEyeHeight()));
         } else {
             Vec3i facingVector = golem.getDirection().getNormal();
             Vec3 facingPos = golem.position().add(facingVector.getX(), facingVector.getY(), facingVector.getZ());

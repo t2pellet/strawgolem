@@ -17,8 +17,6 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static net.minecraft.nbt.Tag.TAG_COMPOUND;
-
 /**
  * Kept for backwards compatibility
  */
@@ -43,12 +41,12 @@ public class StrawgolemSaveData {
                 if (saveFile.exists() && saveFile.isFile()) {
                     CompoundTag worldTag = NbtIo.readCompressed(saveFile);
                     if (!worldTag.contains(VERSION_KEY) || worldTag.getInt(VERSION_KEY) != VERSION) continue;
-                    ListTag positionsTag = worldTag.getList(POS, TAG_COMPOUND);
+                    ListTag positionsTag = worldTag.getList(POS, 10);
                     positionsTag.forEach(tag -> {
                         BlockPos pos = NbtUtils.readBlockPos((CompoundTag) tag);
                         WorldCrops.of(server.getLevel(world)).addCrop(pos);
                     });
-                    FileUtils.delete(saveFile);
+                    FileUtils.deleteQuietly(saveFile);
                 }
             }
             FileUtils.deleteDirectory(worldDataDir);

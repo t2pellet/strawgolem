@@ -6,9 +6,8 @@ import com.t2pellet.strawgolem.client.renderer.entity.layers.StrawGolemHatLayer;
 import com.t2pellet.strawgolem.client.renderer.entity.model.StrawGolemModel;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.StrawGolem;
-import com.t2pellet.strawgolem.registry.ClientRegistry;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.network.chat.Component;
@@ -51,8 +50,8 @@ public class StrawGolemRenderer extends MobRenderer<StrawGolem, StrawGolemModel>
         IS_DECEMBER = GregorianCalendar.getInstance().get(Calendar.MONTH) == Calendar.DECEMBER;
     }
 
-    public StrawGolemRenderer(EntityRendererProvider.Context context) {
-        super(context, new StrawGolemModel(context.bakeLayer(ClientRegistry.Entities.getStrawGolemModel())), 0.35f);
+    public StrawGolemRenderer(EntityRenderDispatcher context) {
+        super(context, new StrawGolemModel(), 0.35f);
         this.addLayer(new ItemInHandLayer<>(this));
         this.addLayer(new StrawGolemHatLayer(this));
     }

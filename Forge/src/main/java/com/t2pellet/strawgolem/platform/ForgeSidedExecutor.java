@@ -3,7 +3,7 @@ package com.t2pellet.strawgolem.platform;
 import com.t2pellet.strawgolem.platform.services.ISidedExecutor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class ForgeSidedExecutor implements ISidedExecutor {
     @Override

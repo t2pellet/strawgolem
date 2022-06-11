@@ -9,8 +9,9 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.impl.builders.*;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.client.ConfigGuiHandler;
+import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.ConfigGuiHandler;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -23,15 +24,14 @@ public class ClothConfigCompat {
 
     public static void registerConfigMenu() {
         StrawgolemCommon.LOG.info("Registering cloth config compat");
-        ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,
-                () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> {
-                    try {
-                        return createConfigBuilder().setParentScreen(screen).build();
-                    } catch (IllegalAccessException e) {
-                        StrawgolemCommon.LOG.error("Failed to create config screen", e);
-                    }
-                    return screen;
-                }));
+        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (mc, screen) -> {
+                try {
+                    return createConfigBuilder().setParentScreen(screen).build();
+                } catch (IllegalAccessException e) {
+                    StrawgolemCommon.LOG.error("Failed to create config screen", e);
+                }
+                return screen;
+        });
     }
 
     /* Disgusting code */
@@ -73,7 +73,8 @@ public class ClothConfigCompat {
                     category.addEntry(toggleBuilder.build());
                 } else if (List.class.isAssignableFrom(declaredField.getType())) {
                     Type listType = declaredField.getGenericType();
-                    if (listType instanceof ParameterizedType parameterizedType) {
+                    if (listType instanceof ParameterizedType) {
+                        ParameterizedType parameterizedType = (ParameterizedType) listType;
                         Class<?> type = (Class<?>) parameterizedType.getActualTypeArguments()[0];
                         if (String.class.isAssignableFrom(type)) {
                             StringListBuilder stringListBuilder = entryBuilder.startStrList(new TextComponent(declaredField.getName()), (List<String>) declaredField.get(null))

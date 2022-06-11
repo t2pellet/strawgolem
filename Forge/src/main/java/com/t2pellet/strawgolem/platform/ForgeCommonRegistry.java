@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -42,7 +43,7 @@ public class ForgeCommonRegistry implements ICommonRegistry {
 
     @Override
     public <T extends LivingEntity> Supplier<EntityType<T>> registerEntity(String name, EntityType.EntityFactory<T> factory, float width, float height, Supplier<AttributeSupplier.Builder> builder) {
-        var result = ENTITIES.register(name, () -> EntityType.Builder.of(factory, MobCategory.CREATURE)
+        RegistryObject<EntityType<T>> result = ENTITIES.register(name, () -> EntityType.Builder.of(factory, MobCategory.CREATURE)
                 .clientTrackingRange(48).updateInterval(3).sized(width, height)
                 .build(name));
         FMLJavaModLoadingContext.get().getModEventBus().addListener((Consumer<EntityAttributeCreationEvent>) event -> event.put(result.get(), builder.get().build()));

@@ -5,14 +5,14 @@ import com.t2pellet.strawgolem.platform.ForgeCommonRegistry;
 import com.t2pellet.strawgolem.platform.Services;
 import com.t2pellet.strawgolem.storage.StrawgolemSaveData;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.function.Consumer;
 
@@ -35,7 +35,7 @@ public class StrawgolemForge {
             StrawgolemCommon.initClient();
         }
         // Save Data
-        MinecraftForge.EVENT_BUS.addListener((Consumer<ServerStartingEvent>) event -> {
+        MinecraftForge.EVENT_BUS.addListener((Consumer<FMLServerStartingEvent>) event -> {
             StrawgolemSaveData data = new StrawgolemSaveData(ServerLifecycleHooks.getCurrentServer());
             try {
                 data.loadData(ServerLifecycleHooks.getCurrentServer());

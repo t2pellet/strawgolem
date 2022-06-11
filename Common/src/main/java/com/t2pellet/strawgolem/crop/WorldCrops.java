@@ -13,7 +13,7 @@ public interface WorldCrops {
 
     static WorldCrops of(Level level) {
         DimensionDataStorage dataStorage = ((ServerLevel) level).getDataStorage();
-        return dataStorage.computeIfAbsent(tag -> WorldCropsImpl.load(level, tag), () -> new WorldCropsImpl(level), DATA_KEY);
+        return dataStorage.computeIfAbsent(() -> new WorldCropsImpl(level), DATA_KEY);
     }
 
     /**

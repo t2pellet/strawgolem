@@ -106,7 +106,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         Block blockPosType = this.strawgolem.level.getBlockState(blockPos).getBlock();
         if (blockPosType instanceof StemGrownBlock) targetDistance += 0.2D;
         if (blockPosType instanceof BushBlock) targetDistance += 0.55D;
-        if (!this.blockPos.closerToCenterThan(this.mob.position(), targetDistance)) {
+        if (!this.blockPos.closerThan(this.mob.position(), targetDistance)) {
             ++this.tryTicks;
             if (this.shouldRecalculatePath()) {
                 this.mob.getNavigation().moveTo(this.blockPos.getX() + 0.5D, this.blockPos.getY() + 1D, this.blockPos.getZ() + 0.5D, speedModifier);

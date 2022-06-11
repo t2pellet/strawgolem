@@ -19,7 +19,8 @@ public class GrowthMixin {
 
     @Inject(method = "setBlock", at = @At("TAIL"))
     public void grow(BlockPos pos, BlockState newState, int i, CallbackInfoReturnable<Boolean> info) {
-        if ((Object) this instanceof ServerLevel world) {
+        if ((Object) this instanceof ServerLevel) {
+            ServerLevel world = (ServerLevel) ((Object) this);
             BlockPos cropPos = pos;
             Block block = newState.getBlock();
             if (block instanceof AttachedStemBlock) {

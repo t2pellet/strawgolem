@@ -74,7 +74,8 @@ public class ClothConfigCompat implements ModMenuApi {
                     category.addEntry(toggleBuilder.build());
                 } else if (List.class.isAssignableFrom(declaredField.getType())) {
                     Type listType = declaredField.getGenericType();
-                    if (listType instanceof ParameterizedType parameterizedType) {
+                    if (listType instanceof ParameterizedType) {
+                        ParameterizedType parameterizedType = (ParameterizedType) listType;
                         Class<?> type = (Class<?>) parameterizedType.getActualTypeArguments()[0];
                         if (String.class.isAssignableFrom(type)) {
                             StringListBuilder stringListBuilder = entryBuilder.startStrList(new TextComponent(declaredField.getName()), (List<String>) declaredField.get(null))

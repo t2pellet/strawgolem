@@ -12,7 +12,7 @@ import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_HURT;
 
 public class MunchGolemGoal extends Goal {
 
-    private static final TargetingConditions predicate = TargetingConditions.forNonCombat().selector(e -> e instanceof StrawGolem).range(10.0D);
+    private static final TargetingConditions predicate = TargetingConditions.DEFAULT.allowNonAttackable().selector(e -> e instanceof StrawGolem).range(10.0D);
     private final double speed;
     private final Animal animal;
     private StrawGolem strawGolem;
@@ -46,7 +46,7 @@ public class MunchGolemGoal extends Goal {
 
     @Override
     public void tick() {
-        animal.getLookControl().setLookAt(strawGolem);
+        animal.getLookControl().setLookAt(strawGolem.getEyePosition(strawGolem.getEyeHeight()));
         if (strawGolem.distanceTo(animal) > 1.1D) {
             animal.getNavigation().moveTo(strawGolem, speed);
         } else {

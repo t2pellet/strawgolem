@@ -6,8 +6,8 @@ import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -143,12 +143,16 @@ public interface CropRegistry {
 
         IHarvestLogic<BlockState> DEFAULT = (worldIn, golem, pos, state) -> {
             List<ItemStack> drops = Block.getDrops(state, worldIn, pos, worldIn.getBlockEntity(pos));
-            return drops.stream().filter(CropRegistry::isCropDrop).collect(Collectors.toList());
+            return drops.stream().filter(drop -> {
+                return !(drop.getItem() instanceof BlockItem)
+                        || drop.getUseAnimation() == UseAnim.EAT
+                        || drop.getItem() == Items.NETHER_WART;
+            }).collect(Collectors.toList());
         };
 
         IHarvestLogic<BlockState> RIGHT_CLICK = (worldIn, golem, pos, state) -> {
             GameProfile fakeProfile = new GameProfile(UUID.randomUUID(), golem.getScoreboardName());
-            ServerPlayer fake = new ServerPlayer(worldIn.getServer(), worldIn, fakeProfile);
+            ServerPlayer fake = new ServerPlayer(worldIn.getServer(), worldIn, fakeProfile, new ServerPlayerGameMode(worldIn));
             fake.setPos(golem.getX(), golem.getY(), golem.getZ());
             BlockHitResult result = new BlockHitResult(golem.position(),
                     golem.getDirection().getOpposite(),
@@ -160,13 +164,13 @@ public interface CropRegistry {
                 List<ItemStack> itemStackList = new ArrayList<>();
                 for (ItemEntity itemEntity : itemList) {
                     itemStackList.add(itemEntity.getItem());
-                    itemEntity.remove(Entity.RemovalReason.DISCARDED);
+                    itemEntity.remove();
                 }
                 return itemStackList;
             } catch (NullPointerException ex) {
                 StrawgolemCommon.LOG.error("Golem could not harvest block at position: {}", pos);
             } finally {
-                fake.remove(Entity.RemovalReason.DISCARDED);
+                fake.remove();
             }
             return null;
         };
@@ -179,12 +183,5 @@ public interface CropRegistry {
          */
         List<ItemStack> doHarvest(ServerLevel level, StrawGolem golem, BlockPos pos, T input);
     }
-
-    private static boolean isCropDrop(ItemStack drop) {
-        return !(drop.getItem() instanceof BlockItem)
-                || drop.getUseAnimation() == UseAnim.EAT
-                || drop.getItem() == Items.NETHER_WART;
-    }
-
 
 }

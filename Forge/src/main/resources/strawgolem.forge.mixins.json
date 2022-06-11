@@ -2,15 +2,17 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.t2pellet.strawgolem.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "GrowthMixin",
-    "RegistryMixin",
-    "SheepMixin",
+    "CarvedPumpkinMixin",
+    "CowMixin",
     "IronGolemMixin",
-    "RaiderMixin",
+    "IronGolemModelMixin",
     "LoginMixin",
-    "CowMixin"
+    "RaiderMixin",
+    "SheepMixin",
+    "GrowthMixin",
+    "RegistryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -32,7 +32,7 @@ public class FabricCommonRegistry implements ICommonRegistry {
 
     @Override
     public <T extends LivingEntity> Supplier<EntityType<T>> registerEntity(String name, EntityType.EntityFactory<T> factory, float width, float height, Supplier<AttributeSupplier.Builder> builder) {
-        var type = Registry.register(
+        EntityType<T> type = Registry.register(
                 Registry.ENTITY_TYPE,
                 new ResourceLocation(StrawgolemCommon.MODID, name),
                 EntityType.Builder.of(factory, MobCategory.CREATURE)
