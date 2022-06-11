@@ -30,25 +30,25 @@ public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
             if (config.getBoolean(LIFESPAN) && StrawgolemConfig.Health.getLifespan() > 0) {
                 float daysLeftLife = golem.getLifespan().get() / 24000F;
                 if (daysLeftLife >= 1) {
-                    tooltip.addLine(new TranslatableComponent("strawgolem.lifespan", Math.round(daysLeftLife)));
+                    tooltip.add(new TranslatableComponent("strawgolem.lifespan", Math.round(daysLeftLife)));
                 } else if (golem.getLifespan().get() < 0) {
-                    tooltip.addLine(new TranslatableComponent("strawgolem.lifespan", '\u221e'));
+                    tooltip.add(new TranslatableComponent("strawgolem.lifespan", '\u221e'));
                 } else {
-                    tooltip.addLine(new TranslatableComponent("strawgolem.lifespan", "<1"));
+                    tooltip.add(new TranslatableComponent("strawgolem.lifespan", "<1"));
                 }
             }
             if (config.getBoolean(HUNGER) && StrawgolemConfig.Health.getHunger() > 0) {
                 float hungerLeft = golem.getHunger().get();
                 if (hungerLeft >= StrawgolemConfig.Health.getHunger()) {
-                    tooltip.addLine(new TranslatableComponent("strawgolem.hunger", "Not At All Hungry"));
+                    tooltip.add(new TranslatableComponent("strawgolem.hunger", "Not At All Hungry"));
                 } else if (hungerLeft >= StrawgolemConfig.Health.getHunger() / 2F) {
-                    tooltip.addLine(new TranslatableComponent("strawgolem.hunger", "A Little Bit Hungry"));
+                    tooltip.add(new TranslatableComponent("strawgolem.hunger", "A Little Bit Hungry"));
                 } else if (hungerLeft >= StrawgolemConfig.Health.getHunger() / 4F) {
-                    tooltip.addLine(new TranslatableComponent("strawgolem.hunger", "Pretty Hungry"));
+                    tooltip.add(new TranslatableComponent("strawgolem.hunger", "Pretty Hungry"));
                 } else if (hungerLeft > 0) {
-                    tooltip.addLine(new TranslatableComponent("strawgolem.hunger", "Very Hungry"));
+                    tooltip.add(new TranslatableComponent("strawgolem.hunger", "Very Hungry"));
                 } else {
-                    tooltip.addLine(new TranslatableComponent("strawgolem.hunger", "Starving"));
+                    tooltip.add(new TranslatableComponent("strawgolem.hunger", "Starving"));
                 }
             }
         }

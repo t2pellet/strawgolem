@@ -48,7 +48,7 @@ public class StrawgolemSaveData {
                         BlockPos pos = NbtUtils.readBlockPos((CompoundTag) tag);
                         WorldCrops.of(server.getLevel(world)).addCrop(pos);
                     });
-                    FileUtils.delete(saveFile);
+                    FileUtils.deleteQuietly(saveFile);
                 }
             }
             FileUtils.deleteDirectory(worldDataDir);

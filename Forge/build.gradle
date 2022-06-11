@@ -83,11 +83,10 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly project(":Common")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    compileOnly fg.deobf("curse.maven:jade-324717:4082408")
-    runtimeOnly fg.deobf("curse.maven:jade-324717:4082408")
-    runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:3784851")
-    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:6.2.62")
-    runtimeOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:6.2.62")
+    compileOnly fg.deobf("curse.maven:jade-324717:3468298")
+    runtimeOnly fg.deobf("curse.maven:jade-324717:3468298")
+    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:5.3.63")
+    runtimeOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:5.3.63")
 }
 
 tasks.withType(JavaCompile) {

@@ -16,19 +16,15 @@ public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
     private static final IEntityComponentProvider INSTANCE = new CompatHwyla();
 
     @Override
-    public void registerClient(IWailaClientRegistration registrar) {
+    public void register(IRegistrar registrar) {
         if (StrawgolemConfig.Miscellaneous.isEnableHwyla()) {
             StrawgolemCommon.LOG.info("Registering Strawgolem HWYLA Compat");
             registrar.registerComponentProvider(INSTANCE, TooltipPosition.BODY, StrawGolem.class);
+            registrar.addConfig(LIFESPAN, StrawgolemConfig.Health.getLifespan() >= 0);
+            registrar.addConfig(HUNGER, StrawgolemConfig.Health.getHunger() >= 0);
         } else {
             StrawgolemCommon.LOG.info("Strawgolem HWYLA compat is disabled");
         }
-    }
-
-    @Override
-    public void register(IWailaCommonRegistration registration) {
-        registration.addConfig(LIFESPAN, StrawgolemConfig.Health.getLifespan() >= 0);
-        registration.addConfig(HUNGER, StrawgolemConfig.Health.getHunger() >= 0);
     }
 
     @Override

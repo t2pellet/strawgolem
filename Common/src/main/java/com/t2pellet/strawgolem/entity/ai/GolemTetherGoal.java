@@ -51,7 +51,7 @@ public class GolemTetherGoal<T extends PathfinderMob & IHasTether> extends MoveT
     @Override
     public void tick() {
         this.entity.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
-        if (!this.blockPos.closerToCenterThan(this.mob.position(), this.acceptedDistance())) {
+        if (!this.blockPos.closerThan(this.mob.position(), this.acceptedDistance())) {
             ++this.tryTicks;
             if (this.shouldRecalculatePath()) {
                 double speed = this.speedModifier;
