@@ -5,7 +5,6 @@ import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -47,7 +46,7 @@ public class WorldInteractHandler {
                 if (golem != null) {
                     golem.getMemory().setPriorityChest(blockHitResult.getBlockPos());
                     golem.getMemory().addPosition(world, blockHitResult.getBlockPos());
-                    Component text = new TranslatableComponent("strawgolem.deliver", golem.getDisplayName().getString());
+                    Component text = Component.translatable("strawgolem.deliver", golem.getDisplayName().getString());
                     Player.displayClientMessage(text, true);
                     playerToGolemMap.remove(Player.getUUID());
                     // Tether to the priority chest

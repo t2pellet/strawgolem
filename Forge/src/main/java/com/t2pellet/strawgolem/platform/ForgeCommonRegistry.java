@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 
 public class ForgeCommonRegistry implements ICommonRegistry {
 
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, StrawgolemCommon.MODID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, StrawgolemCommon.MODID);
     public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, StrawgolemCommon.MODID);
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, StrawgolemCommon.MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, StrawgolemCommon.MODID);
@@ -71,10 +71,10 @@ public class ForgeCommonRegistry implements ICommonRegistry {
             ForgeRegistries.BLOCKS.forEach(ICommonRegistry::registerCrop);
         });
         //Crop growth handling
-        MinecraftForge.EVENT_BUS.addListener((Consumer<StrawGolemEvents.CropGrowthEvent>) event -> CropGrowthHandler.onCropGrowth((Level) event.getWorld(), event.getPos()));
+        MinecraftForge.EVENT_BUS.addListener((Consumer<StrawGolemEvents.CropGrowthEvent>) event -> CropGrowthHandler.onCropGrowth((Level) event.getLevel(), event.getPos()));
         MinecraftForge.EVENT_BUS.addListener((Consumer<PlayerInteractEvent.RightClickBlock>) event -> {
             // Chest Handling
-            if (WorldInteractHandler.setPriorityChest(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec()) == InteractionResult.CONSUME) {
+            if (WorldInteractHandler.setPriorityChest(event.getEntity(), event.getLevel(), event.getHand(), event.getHitVec()) == InteractionResult.CONSUME) {
                 event.setCanceled(true);
             }
         });

@@ -24,7 +24,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -245,7 +244,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
             if (!level.isClientSide()) {
                 WorldInteractHandler.addMapping(player.getUUID(), getId());
                 // Feedback
-                Component message = new TranslatableComponent("strawgolem.order", getDisplayName().getString());
+                Component message = Component.translatable("strawgolem.order", getDisplayName().getString());
                 player.displayClientMessage(message, true);
             }
             // Result
