@@ -52,7 +52,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
 
     public RenderStrawGolem(EntityRendererProvider.Context context) {
         super(context, new ModelStrawGolem(context.bakeLayer(ClientRegistry.Entities.getStrawGolemModel())), 0.35f);
-        this.addLayer(new ItemInHandLayer<>(this));
+        this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
     }
 
     @Override

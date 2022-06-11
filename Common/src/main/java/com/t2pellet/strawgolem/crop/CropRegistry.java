@@ -136,7 +136,7 @@ public interface CropRegistry {
 
         IHarvestLogic<BlockState> RIGHT_CLICK = (worldIn, golem, pos, state) -> {
             GameProfile fakeProfile = new GameProfile(UUID.randomUUID(), golem.getScoreboardName());
-            ServerPlayer fake = new ServerPlayer(worldIn.getServer(), worldIn, fakeProfile);
+            ServerPlayer fake = new ServerPlayer(worldIn.getServer(), worldIn, fakeProfile, null);
             fake.setPos(golem.getX(), golem.getY(), golem.getZ());
             BlockHitResult result = new BlockHitResult(golem.position(),
                     golem.getDirection().getOpposite(),

@@ -26,9 +26,9 @@
     "strawgolem.fabric.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.13",
-    "fabric": ">=0.54.0",
-    "minecraft": "1.18.x",
+    "fabricloader": ">=0.14",
+    "fabric": ">=0.55.3",
+    "minecraft": "1.19.x",
     "java": ">=17"
   },
   "custom": {
