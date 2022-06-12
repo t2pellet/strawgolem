@@ -14,6 +14,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     modRuntimeOnly "mcp.mobius.waila:wthit:fabric-4.10.1"
     modRuntimeOnly "lol.bai:badpackets:fabric-0.1.2"
+    modRuntimeOnly "curse.maven:farmers-delight-fabric-482834:3770564"
     implementation project(":Common")
 }
 
