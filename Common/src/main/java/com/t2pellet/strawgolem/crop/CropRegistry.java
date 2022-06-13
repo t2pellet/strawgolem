@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -145,7 +146,12 @@ public interface CropRegistry {
             try {
                 state.use(worldIn, fake, InteractionHand.MAIN_HAND, result);
                 List<ItemEntity> itemList = worldIn.getEntitiesOfClass(ItemEntity.class, new AABB(pos).inflate(2.5F), e -> true);
-                return itemList.stream().map(ItemEntity::getItem).collect(Collectors.toList());
+                List<ItemStack> itemStackList = new ArrayList<>();
+                for (ItemEntity itemEntity : itemList) {
+                    itemStackList.add(itemEntity.getItem());
+                    itemEntity.remove(Entity.RemovalReason.DISCARDED);
+                }
+                return itemStackList;
             } catch (NullPointerException ex) {
                 StrawgolemCommon.LOG.error("Golem could not harvest block at position: {}", pos);
             } finally {

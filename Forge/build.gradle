@@ -87,6 +87,7 @@ dependencies {
     testCompileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-5.1.4")
     runtimeOnly fg.deobf("mcp.mobius.waila:wthit:forge-5.1.4")
     runtimeOnly fg.deobf("lol.bai:badpackets:forge-0.1.2")
+    runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:3784851")
 }
 
 tasks.withType(JavaCompile) {

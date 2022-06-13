@@ -80,6 +80,7 @@ class CropRegistryImpl implements CropRegistry {
         }
     }
 
+    // TODO : Fix StemGrownBlock being harvestable even when manually placed
     @SuppressWarnings("unchecked")
     private <T> boolean isGrownCrop(CropKey<?> key, T val) {
         if (contains(key)) {

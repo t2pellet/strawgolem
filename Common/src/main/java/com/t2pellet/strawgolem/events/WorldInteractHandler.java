@@ -52,12 +52,14 @@ public class WorldInteractHandler {
                 if (StrawgolemConfig.Creation.isHeadBlock(heldBlock)) {
                     BlockPos bodyPos = placementPos.below();
                     if (StrawgolemConfig.Creation.isBodyBlock(worldIn.getBlockState(bodyPos).getBlock())) {
-                        spawnStrawGolem(worldIn, bodyPos, placementPos, result.getDirection());
+                        if (!player.isCreative()) player.getMainHandItem().shrink(1);
+                        return spawnStrawGolem(worldIn, bodyPos, placementPos, result.getDirection());
                     }
                 } else if (StrawgolemConfig.Creation.isBodyBlock(heldBlock)) {
                     BlockPos headPos = placementPos.above();
                     if (StrawgolemConfig.Creation.isHeadBlock(worldIn.getBlockState(headPos).getBlock())) {
-                        spawnStrawGolem(worldIn, placementPos, headPos, result.getDirection());
+                        if (!player.isCreative()) player.getMainHandItem().shrink(1);
+                        return spawnStrawGolem(worldIn, placementPos, headPos, result.getDirection());
                     }
                 }
             }
@@ -134,7 +136,7 @@ public class WorldInteractHandler {
             strawGolem.setYHeadRot(0.0F);
             strawGolem.setPos(hay.getX() + 0.5, hay.getY() + 0.5, hay.getZ() + 0.5);
             worldIn.addFreshEntity(strawGolem);
-            return InteractionResult.CONSUME;
+            return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
     }

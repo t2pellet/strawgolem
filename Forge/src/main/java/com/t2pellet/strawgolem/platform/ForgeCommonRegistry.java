@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -53,8 +54,15 @@ public class ForgeCommonRegistry implements ICommonRegistry {
 
     @Override
     public void registerEvents() {
-        // Crop Registry
-        MinecraftForge.EVENT_BUS.addListener((Consumer<StrawGolemEvents.BlockRegisteredEvent>) event -> ICommonRegistry.registerCrop(event.block));
+        /*  Crop Registry */
+        // Register crops from vanilla registry
+        MinecraftForge.EVENT_BUS.addListener((Consumer<StrawGolemEvents.BlockRegisteredEvent>) event -> {
+            ICommonRegistry.registerCrop(event.block);
+        });
+        // Can't mixin to Forge stuff, so just gonna wait until its done and then get all the stuff in the forge block registry
+        FMLJavaModLoadingContext.get().getModEventBus().addListener((Consumer<FMLLoadCompleteEvent>) event -> {
+            ForgeRegistries.BLOCKS.forEach(ICommonRegistry::registerCrop);
+        });
         //Crop growth handling
         MinecraftForge.EVENT_BUS.addListener((Consumer<StrawGolemEvents.CropGrowthEvent>) event -> CropGrowthHandler.onCropGrowth((Level) event.getWorld(), event.getPos()));
         MinecraftForge.EVENT_BUS.addListener((Consumer<PlayerInteractEvent.RightClickBlock>) event -> {

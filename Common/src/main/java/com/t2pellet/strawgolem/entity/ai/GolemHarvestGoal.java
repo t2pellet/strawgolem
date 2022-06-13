@@ -25,9 +25,11 @@ import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.StemGrownBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
+import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_INTERESTED;
 import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_STRAINED;
 
 public class GolemHarvestGoal extends MoveToBlockGoal {
@@ -39,6 +41,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         this.strawgolem = strawgolem;
     }
 
+    // TODO : Check for valid path
     @Override
     public boolean canUse() {
         /* Checks for cooldown period, then checks for any nearby crops */
@@ -46,14 +49,27 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
             --this.nextStartTick;
             return false;
         } else if (strawgolem.isHandEmpty() && !strawgolem.getHunger().isHungry()) {
-            blockPos = CropHandler.INSTANCE.getNearestCrop(strawgolem.level, strawgolem.blockPosition(), StrawgolemConfig.Harvest.getSearchRange());
-            if (blockPos != null) {
-                BlockState state = strawgolem.level.getBlockState(blockPos);
-                BlockEntity entity = strawgolem.level.getBlockEntity(blockPos);
-                if (CropRegistry.INSTANCE.isGrownCrop(state) || CropRegistry.INSTANCE.isGrownCrop(entity)) return true;
-                CropHandler.INSTANCE.removeCrop(strawgolem.level, blockPos);
+            BlockPos harvestPos = strawgolem.harvestPos != null
+                    ? strawgolem.harvestPos
+                    : CropHandler.INSTANCE.getNearestCrop(strawgolem.level, strawgolem.blockPosition(), StrawgolemConfig.Harvest.getSearchRange());
+            if (harvestPos != null) {
+                BlockState state = strawgolem.level.getBlockState(harvestPos);
+                BlockEntity entity = strawgolem.level.getBlockEntity(harvestPos);
+                if (CropRegistry.INSTANCE.isGrownCrop(state) || CropRegistry.INSTANCE.isGrownCrop(entity)) {
+                    if (strawgolem.canReachBlock(strawgolem.level, harvestPos)) {
+                        blockPos = harvestPos;
+                        strawgolem.harvestPos = harvestPos;
+                        return true;
+                    } else if (harvestPos == strawgolem.harvestPos) {
+                        // Put crop we're trying to resume harvesting back into the system if we can't reach it
+                        CropHandler.INSTANCE.addCrop(strawgolem.level, harvestPos);
+                    }
+                } else {
+                    CropHandler.INSTANCE.removeCrop(strawgolem.level, harvestPos);
+                }
             }
         }
+        strawgolem.harvestPos = null;
         return false;
     }
 
@@ -61,6 +77,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     public void start() {
         this.nextStartTick = nextStartTick(this.mob);
         CropHandler.INSTANCE.removeCrop(strawgolem.level, blockPos); // Remove crop from handler, as its being harvested now
+        strawgolem.playSound(GOLEM_INTERESTED, 1.0F, 1.0F);
     }
 
     @Override
@@ -73,21 +90,24 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         return strawgolem.getVehicle() == null && super.canContinueToUse();
     }
 
+
     @Override
     public void stop() {
         // If we stopped while still harvesting, restore the crop and clear harvesting flag
-        CropHandler.INSTANCE.addCrop(strawgolem.level, blockPos);
+        BlockState state = strawgolem.level.getBlockState(blockPos);
+        BlockEntity entity = strawgolem.level.getBlockEntity(blockPos);
+        if (CropRegistry.INSTANCE.isGrownCrop(state) || CropRegistry.INSTANCE.isGrownCrop(entity)) {
+            CropHandler.INSTANCE.addCrop(strawgolem.level, blockPos);
+        }
+        strawgolem.harvestPos = null;
     }
 
     /* Almost copied from the vanilla tick() method, just calling harvestCrop when it gets to the block and some tweaks for different kinds of blocks */
     @Override
     public void tick() {
-        this.strawgolem.getLookControl().setLookAt(
-                this.blockPos.getX() + 0.5D,
-                this.blockPos.getY(),
-                this.blockPos.getZ() + 0.5D,
-                10.0F,
-                this.strawgolem.getYHeadRot());
+        if (!strawgolem.isRunningGoal(GolemLookAtPlayerGoal.class)) {
+            this.strawgolem.getLookControl().setLookAt(Vec3.atCenterOf(this.blockPos));
+        }
         double targetDistance = acceptedDistance();
         Block blockPosType = this.strawgolem.level.getBlockState(blockPos).getBlock();
         if (blockPosType instanceof StemGrownBlock) targetDistance += 0.2D;

@@ -21,6 +21,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -42,12 +43,16 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.StemGrownBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 
@@ -69,6 +74,8 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     private final Hunger hunger;
     private boolean tempted;
 
+    public BlockPos harvestPos;
+
     public static AttributeSupplier.Builder createMob() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 8.0D)
@@ -82,6 +89,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
         tether = CapabilityHandler.INSTANCE.get(Tether.class).orElseThrow(() -> new InstantiationError("Failed to create tether cap"));
         hunger = CapabilityHandler.INSTANCE.get(Hunger.class).orElseThrow(() -> new InstantiationError("Failed to create new hunger cap"));
         inventory = new SimpleContainer(1);
+        harvestPos = null;
         tempted = false;
         // Set default tether value
     }
@@ -104,7 +112,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
 
     @SafeVarargs
     public final boolean isRunningGoal(Class<? extends Goal>... clazzes) {
-        return goalSelector.getRunningGoals().anyMatch(goal -> Arrays.stream(clazzes).anyMatch(clazz -> clazz.isInstance(goal)));
+        return goalSelector.getRunningGoals().anyMatch(goal -> Arrays.stream(clazzes).anyMatch(clazz -> clazz.isInstance(goal.getGoal())));
     }
 
     @Override
@@ -304,14 +312,22 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
      * @return whether the golem has line of sight
      */
     public boolean canReachBlock(LevelReader levelIn, BlockPos pos) {
-        if (levelIn.dimensionType() == level.dimensionType()) {
-            return navigation.createPath(pos.offset(0, 0.5, 0), StrawgolemConfig.Harvest.getSearchRange()) != null;
+        if (levelIn != this.level) {
+            return false;
+        } else {
+            if (pos.distManhattan(pos) > 1.27 * StrawgolemConfig.Harvest.getSearchRange()) { // on avg, manhattan dist is 4/pi times actual distance
+                return false;
+            } else {
+                Vec3 eyePos = Vec3.atCenterOf(blockPosition()).add(0.0D, 0.5D, 0.0D);
+                Vec3 blockPos = Vec3.atCenterOf(pos);
+                BlockHitResult result = this.level.clip(new ClipContext(eyePos, blockPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+                return result.getType() == HitResult.Type.MISS || result.getBlockPos().closerThan(pos, 1.0D);
+            }
         }
-        return false;
     }
 
     public boolean isHarvesting() {
-        return isRunningGoal(GolemHarvestGoal.class);
+        return harvestPos != null;
     }
 
     /* Handle inventory */
@@ -429,6 +445,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
         tag.put("memory", memory.writeTag());
         tag.put("inventory", inventory.createTag());
         tag.put("tether", tether.writeTag());
+        if (harvestPos != null) tag.put("harvestPos", NbtUtils.writeBlockPos(harvestPos));
         super.addAdditionalSaveData(tag);
     }
 
@@ -439,6 +456,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
         if (tag.contains("memory")) memory.readTag(tag.get("memory"));
         if (tag.contains("inventory")) inventory.fromTag((ListTag) tag.get("inventory"));
         if (tag.contains("tether")) tether.readTag(tag.get("tether"));
+        if (tag.contains("harvestPos")) harvestPos = NbtUtils.readBlockPos((CompoundTag) tag.get("harvestPos"));
         super.readAdditionalSaveData(tag);
     }
 
