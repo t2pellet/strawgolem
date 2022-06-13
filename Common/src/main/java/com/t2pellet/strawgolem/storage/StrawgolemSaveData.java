@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.storage;
 
+import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.crop.CropHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -33,6 +34,7 @@ public class StrawgolemSaveData {
     private static final String VERSION_KEY = "version";
 
     public void loadData(MinecraftServer server) throws IOException {
+        StrawgolemCommon.LOG.info("Loading strawgolem save data");
         for (ServerLevel world : server.getAllLevels()) {
             File saveFile = new File(worldDataDir, getFileName(world));
             if (saveFile.exists() && saveFile.isFile()) {
@@ -48,6 +50,7 @@ public class StrawgolemSaveData {
     }
 
     public void saveData(MinecraftServer server) throws IOException {
+        StrawgolemCommon.LOG.info("Saving strawgolem save data");
         CompoundTag worldTag = new CompoundTag();
         ListTag positionsTag = new ListTag();
         for (ServerLevel world : server.getAllLevels()) {
