@@ -10,6 +10,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 
 import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_SCARED;
 
@@ -52,12 +53,7 @@ public class GolemTetherGoal<T extends PathfinderMob & IHasTether> extends MoveT
 
     @Override
     public void tick() {
-        this.entity.getLookControl().setLookAt(
-                this.blockPos.getX() + 0.5D,
-                this.blockPos.getY(),
-                this.blockPos.getZ() + 0.5D,
-                10.0F,
-                40.0F);
+        this.entity.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
         if (!this.blockPos.closerToCenterThan(this.mob.position(), this.acceptedDistance())) {
             ++this.tryTicks;
             if (this.shouldRecalculatePath()) {

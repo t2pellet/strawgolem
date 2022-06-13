@@ -45,7 +45,7 @@ public class MunchGolemGoal extends Goal {
 
     @Override
     public void tick() {
-        animal.getLookControl().setLookAt(strawGolem.position());
+        animal.getLookControl().setLookAt(strawGolem);
         if (strawGolem.distanceTo(animal) > 1.1D) {
             animal.getNavigation().moveTo(strawGolem, speed);
         } else {

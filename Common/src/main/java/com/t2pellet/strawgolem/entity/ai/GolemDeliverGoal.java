@@ -17,10 +17,12 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
 
 public class GolemDeliverGoal extends MoveToBlockGoal {
     private final EntityStrawGolem strawGolem;
-    private Boolean deliveringBlock;
+    private boolean deliveringBlock;
+    private boolean doneDepositing;
 
     public GolemDeliverGoal(EntityStrawGolem strawGolem) {
         super(strawGolem, 0.7D, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
@@ -58,16 +60,17 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     }
 
     @Override
+    public void start() {
+        super.start();
+        this.deliveringBlock = strawGolem.holdingFullBlock();
+        this.doneDepositing = false;
+    }
+
+    @Override
     public void tick() {
-        if (deliveringBlock == null) {
-            deliveringBlock = strawGolem.holdingFullBlock();
+        if (!strawGolem.isRunningGoal(GolemLookAtPlayerGoal.class)) {
+            this.strawGolem.getLookControl().setLookAt(Vec3.atCenterOf(this.blockPos));
         }
-        this.strawGolem.getLookControl().setLookAt(
-                this.blockPos.getX() + 0.5D,
-                this.blockPos.getY(),
-                this.blockPos.getZ() + 0.5D,
-                10.0F,
-                this.strawGolem.getYHeadRot());
         if (!this.blockPos.closerToCenterThan(this.mob.position(), this.acceptedDistance())) {
             ++this.tryTicks;
             if (this.canContinueToUse()) {
@@ -76,7 +79,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
                 this.mob.getNavigation().moveTo(this.blockPos.getX() + 0.5D, this.blockPos.getY() + 1D, this.blockPos.getZ() + 0.5D, moveSpeed);
             }
         } else {
-            tryTicks = 0;
+            --this.tryTicks;
             doDeposit();
         }
     }
@@ -86,11 +89,13 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
      * Finds first empty/compatible slot in the chest and puts the golem's held item there
      */
     private void doDeposit() {
+        if (this.doneDepositing) return;
         strawGolem.getMemory().addPosition(strawGolem.level, blockPos);
         ServerLevel worldIn = (ServerLevel) this.strawGolem.level;
         BlockPos pos = this.blockPos;
         BaseContainerBlockEntity invBlock = (BaseContainerBlockEntity) worldIn.getBlockEntity(pos);
-        ItemStack insertStack = this.strawGolem.getInventory().removeItem(0, 1);
+        ItemStack insertStack = this.strawGolem.getInventory().getItem(0);
+        this.strawGolem.getInventory().removeAllItems();
         boolean chestFull = true;
         for (int i = 0; i < invBlock.getContainerSize(); ++i) {
             if (invBlock.getItem(i).getItem() == Items.AIR
@@ -108,6 +113,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
         worldIn.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
         strawGolem.getNavigation().recomputePath();
         Services.PACKETS.sendInRange(new HoldingPacket(strawGolem), strawGolem, 25.0F);
+        this.doneDepositing = true;
     }
 
     @Override
