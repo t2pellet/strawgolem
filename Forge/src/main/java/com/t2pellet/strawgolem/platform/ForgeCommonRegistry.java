@@ -33,7 +33,7 @@ public class ForgeCommonRegistry implements ICommonRegistry {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, StrawgolemCommon.MODID);
 
     @Override
-    public Supplier<ParticleType<SimpleParticleType>> registerParticle(ResourceLocation id) {
+    public Supplier<SimpleParticleType> registerParticle(ResourceLocation id) {
         return PARTICLES.register(id.getPath(), () -> new SimpleParticleType(true) {
         });
     }

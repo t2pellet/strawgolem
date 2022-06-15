@@ -17,7 +17,6 @@ import com.t2pellet.strawgolem.network.CapabilityPacket;
 import com.t2pellet.strawgolem.platform.Services;
 import com.t2pellet.strawgolem.registry.CommonRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -138,6 +137,9 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
                 Services.PACKETS.sendInRange(new CapabilityPacket(this), this, 25.0F);
             }
         }
+        if (StrawgolemConfig.Health.getLifespan() > 0 && getLifespan().get() * 4 < StrawgolemConfig.Health.getLifespan() && random.nextInt(240) == 0) {
+            spawnFlyParticles(getX(), getY(), getZ());
+        }
     }
 
     /**
@@ -213,6 +215,13 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
         }
 
         return InteractionResult.FAIL;
+    }
+
+    private void spawnFlyParticles(double x, double y, double z) {
+        level.addParticle(
+                getFlyParticle(),
+                x + random.nextDouble() - 0.5, y + 0.4D, z + random.nextDouble() - 0.5,
+                0, 0, 0);
     }
 
     private void spawnHealParticles(double x, double y, double z) {

@@ -1,7 +1,6 @@
 package com.t2pellet.strawgolem.platform.services;
 
 import com.t2pellet.strawgolem.crop.CropRegistry;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -23,7 +22,7 @@ import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_STRAI
 
 public interface ICommonRegistry {
 
-    Supplier<ParticleType<SimpleParticleType>> registerParticle(ResourceLocation id);
+    Supplier<SimpleParticleType> registerParticle(ResourceLocation id);
 
     <T extends LivingEntity> Supplier<EntityType<T>> registerEntity(String name, EntityType.EntityFactory<T> factory, float width, float height, Supplier<AttributeSupplier.Builder> builder);
 

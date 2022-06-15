@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -23,7 +22,7 @@ import java.util.function.Supplier;
 public class FabricCommonRegistry implements ICommonRegistry {
 
     @Override
-    public Supplier<ParticleType<SimpleParticleType>> registerParticle(ResourceLocation id) {
+    public Supplier<SimpleParticleType> registerParticle(ResourceLocation id) {
         SimpleParticleType type = new SimpleParticleType(true) {
         };
         Registry.register(Registry.PARTICLE_TYPE, id, type);

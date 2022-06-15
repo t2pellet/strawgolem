@@ -14,7 +14,7 @@ public class FlyParticle extends TextureSheetParticle {
         super(worldIn, xCoordIn, yCoordIn + 0.4F, zCoordIn);
         x += random.nextFloat() - 0.5F;
         z += random.nextFloat() - 0.5F;
-        setSize(0.02F, 0.02F);
+        setSize(0.01F, 0.01F);
         lifetime = 60;
         thetaHoriz = random.nextFloat() * (float) Math.PI;
         thetaVert = 0;
@@ -30,10 +30,10 @@ public class FlyParticle extends TextureSheetParticle {
             this.remove();
         } else {
             this.move(this.xd, this.yd, this.zd);
-            thetaHoriz += 0.05;
-            thetaVert += 0.05;
+            thetaHoriz += 0.04;
+            thetaVert += 0.04;
             this.xd = Math.sin(thetaHoriz) / 14;
-            this.yd = (Math.sin(2 * thetaVert)) / 12 + 0.025;
+            this.yd = (Math.sin(2 * thetaVert)) / 12;
             this.zd = Math.cos(thetaHoriz) / 14;
         }
     }

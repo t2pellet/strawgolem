@@ -4,7 +4,6 @@ import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.entity.EntityStrawGolem;
 import com.t2pellet.strawgolem.entity.EntityStrawngGolem;
 import com.t2pellet.strawgolem.platform.Services;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -64,9 +63,9 @@ public class CommonRegistry {
     }
 
     public static class Particles {
-        private static Supplier<ParticleType<SimpleParticleType>> FLY_PARTICLE;
+        private static Supplier<SimpleParticleType> FLY_PARTICLE;
 
-        public static ParticleType<SimpleParticleType> getFlyParticle() {
+        public static SimpleParticleType getFlyParticle() {
             return FLY_PARTICLE.get();
         }
 
