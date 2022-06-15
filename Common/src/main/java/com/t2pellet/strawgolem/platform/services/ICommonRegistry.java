@@ -28,6 +28,8 @@ public interface ICommonRegistry {
 
     void registerSound(SoundEvent id);
 
+    Supplier<Item> registerItem(ResourceLocation id, Item.Properties properties);
+
     void registerEvents();
 
     static void registerCrop(Block block) {

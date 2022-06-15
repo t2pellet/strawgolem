@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -31,6 +32,7 @@ public class ForgeCommonRegistry implements ICommonRegistry {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, StrawgolemCommon.MODID);
     public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, StrawgolemCommon.MODID);
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, StrawgolemCommon.MODID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, StrawgolemCommon.MODID);
 
     @Override
     public Supplier<SimpleParticleType> registerParticle(ResourceLocation id) {
@@ -50,6 +52,11 @@ public class ForgeCommonRegistry implements ICommonRegistry {
     @Override
     public void registerSound(SoundEvent id) {
         SOUNDS.register(id.getLocation().getPath(), () -> id);
+    }
+
+    @Override
+    public Supplier<Item> registerItem(ResourceLocation location, Item.Properties properties) {
+        return ITEMS.register(location.getPath(), () -> new Item(properties));
     }
 
     @Override

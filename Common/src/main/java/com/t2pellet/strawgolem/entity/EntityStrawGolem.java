@@ -6,6 +6,7 @@ import com.t2pellet.strawgolem.crop.CropHandler;
 import com.t2pellet.strawgolem.crop.CropRegistry;
 import com.t2pellet.strawgolem.entity.ai.*;
 import com.t2pellet.strawgolem.entity.capability.CapabilityManager;
+import com.t2pellet.strawgolem.entity.capability.accessory.Accessory;
 import com.t2pellet.strawgolem.entity.capability.hunger.Hunger;
 import com.t2pellet.strawgolem.entity.capability.hunger.IHasHunger;
 import com.t2pellet.strawgolem.entity.capability.lifespan.Lifespan;
@@ -86,6 +87,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
         capabilities.addCapability(Memory.class);
         capabilities.addCapability(Tether.class);
         capabilities.addCapability(Hunger.class);
+        capabilities.addCapability(Accessory.class);
         inventory = new SimpleContainer(1);
         harvestPos = null;
         tempted = false;
@@ -125,7 +127,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             }
             if (isInWaterOrBubble() && StrawgolemConfig.Health.isWaterPenalty()) {
                 ++lifeTicks;
-            } else if (isInWaterOrRain() && StrawgolemConfig.Health.isRainPenalty()) {
+            } else if (!getAccessory().hasHat() && isInWaterOrRain() && StrawgolemConfig.Health.isRainPenalty()) {
                 ++lifeTicks;
             }
             getLifespan().shrink(lifeTicks);
@@ -212,6 +214,18 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             }
             // Result
             return InteractionResult.SUCCESS;
+        } else if (heldItem == CommonRegistry.Items.getStrawHat()) {
+            // Compute
+            if (!level.isClientSide()) {
+                getAccessory().setHasHat(true);
+                if (!player.isCreative()) player.getItemInHand(hand).shrink(1);
+                Services.PACKETS.sendInRange(new CapabilityPacket(this), this, 25.0F);
+                // Feedback
+                playSound(GOLEM_INTERESTED, 1.0F, 1.0F);
+                playSound(SoundEvents.GRASS_STEP, 1.0F, 1.0F);
+            }
+            // Result
+            return InteractionResult.CONSUME;
         }
 
         return InteractionResult.FAIL;
@@ -376,9 +390,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     /* Handles capabilities */
 
     /**
-     * Returns the CapabilityManager for the straw golem
-     *
-     * @return
+     * @return the CapabilityManager for the straw golem
      */
     public CapabilityManager getCapabilityManager() {
         return capabilities;
@@ -412,6 +424,13 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     @Override
     public Hunger getHunger() {
         return capabilities.getCapability(Hunger.class);
+    }
+
+    /**
+     * Returns the accessory capability, used to store which accessories the golem is wearing
+     */
+    public Accessory getAccessory() {
+        return capabilities.getCapability(Accessory.class);
     }
 
     @Override

@@ -8,6 +8,8 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 
 import java.util.function.Supplier;
 
@@ -72,6 +74,23 @@ public class CommonRegistry {
         public static void register() {
             StrawgolemCommon.LOG.info("Registering particles");
             FLY_PARTICLE = Services.COMMON_REGISTRY.registerParticle(new ResourceLocation(StrawgolemCommon.MODID, "fly"));
+        }
+
+    }
+
+    public static class Items {
+
+        private static Supplier<Item> STRAW_HAT;
+
+        public static Item getStrawHat() {
+            return STRAW_HAT.get();
+        }
+
+        public static void register() {
+            StrawgolemCommon.LOG.info("Registering items");
+            STRAW_HAT = Services.COMMON_REGISTRY.registerItem(
+                    new ResourceLocation(StrawgolemCommon.MODID, "straw_hat"),
+                    new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_MISC));
         }
 
     }

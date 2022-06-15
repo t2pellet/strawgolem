@@ -31,6 +31,7 @@ public class StrawgolemForge {
         ForgeCommonRegistry.SOUNDS.register(bus);
         ForgeCommonRegistry.PARTICLES.register(bus);
         ForgeCommonRegistry.ENTITIES.register(bus);
+        ForgeCommonRegistry.ITEMS.register(bus);
         // Client pre-init
         if (FMLLoader.getDist().isClient()) {
             StrawgolemCommon.initClient();

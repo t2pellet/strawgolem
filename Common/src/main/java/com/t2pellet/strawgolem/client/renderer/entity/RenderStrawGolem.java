@@ -2,6 +2,7 @@ package com.t2pellet.strawgolem.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.t2pellet.strawgolem.StrawgolemCommon;
+import com.t2pellet.strawgolem.client.renderer.entity.layers.StrawGolemHatLayer;
 import com.t2pellet.strawgolem.client.renderer.entity.model.ModelStrawGolem;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.EntityStrawGolem;
@@ -53,6 +54,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     public RenderStrawGolem(EntityRendererProvider.Context context) {
         super(context, new ModelStrawGolem(context.bakeLayer(ClientRegistry.Entities.getStrawGolemModel())), 0.35f);
         this.addLayer(new ItemInHandLayer<>(this));
+        this.addLayer(new StrawGolemHatLayer(this));
     }
 
     @Override
@@ -68,7 +70,8 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         // Shivering movement
         if (StrawgolemConfig.Miscellaneous.isShiverEnabled() &&
                 (mobEntity.isInCold()
-                        || mobEntity.isInWaterRainOrBubble())) {
+                        || mobEntity.isInWaterOrBubble()
+                        || (mobEntity.isInWaterOrRain() && !mobEntity.getAccessory().hasHat()))) {
             double offX = mobEntity.getRandom().nextDouble() / 32 - 1 / 64F;
             double offZ = mobEntity.getRandom().nextDouble() / 32 - 1 / 64F;
             matrixStack.translate(offX, 0, offZ);

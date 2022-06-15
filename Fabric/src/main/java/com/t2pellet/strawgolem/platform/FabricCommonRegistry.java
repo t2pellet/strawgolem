@@ -16,6 +16,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.item.Item;
 
 import java.util.function.Supplier;
 
@@ -44,6 +45,12 @@ public class FabricCommonRegistry implements ICommonRegistry {
     @Override
     public void registerSound(SoundEvent id) {
         Registry.register(Registry.SOUND_EVENT, id.getLocation(), id);
+    }
+
+    @Override
+    public Supplier<Item> registerItem(ResourceLocation location, Item.Properties properties) {
+        Item item = Registry.register(Registry.ITEM, location, new Item(properties));
+        return () -> item;
     }
 
     @Override

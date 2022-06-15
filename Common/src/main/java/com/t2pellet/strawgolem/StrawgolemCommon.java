@@ -2,6 +2,7 @@ package com.t2pellet.strawgolem;
 
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.capability.CapabilityHandler;
+import com.t2pellet.strawgolem.entity.capability.accessory.Accessory;
 import com.t2pellet.strawgolem.entity.capability.hunger.Hunger;
 import com.t2pellet.strawgolem.entity.capability.lifespan.Lifespan;
 import com.t2pellet.strawgolem.entity.capability.memory.Memory;
@@ -38,6 +39,7 @@ public class StrawgolemCommon {
         Registry.BLOCK.forEach(ICommonRegistry::registerCrop);
         Services.COMMON_REGISTRY.registerEvents();
         CommonRegistry.Particles.register();
+        CommonRegistry.Items.register();
         CommonRegistry.Entities.register();
         CommonRegistry.Sounds.register();
         registerCapabilities();
@@ -61,6 +63,7 @@ public class StrawgolemCommon {
         CapabilityHandler.INSTANCE.register(Lifespan.class, Lifespan::getInstance);
         CapabilityHandler.INSTANCE.register(Memory.class, Memory::getInstance);
         CapabilityHandler.INSTANCE.register(Tether.class, Tether::getInstance);
+        CapabilityHandler.INSTANCE.register(Accessory.class, Accessory::getInstance);
     }
 
 
