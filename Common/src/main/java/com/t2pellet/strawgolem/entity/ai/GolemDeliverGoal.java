@@ -75,7 +75,6 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
             ++this.tryTicks;
             if (this.canContinueToUse()) {
                 double moveSpeed = strawGolem.holdingFullBlock() ? speedModifier * 2 / 3F : speedModifier;
-                moveSpeed *= strawGolem.getHunger().getPercentage();
                 this.mob.getNavigation().moveTo(this.blockPos.getX() + 0.5D, this.blockPos.getY() + 1D, this.blockPos.getZ() + 0.5D, moveSpeed);
             }
         } else {

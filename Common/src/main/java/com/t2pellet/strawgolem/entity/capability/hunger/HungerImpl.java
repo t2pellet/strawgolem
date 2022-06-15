@@ -23,8 +23,17 @@ class HungerImpl implements Hunger {
     }
 
     @Override
-    public void update() {
+    public void shrink() {
         if (hunger > 0) --hunger;
+    }
+
+    @Override
+    public void shrink(int ticks) {
+        if (ticks > hunger) {
+            if (hunger > 0) hunger = 0;
+        } else {
+            hunger -= ticks;
+        }
     }
 
     @Override
@@ -34,7 +43,7 @@ class HungerImpl implements Hunger {
 
     @Override
     public boolean isHungry() {
-        return hunger == 0;
+        return hunger == 0 && StrawgolemConfig.Health.getHunger() > 0;
     }
 
     @Override

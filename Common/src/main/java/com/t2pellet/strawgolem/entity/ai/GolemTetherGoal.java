@@ -58,7 +58,6 @@ public class GolemTetherGoal<T extends PathfinderMob & IHasTether> extends MoveT
             ++this.tryTicks;
             if (this.shouldRecalculatePath()) {
                 double speed = this.speedModifier;
-                if (entity instanceof IHasHunger) speed *= ((IHasHunger) entity).getHunger().getPercentage();
                 this.mob.getNavigation().moveTo(
                         this.blockPos.getX() + 0.5D,
                         this.blockPos.getY() + 1D,

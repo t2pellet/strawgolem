@@ -11,7 +11,14 @@ public interface Lifespan extends Capability {
     /**
      * Updates the lifespan
      */
-    void update();
+    void shrink();
+
+    /**
+     * Updates the lifespan by given # of ticks
+     *
+     * @param ticks the given # of ticks
+     */
+    void shrink(int ticks);
 
     /**
      * @return whether the golem's lifespan is over

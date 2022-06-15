@@ -12,14 +12,23 @@ class LifespanImpl implements Lifespan {
     }
 
     @Override
-    public void update() {
+    public void shrink() {
         if (tickLeft > 0)
             tickLeft--;
     }
 
     @Override
+    public void shrink(int ticks) {
+        if (ticks > tickLeft && tickLeft > 0) {
+            tickLeft = 0;
+        } else {
+            tickLeft -= ticks;
+        }
+    }
+
+    @Override
     public boolean isOver() {
-        return tickLeft == 0;
+        return tickLeft == 0 && StrawgolemConfig.Health.getLifespan() > 0;
     }
 
     @Override

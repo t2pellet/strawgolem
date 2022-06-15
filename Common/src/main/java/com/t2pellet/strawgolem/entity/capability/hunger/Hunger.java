@@ -12,7 +12,9 @@ public interface Hunger extends Capability {
 
     float getPercentage();
 
-    void update();
+    void shrink();
+
+    void shrink(int ticks);
 
     void set(int hunger);
 
