@@ -31,7 +31,7 @@ public class PickupGolemGoal extends Goal {
     public boolean canUse() {
         if (StrawgolemConfig.Miscellaneous.isGolemInteract()
                 && this.golemEntity.level.isDay()
-                && this.golemEntity.getRandom().nextInt(6000) == 0
+                && this.golemEntity.getRandom().nextInt(3000) == 0
                 && this.golemEntity.getVehicle() == null) {
             if (cooldownTime > 0) {
                 --cooldownTime;

@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.entity.ai;
 
+import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.EntityStrawGolem;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -27,7 +28,7 @@ public class MunchGolemGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (animal.getRandom().nextInt(12000) == 0) {
+        if (StrawgolemConfig.Miscellaneous.isGolemMunch() && animal.getRandom().nextInt(3000) == 0) {
             if (cooldownTime > 0) {
                 --cooldownTime;
                 return false;

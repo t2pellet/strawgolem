@@ -106,8 +106,10 @@ public class StrawgolemConfig extends Config {
         private static boolean soundsEnabled = true;
         @Section.Comment("Enables golems shivering in the cold & rain")
         private static boolean shiverEnabled = true;
-        @Section.Comment("Enables Iron Golem's picking up Straw Golems")
+        @Section.Comment("Enables Iron & Strawng Golem's picking up Straw Golems")
         private static boolean golemInteract = true;
+        @Section.Comment("Enables sheep and cows ocassionaly munching on straw golems")
+        private static boolean golemMunch = true;
         @Section.Comment("Enables HWYLA Compat")
         private static boolean enableHwyla = true;
 
@@ -125,6 +127,10 @@ public class StrawgolemConfig extends Config {
 
         public static boolean isEnableHwyla() {
             return enableHwyla;
+        }
+
+        public static boolean isGolemMunch() {
+            return golemMunch;
         }
     }
 
