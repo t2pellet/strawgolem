@@ -73,13 +73,6 @@ public class ForgeCommonRegistry implements ICommonRegistry {
         //Crop growth handling
         MinecraftForge.EVENT_BUS.addListener((Consumer<StrawGolemEvents.CropGrowthEvent>) event -> CropGrowthHandler.onCropGrowth((Level) event.getWorld(), event.getPos()));
         MinecraftForge.EVENT_BUS.addListener((Consumer<PlayerInteractEvent.RightClickBlock>) event -> {
-            // Golem Creation Handling
-            if (WorldInteractHandler.onGolemBuilt(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec()) == InteractionResult.CONSUME) {
-                event.setCanceled(true);
-            }
-            if (WorldInteractHandler.onGolemSheared(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec()) == InteractionResult.CONSUME) {
-                event.setCanceled(true);
-            }
             // Chest Handling
             if (WorldInteractHandler.setPriorityChest(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec()) == InteractionResult.CONSUME) {
                 event.setCanceled(true);

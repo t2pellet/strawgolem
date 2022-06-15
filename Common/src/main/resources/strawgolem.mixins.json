@@ -4,6 +4,7 @@
   "package": "com.t2pellet.strawgolem.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "CarvedPumpkinMixin",
     "CowMixin",
     "IronGolemMixin",
     "LoginMixin",
