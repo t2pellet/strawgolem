@@ -67,6 +67,8 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     private static final ResourceLocation ResourceLocation = new ResourceLocation(StrawgolemCommon.MODID, "strawgolem");
     private static final int maxLifespan = StrawgolemConfig.Health.getLifespan() + StrawgolemConfig.Health.getWheatTicks();
     private static final int maxHunger = StrawgolemConfig.Health.getHunger() + StrawgolemConfig.Health.getFoodTicks();
+    private static final float maxHealth = 8.0F;
+    private static final float moveSpeed = 0.2F;
 
     private final CapabilityManager capabilities;
     private final SimpleContainer inventory;
@@ -76,8 +78,8 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
 
     public static AttributeSupplier.Builder createMob() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 8.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.2D);
+                .add(Attributes.MAX_HEALTH, maxHealth)
+                .add(Attributes.MOVEMENT_SPEED, moveSpeed);
     }
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, Level levelIn) {
@@ -132,6 +134,10 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             }
             getLifespan().shrink(lifeTicks);
             getHunger().shrink(hungerTicks);
+            float curMaxHealth = maxHealth * Math.min(1.25F, getLifespan().getPercentage());
+            float curMoveSpeed = moveSpeed * Math.min(1.25F, getHunger().getPercentage());
+            getAttribute(Attributes.MAX_HEALTH).setBaseValue(curMaxHealth);
+            getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(curMoveSpeed);
             if (getLifespan().isOver()) {
                 kill();
             }
@@ -166,8 +172,8 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             }
             // Compute
             if (!level.isClientSide()) {
-                setHealth(getHealth() + 0.5F);
-                if (StrawgolemConfig.Health.getLifespan() > -1) {
+                heal(0.5F);
+                if (StrawgolemConfig.Health.getLifespan() > -1 && newLifespan < maxLifespan) {
                     getLifespan().set(newLifespan);
                 }
                 if (!player.isCreative()) {
@@ -205,7 +211,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             }
             // Compute
             if (!level.isClientSide()) {
-                if (StrawgolemConfig.Health.getHunger() > -1) {
+                if (StrawgolemConfig.Health.getHunger() > -1 && newHunger < maxHunger) {
                     getHunger().set(newHunger);
                 }
                 if (!player.isCreative()) {

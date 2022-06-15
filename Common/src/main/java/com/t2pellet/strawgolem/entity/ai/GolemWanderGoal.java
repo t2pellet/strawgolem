@@ -24,6 +24,6 @@ public class GolemWanderGoal extends WaterAvoidingRandomStrollGoal {
 
     @Override
     public void start() {
-        this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, speed * strawGolem.getHunger().getPercentage());
+        this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, speed);
     }
 }

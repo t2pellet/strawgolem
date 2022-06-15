@@ -37,6 +37,11 @@ class LifespanImpl implements Lifespan {
     }
 
     @Override
+    public float getPercentage() {
+        return StrawgolemConfig.Health.getLifespan() < 0 ? 100 : (float) tickLeft / StrawgolemConfig.Health.getLifespan();
+    }
+
+    @Override
     public void set(int tickLeft) {
         this.tickLeft = tickLeft;
     }

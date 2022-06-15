@@ -42,7 +42,7 @@ public class GolemTemptGoal extends TemptGoal {
         if (this.mob.distanceToSqr(this.player) < 6.25D) {
             this.mob.getNavigation().stop();
         } else {
-            this.mob.getNavigation().moveTo(this.player, SPEED * strawGolem.getHunger().getPercentage());
+            this.mob.getNavigation().moveTo(this.player, SPEED);
         }
         if (StrawgolemConfig.Tether.isTetherEnabled() && StrawgolemConfig.Tether.doesTemptResetTether()) {
             BlockPos golemPos = strawGolem.blockPosition();

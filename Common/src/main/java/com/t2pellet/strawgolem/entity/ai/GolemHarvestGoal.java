@@ -115,8 +115,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         if (!this.blockPos.closerToCenterThan(this.mob.position(), targetDistance)) {
             ++this.tryTicks;
             if (this.shouldRecalculatePath()) {
-                double speed = this.speedModifier * strawgolem.getHunger().getPercentage();
-                this.mob.getNavigation().moveTo(this.blockPos.getX() + 0.5D, this.blockPos.getY() + 1D, this.blockPos.getZ() + 0.5D, speed);
+                this.mob.getNavigation().moveTo(this.blockPos.getX() + 0.5D, this.blockPos.getY() + 1D, this.blockPos.getZ() + 0.5D, speedModifier);
             }
         } else {
             --this.tryTicks;

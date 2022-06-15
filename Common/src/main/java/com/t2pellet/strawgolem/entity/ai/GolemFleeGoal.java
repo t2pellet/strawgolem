@@ -25,7 +25,7 @@ public class GolemFleeGoal extends AvoidEntityGoal<Monster> {
 
     @Override
     public void start() {
-        this.pathNav.moveTo(this.path, SLOW_SPEED * strawGolem.getHunger().getPercentage());
+        this.pathNav.moveTo(this.path, SLOW_SPEED);
         if (StrawgolemConfig.Miscellaneous.isSoundsEnabled())
             strawGolem.playSound(GOLEM_SCARED, 1.0F, 1.0F);
     }
@@ -33,9 +33,9 @@ public class GolemFleeGoal extends AvoidEntityGoal<Monster> {
     @Override
     public void tick() {
         if (this.mob.distanceToSqr(this.toAvoid) < 49.0D) {
-            this.mob.getNavigation().setSpeedModifier(FAST_SPEED * strawGolem.getHunger().getPercentage());
+            this.mob.getNavigation().setSpeedModifier(FAST_SPEED);
         } else {
-            this.mob.getNavigation().setSpeedModifier(SLOW_SPEED * strawGolem.getHunger().getPercentage());
+            this.mob.getNavigation().setSpeedModifier(SLOW_SPEED);
         }
 
     }

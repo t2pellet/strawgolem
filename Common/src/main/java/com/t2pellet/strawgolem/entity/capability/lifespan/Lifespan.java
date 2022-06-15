@@ -31,6 +31,11 @@ public interface Lifespan extends Capability {
     int get();
 
     /**
+     * @return percentage of lifespan left
+     */
+    float getPercentage();
+
+    /**
      * Sets the current lifespan to tickLeft
      *
      * @param tickLeft
