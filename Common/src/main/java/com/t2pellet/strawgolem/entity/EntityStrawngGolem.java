@@ -90,6 +90,13 @@ public class EntityStrawngGolem extends AbstractGolem implements IHasTether {
     }
 
     @Override
+    public void handleEntityEvent(byte $$0) {
+        if ($$0 == 4) {
+            this.attackAnimationTick = 10;
+        }
+    }
+
+    @Override
     public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
         if (player.getItemInHand(hand).getItem() == Items.WHEAT && !level.isClientSide()) {
             setHealth(getHealth() + 0.5F);
