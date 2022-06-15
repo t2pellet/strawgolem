@@ -14,6 +14,10 @@ on:
         description: 'Release Type'
         required: true
         default: 'alpha'
+      versionRange:
+        description: 'Game Versions'
+        required: true
+        default: '1.18:1.18.2'
 
 jobs:
   build:
@@ -72,7 +76,7 @@ jobs:
           changelog: |
             ${{ steps.changelog.outputs.changelog }}
           relations: "fabric-api:requiredDependency"
-          game_versions: "Minecraft ${{steps.build.outputs.gameVersion}}:${{steps.build.outputs.gameVersion}},Java 17,Fabric"
+          game_versions: "Minecraft ${{versionRange}},Java 17,Fabric"
           release_type: "${{ inputs.releaseType }}"
           project_id: "449768"
           token: "${{ secrets.CF_API_TOKEN }}"
@@ -84,7 +88,7 @@ jobs:
           display_name: "strawgolem-${{steps.build.outputs.gameVersion}}-${{steps.build.outputs.version}}"
           changelog: |
             ${{ steps.changelog.outputs.changelog }}
-          game_versions: "Minecraft ${{steps.build.outputs.gameVersion}}:${{steps.build.outputs.gameVersion}},Java 17,Forge"
+          game_versions: "Minecraft ${{versionRange}},Java 17,Forge"
           release_type: "${{ inputs.releaseType }}"
           project_id: "387580"
           token: "${{ secrets.CF_API_TOKEN }}"

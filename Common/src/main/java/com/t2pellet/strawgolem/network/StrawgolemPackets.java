@@ -9,7 +9,7 @@ public class StrawgolemPackets {
     }
 
     public static class Client {
-        public static final PacketKey<HealthPacket> HEALTH_PACKET = new PacketKey<>(HealthPacket.class, "message_health");
+        public static final PacketKey<CapabilityPacket> CAPABILITY_PACKET = new PacketKey<>(CapabilityPacket.class, "message_capabilities");
         public static final PacketKey<HoldingPacket> HOLDING_PACKET = new PacketKey<>(HoldingPacket.class, "message_item");
         public static final PacketKey<GreedyPacket> GREEDY_PACKET = new PacketKey<>(GreedyPacket.class, "message_greedy");
     }

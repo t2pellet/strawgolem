@@ -5,7 +5,7 @@ import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.crop.CropHandler;
 import com.t2pellet.strawgolem.crop.CropRegistry;
 import com.t2pellet.strawgolem.entity.ai.*;
-import com.t2pellet.strawgolem.entity.capability.CapabilityHandler;
+import com.t2pellet.strawgolem.entity.capability.CapabilityManager;
 import com.t2pellet.strawgolem.entity.capability.hunger.Hunger;
 import com.t2pellet.strawgolem.entity.capability.hunger.IHasHunger;
 import com.t2pellet.strawgolem.entity.capability.lifespan.Lifespan;
@@ -13,7 +13,7 @@ import com.t2pellet.strawgolem.entity.capability.memory.Memory;
 import com.t2pellet.strawgolem.entity.capability.tether.IHasTether;
 import com.t2pellet.strawgolem.entity.capability.tether.Tether;
 import com.t2pellet.strawgolem.events.WorldInteractHandler;
-import com.t2pellet.strawgolem.network.HealthPacket;
+import com.t2pellet.strawgolem.network.CapabilityPacket;
 import com.t2pellet.strawgolem.platform.Services;
 import com.t2pellet.strawgolem.registry.CommonRegistry;
 import net.minecraft.core.BlockPos;
@@ -68,11 +68,8 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     private static final int maxLifespan = StrawgolemConfig.Health.getLifespan() + 12000;
     private static final int maxHunger = StrawgolemConfig.Health.getHunger() + 6000;
 
-    private final Lifespan lifespan;
-    private final Memory memory;
+    private final CapabilityManager capabilities;
     private final SimpleContainer inventory;
-    private final Tether tether;
-    private final Hunger hunger;
     private boolean tempted;
 
     public BlockPos harvestPos;
@@ -85,10 +82,11 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
 
     public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, Level levelIn) {
         super(type, levelIn);
-        lifespan = CapabilityHandler.INSTANCE.get(Lifespan.class).orElseThrow(() -> new InstantiationError("Failed to create lifespan cap"));
-        memory = CapabilityHandler.INSTANCE.get(Memory.class).orElseThrow(() -> new InstantiationError("Failed to create memory cap"));
-        tether = CapabilityHandler.INSTANCE.get(Tether.class).orElseThrow(() -> new InstantiationError("Failed to create tether cap"));
-        hunger = CapabilityHandler.INSTANCE.get(Hunger.class).orElseThrow(() -> new InstantiationError("Failed to create new hunger cap"));
+        capabilities = CapabilityManager.newInstance();
+        capabilities.addCapability(Lifespan.class);
+        capabilities.addCapability(Memory.class);
+        capabilities.addCapability(Tether.class);
+        capabilities.addCapability(Hunger.class);
         inventory = new SimpleContainer(1);
         harvestPos = null;
         tempted = false;
@@ -166,7 +164,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
 
         if (heldItem == Items.WHEAT) {
             // Check condition
-            int newLifespan = lifespan.get() + 12000;
+            int newLifespan = getLifespan().get() + 12000;
             if (newLifespan > maxLifespan) {
                 setHealth(getHealth() + 0.5F);
                 return InteractionResult.FAIL;
@@ -174,9 +172,9 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             // Compute
             if (!level.isClientSide()) {
                 setHealth(getHealth() + 0.5F);
-                if (StrawgolemConfig.Health.getLifespan() > -1) lifespan.set(newLifespan);
+                if (StrawgolemConfig.Health.getLifespan() > -1) getLifespan().set(newLifespan);
                 if (!player.isCreative()) player.getItemInHand(hand).shrink(1);
-                Services.PACKETS.sendInRange(new HealthPacket(this), this, 25.0F);
+                Services.PACKETS.sendInRange(new CapabilityPacket(this), this, 25.0F);
                 // Feedback
                 playSound(GOLEM_HEAL, 1.0F, 1.0F);
                 playSound(SoundEvents.GRASS_STEP, 1.0F, 1.0F);
@@ -186,13 +184,13 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             return InteractionResult.CONSUME;
         } else if (heldItem == Items.APPLE) {
             // Check condition
-            int newHunger = hunger.get() + 6000;
+            int newHunger = getHunger().get() + 6000;
             if (newHunger > maxHunger) return InteractionResult.FAIL;
             // Compute
             if (!level.isClientSide()) {
-                hunger.set(newHunger);
+                getHunger().set(newHunger);
                 if (!player.isCreative()) player.getItemInHand(hand).shrink(1);
-                Services.PACKETS.sendInRange(new HealthPacket(this), this, 25.0F);
+                Services.PACKETS.sendInRange(new CapabilityPacket(this), this, 25.0F);
                 // Feedback
                 playSound(GOLEM_HEAL, 1.0F, 1.0F);
             }
@@ -367,16 +365,26 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
 
     /* Handles capabilities */
 
+    /**
+     * Returns the CapabilityManager for the straw golem
+     *
+     * @return
+     */
+    public CapabilityManager getCapabilityManager() {
+        return capabilities;
+    }
+
     public Lifespan getLifespan() {
-        return lifespan;
+        return capabilities.getCapability(Lifespan.class);
     }
 
     /**
      * Returns the memory, capability, used to store and retrieve chest positions
+     *
      * @return the golem's memory capability
      */
     public Memory getMemory() {
-        return memory;
+        return capabilities.getCapability(Memory.class);
     }
 
     /**
@@ -385,7 +393,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
      */
     @Override
     public Tether getTether() {
-        return tether;
+        return capabilities.getCapability(Tether.class);
     }
 
     /**
@@ -393,7 +401,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
      */
     @Override
     public Hunger getHunger() {
-        return hunger;
+        return capabilities.getCapability(Hunger.class);
     }
 
     @Override
@@ -441,22 +449,16 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
 
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
-        tag.put("lifespan", lifespan.writeTag());
-        tag.put("hunger", hunger.writeTag());
-        tag.put("memory", memory.writeTag());
         tag.put("inventory", inventory.createTag());
-        tag.put("tether", tether.writeTag());
+        tag.put("capabilities", capabilities.writeTag());
         if (harvestPos != null) tag.put("harvestPos", NbtUtils.writeBlockPos(harvestPos));
         super.addAdditionalSaveData(tag);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
-        if (tag.contains("lifespan")) lifespan.readTag(tag.get("lifespan"));
-        if (tag.contains("hunger")) hunger.readTag(tag.get("hunger"));
-        if (tag.contains("memory")) memory.readTag(tag.get("memory"));
         if (tag.contains("inventory")) inventory.fromTag((ListTag) tag.get("inventory"));
-        if (tag.contains("tether")) tether.readTag(tag.get("tether"));
+        if (tag.contains("capabilities")) capabilities.readTag(tag.get("capabilities"));
         if (tag.contains("harvestPos")) harvestPos = NbtUtils.readBlockPos((CompoundTag) tag.get("harvestPos"));
         super.readAdditionalSaveData(tag);
     }
@@ -470,7 +472,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             if (goalSelector.getRunningGoals().anyMatch(
                     goal -> goal.getGoal() instanceof GolemFleeGoal || goal.getGoal() instanceof GolemTetherGoal))
                 return GOLEM_SCARED;
-            else if (holdingFullBlock()) return GOLEM_STRAINED;
+            else if (holdingFullBlock() || getHunger().isHungry()) return GOLEM_STRAINED;
             return GOLEM_AMBIENT;
         }
         return null;
