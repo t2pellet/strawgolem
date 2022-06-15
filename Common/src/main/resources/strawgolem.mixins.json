@@ -7,6 +7,7 @@
     "CarvedPumpkinMixin",
     "CowMixin",
     "IronGolemMixin",
+    "IronGolemModelMixin",
     "LoginMixin",
     "RaiderMixin",
     "SheepMixin"
