@@ -71,8 +71,8 @@ public class WorldInteractHandler {
     /**
      * Handles golem building based on shearing the pumpkin
      */
-    public static InteractionResult onGolemBuiltAlternate(Player player, Level worldIn, InteractionHand hand, BlockHitResult result) {
-        if (!worldIn.isClientSide && StrawgolemConfig.Creation.isGolemConstructionEnabled() && StrawgolemConfig.Creation.isShearConstructionEnabled()) {
+    public static InteractionResult onGolemSheared(Player player, Level worldIn, InteractionHand hand, BlockHitResult result) {
+        if (!worldIn.isClientSide && StrawgolemConfig.Creation.isShearConstructionEnabled()) {
             BlockPos pos = result.getBlockPos();
             if (player.getMainHandItem().getItem() == Items.SHEARS
                     && worldIn.getBlockState(pos).getBlock() == Blocks.PUMPKIN

@@ -4,6 +4,8 @@ import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.util.io.Config;
 import com.t2pellet.strawgolem.util.io.ConfigHelper.Section;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ public class StrawgolemConfig extends Config {
         private static boolean golemConstructionEnabled = true;
         @Section.Comment("Allow constructing head by shearing a pumpkin")
         private static boolean shearConstructionEnabled = true;
+        @Section.Comment("Allow constructing golem with dispenser")
+        private static boolean dispenserConstructionEnabled = true;
         @Section.Comment("Potential head blocks to make a golem")
         private static List<String> headBlocks = new ArrayList<>(List.of("minecraft:carved_pumpkin"));
         @Section.Comment("Potential body blocks to make a golem")
@@ -45,6 +49,10 @@ public class StrawgolemConfig extends Config {
         public static boolean isShearConstructionEnabled() {
             return shearConstructionEnabled;
         }
+
+        public static boolean isDispenserConstructionEnabled() {
+            return dispenserConstructionEnabled;
+        }
     }
 
     @Section("Harvesting")
@@ -61,7 +69,7 @@ public class StrawgolemConfig extends Config {
         private static List<String> filterList = new ArrayList<>();
 
         public static boolean isHarvestAllowed(Block block) {
-            return blockMatchesFilter(block, filterList, filterMode.equals(FILTER_MODE_BLACKLIST));
+            return blockMatchesFilter(block, filterList, !filterMode.equals(FILTER_MODE_WHITELIST));
         }
 
         public static boolean isReplantEnabled() {
@@ -160,6 +168,12 @@ public class StrawgolemConfig extends Config {
         private static boolean waterPenalty = true;
         @Section.Comment("Enables lifespan heavy penalty, such as carrying a gourd block (-1 extra / tick)")
         private static boolean heavyPenalty = true;
+        @Section.Comment("Amount of lifespan restored with wheat")
+        private static int wheatTicks = 6000;
+        @Section.Comment("Amount of hunger restored with apple")
+        private static int foodTicks = 6000;
+        @Section.Comment("Tempt/food item. Default is apple")
+        private static String foodItem = "minecraft:apple";
 
         public static int getLifespan() {
             return lifespan;
@@ -180,6 +194,19 @@ public class StrawgolemConfig extends Config {
         public static boolean isHeavyPenalty() {
             return heavyPenalty;
         }
+
+        public static int getWheatTicks() {
+            return wheatTicks;
+        }
+
+        public static int getFoodTicks() {
+            return foodTicks;
+        }
+
+        public static Item getFoodItem() {
+            return Registry.ITEM.get(new ResourceLocation(foodItem));
+        }
+
     }
 
     private static boolean blockMatchesFilter(Block block, List<String> filter, boolean invert) {

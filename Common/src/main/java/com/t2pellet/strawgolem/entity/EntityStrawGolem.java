@@ -65,8 +65,8 @@ import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.*;
 public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasTether {
 
     private static final ResourceLocation ResourceLocation = new ResourceLocation(StrawgolemCommon.MODID, "strawgolem");
-    private static final int maxLifespan = StrawgolemConfig.Health.getLifespan() + 6000;
-    private static final int maxHunger = StrawgolemConfig.Health.getHunger() + 6000;
+    private static final int maxLifespan = StrawgolemConfig.Health.getLifespan() + StrawgolemConfig.Health.getWheatTicks();
+    private static final int maxHunger = StrawgolemConfig.Health.getHunger() + StrawgolemConfig.Health.getFoodTicks();
 
     private final CapabilityManager capabilities;
     private final SimpleContainer inventory;
@@ -160,7 +160,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
 
         if (heldItem == Items.WHEAT) {
             // Condition
-            int newLifespan = getLifespan().get() + 6000;
+            int newLifespan = getLifespan().get() + StrawgolemConfig.Health.getWheatTicks();
             if (getHealth() == getMaxHealth() && newLifespan > maxLifespan) {
                 return InteractionResult.FAIL;
             }
@@ -181,9 +181,25 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             spawnHealParticles(getX(), getY(), getZ());
             // Result
             return InteractionResult.CONSUME;
-        } else if (heldItem == Items.APPLE) {
+        } else if (heldItem == CommonRegistry.Items.getStrawHat()) {
             // Check condition
-            int newHunger = getHunger().get() + 6000;
+            if (getAccessory().hasHat()) {
+                return InteractionResult.FAIL;
+            }
+            // Compute
+            if (!level.isClientSide()) {
+                getAccessory().setHasHat(true);
+                if (!player.isCreative()) player.getItemInHand(hand).shrink(1);
+                Services.PACKETS.sendInRange(new CapabilityPacket(this), this, 25.0F);
+                // Feedback
+                playSound(GOLEM_INTERESTED, 1.0F, 1.0F);
+                playSound(SoundEvents.GRASS_STEP, 1.0F, 1.0F);
+            }
+            // Result
+            return InteractionResult.CONSUME;
+        } else if (heldItem == StrawgolemConfig.Health.getFoodItem()) {
+            // Check condition
+            int newHunger = getHunger().get() + StrawgolemConfig.Health.getFoodTicks();
             if (newHunger > maxHunger) {
                 return InteractionResult.FAIL;
             }
@@ -214,18 +230,6 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
             }
             // Result
             return InteractionResult.SUCCESS;
-        } else if (heldItem == CommonRegistry.Items.getStrawHat()) {
-            // Compute
-            if (!level.isClientSide()) {
-                getAccessory().setHasHat(true);
-                if (!player.isCreative()) player.getItemInHand(hand).shrink(1);
-                Services.PACKETS.sendInRange(new CapabilityPacket(this), this, 25.0F);
-                // Feedback
-                playSound(GOLEM_INTERESTED, 1.0F, 1.0F);
-                playSound(SoundEvents.GRASS_STEP, 1.0F, 1.0F);
-            }
-            // Result
-            return InteractionResult.CONSUME;
         }
 
         return InteractionResult.FAIL;

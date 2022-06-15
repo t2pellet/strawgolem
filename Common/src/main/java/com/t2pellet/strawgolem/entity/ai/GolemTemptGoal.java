@@ -7,7 +7,6 @@ import com.t2pellet.strawgolem.network.GreedyPacket;
 import com.t2pellet.strawgolem.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 
@@ -20,7 +19,7 @@ public class GolemTemptGoal extends TemptGoal {
     private final EntityStrawGolem strawGolem;
 
     public GolemTemptGoal(EntityStrawGolem creatureIn) {
-        super(creatureIn, SPEED, Ingredient.of(Items.APPLE), false);
+        super(creatureIn, SPEED, Ingredient.of(StrawgolemConfig.Health.getFoodItem()), false);
         strawGolem = creatureIn;
     }
 

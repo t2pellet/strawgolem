@@ -61,7 +61,7 @@ public class FabricCommonRegistry implements ICommonRegistry {
         CropGrowthCallback.EVENT.register(CropGrowthHandler::onCropGrowth);
         //Golem Creation Handling
         UseBlockCallback.EVENT.register(WorldInteractHandler::onGolemBuilt);
-        UseBlockCallback.EVENT.register(WorldInteractHandler::onGolemBuiltAlternate);
+        UseBlockCallback.EVENT.register(WorldInteractHandler::onGolemSheared);
         //Chest Handling
         UseBlockCallback.EVENT.register(WorldInteractHandler::setPriorityChest);
     }

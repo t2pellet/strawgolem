@@ -77,7 +77,7 @@ public class ForgeCommonRegistry implements ICommonRegistry {
             if (WorldInteractHandler.onGolemBuilt(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec()) == InteractionResult.CONSUME) {
                 event.setCanceled(true);
             }
-            if (WorldInteractHandler.onGolemBuiltAlternate(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec()) == InteractionResult.CONSUME) {
+            if (WorldInteractHandler.onGolemSheared(event.getPlayer(), event.getWorld(), event.getHand(), event.getHitVec()) == InteractionResult.CONSUME) {
                 event.setCanceled(true);
             }
             // Chest Handling
