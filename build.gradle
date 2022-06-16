@@ -40,6 +40,18 @@ subprojects {
                 includeGroup "curse.maven"
             }
         }
+        maven {
+            url "https://maven.shedaniel.me"
+            content {
+                includeGroup("me.shedaniel.cloth")
+            }
+        }
+        maven {
+            url "https://maven.terraformersmc.com/"
+            content {
+                includeGroup("com.terraformersmc")
+            }
+        }
     }
 
 
