@@ -87,7 +87,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canContinueToUse() {
-        return strawgolem.getVehicle() == null && super.canContinueToUse();
+        return strawgolem.getVehicle() == null && !strawgolem.getHunger().isHungry() && super.canContinueToUse();
     }
 
 

@@ -39,6 +39,14 @@ public class GolemTetherGoal<T extends PathfinderMob & IHasTether> extends MoveT
     }
 
     @Override
+    public boolean canContinueToUse() {
+        if (entity instanceof IHasHunger hungerHaver && hungerHaver.getHunger().isHungry()) {
+            return false;
+        }
+        return super.canContinueToUse();
+    }
+
+    @Override
     public void start() {
         if (StrawgolemConfig.Miscellaneous.isSoundsEnabled()) {
             entity.playSound(GOLEM_SCARED, 1.0F, 1.0F);
