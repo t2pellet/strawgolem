@@ -96,13 +96,15 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
         ItemStack insertStack = this.strawGolem.getInventory().getItem(0);
         this.strawGolem.getInventory().removeAllItems();
         boolean chestFull = true;
-        for (int i = 0; i < invBlock.getContainerSize(); ++i) {
-            if (invBlock.getItem(i).getItem() == Items.AIR
-                    || (invBlock.getItem(i).getItem() == insertStack.getItem() && invBlock.getItem(i).getCount() < invBlock.getItem(i).getMaxStackSize())) {
-                insertStack.setCount(insertStack.getCount() + invBlock.getItem(i).getCount());
-                invBlock.setItem(i, insertStack);
-                chestFull = false;
-                break;
+        if (invBlock == null) {
+            for (int i = 0; i < invBlock.getContainerSize(); ++i) {
+                if (invBlock.getItem(i).getItem() == Items.AIR
+                        || (invBlock.getItem(i).getItem() == insertStack.getItem() && invBlock.getItem(i).getCount() < invBlock.getItem(i).getMaxStackSize())) {
+                    insertStack.setCount(insertStack.getCount() + invBlock.getItem(i).getCount());
+                    invBlock.setItem(i, insertStack);
+                    chestFull = false;
+                    break;
+                }
             }
         }
         if (chestFull) {
