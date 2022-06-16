@@ -36,7 +36,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canContinueToUse() {
-        return !strawGolem.isHandEmpty() && super.canContinueToUse();
+        return !strawGolem.getHunger().isHungry() && !strawGolem.isHandEmpty() && strawGolem.level.getBlockEntity(blockPos) instanceof Container && super.canContinueToUse();
     }
 
     @Override
@@ -96,15 +96,13 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
         ItemStack insertStack = this.strawGolem.getInventory().getItem(0);
         this.strawGolem.getInventory().removeAllItems();
         boolean chestFull = true;
-        if (invBlock == null) {
-            for (int i = 0; i < invBlock.getContainerSize(); ++i) {
-                if (invBlock.getItem(i).getItem() == Items.AIR
-                        || (invBlock.getItem(i).getItem() == insertStack.getItem() && invBlock.getItem(i).getCount() < invBlock.getItem(i).getMaxStackSize())) {
-                    insertStack.setCount(insertStack.getCount() + invBlock.getItem(i).getCount());
-                    invBlock.setItem(i, insertStack);
-                    chestFull = false;
-                    break;
-                }
+        for (int i = 0; i < invBlock.getContainerSize(); ++i) {
+            if (invBlock.getItem(i).getItem() == Items.AIR
+                    || (invBlock.getItem(i).getItem() == insertStack.getItem() && invBlock.getItem(i).getCount() < invBlock.getItem(i).getMaxStackSize())) {
+                insertStack.setCount(insertStack.getCount() + invBlock.getItem(i).getCount());
+                invBlock.setItem(i, insertStack);
+                chestFull = false;
+                break;
             }
         }
         if (chestFull) {
