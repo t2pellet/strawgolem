@@ -3,35 +3,34 @@ package com.t2pellet.strawgolem.client.compat;
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.util.io.ConfigHelper;
-import com.terraformersmc.modmenu.api.ConfigScreenFactory;
-import com.terraformersmc.modmenu.api.ModMenuApi;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.impl.builders.*;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraftforge.client.ConfigGuiHandler;
+import net.minecraftforge.fml.ModLoadingContext;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class ClothConfigCompat implements ModMenuApi {
+public class ClothConfigCompat {
 
-    public ClothConfigCompat() {
+
+    public static void registerConfigMenu() {
         StrawgolemCommon.LOG.info("Registering cloth config compat");
-    }
-
-    @Override
-    public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> {
-            try {
-                return createConfigBuilder().build();
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        };
+        ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,
+                () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> {
+                    try {
+                        return createConfigBuilder().setParentScreen(screen).build();
+                    } catch (IllegalAccessException e) {
+                        StrawgolemCommon.LOG.error("Failed to create config screen", e);
+                    }
+                    return screen;
+                }));
     }
 
     /* Disgusting code */

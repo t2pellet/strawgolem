@@ -88,6 +88,8 @@ dependencies {
     runtimeOnly fg.deobf("mcp.mobius.waila:wthit:forge-4.10.1")
     runtimeOnly fg.deobf("lol.bai:badpackets:forge-0.1.2")
     runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:3784851")
+    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:6.2.62")
+    runtimeOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:6.2.62")
 }
 
 tasks.withType(JavaCompile) {

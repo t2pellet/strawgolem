@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem;
 
+import com.t2pellet.strawgolem.client.compat.ClothConfigCompat;
 import com.t2pellet.strawgolem.platform.ForgeCommonRegistry;
 import com.t2pellet.strawgolem.storage.StrawgolemSaveData;
 import net.minecraft.server.level.ServerLevel;
@@ -9,6 +10,7 @@ import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -25,6 +27,7 @@ public class StrawgolemForge {
     public StrawgolemForge() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::onCommonSetup);
+        bus.addListener(this::onClientSetup);
         // Pre-init
         StrawgolemCommon.preInit();
         // Deferred Registers
@@ -32,7 +35,7 @@ public class StrawgolemForge {
         ForgeCommonRegistry.PARTICLES.register(bus);
         ForgeCommonRegistry.ENTITIES.register(bus);
         ForgeCommonRegistry.ITEMS.register(bus);
-        // Client pre-init
+        // Client init
         if (FMLLoader.getDist().isClient()) {
             StrawgolemCommon.initClient();
         }
@@ -65,5 +68,9 @@ public class StrawgolemForge {
 
     private void onCommonSetup(FMLCommonSetupEvent event) {
         StrawgolemCommon.init();
+    }
+
+    private void onClientSetup(FMLClientSetupEvent event) {
+        ClothConfigCompat.registerConfigMenu();
     }
 }
