@@ -2,8 +2,8 @@ package com.t2pellet.strawgolem.entity;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.crop.CropHandler;
 import com.t2pellet.strawgolem.crop.CropRegistry;
+import com.t2pellet.strawgolem.crop.WorldCrops;
 import com.t2pellet.strawgolem.entity.ai.*;
 import com.t2pellet.strawgolem.entity.capability.CapabilityManager;
 import com.t2pellet.strawgolem.entity.capability.accessory.Accessory;
@@ -293,7 +293,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
                     for (int k = -maxRange; k < maxRange; ++k) {
                         currPos = blockPosition().offset(i, j, k);
                         if (CropRegistry.INSTANCE.isGrownCrop(level.getBlockState(currPos))) {
-                            CropHandler.INSTANCE.addCrop(level, currPos);
+                            WorldCrops.of(level).addCrop(currPos);
                         }
                     }
                 }

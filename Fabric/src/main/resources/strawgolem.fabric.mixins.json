@@ -9,8 +9,7 @@
     "IronGolemMixin",
     "RaiderMixin",
     "LoginMixin",
-    "CowMixin",
-    "ServerLevelMixin"
+    "CowMixin"
   ],
   "injectors": {
     "defaultRequire": 1

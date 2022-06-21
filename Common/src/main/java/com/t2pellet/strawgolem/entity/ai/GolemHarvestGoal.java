@@ -1,8 +1,8 @@
 package com.t2pellet.strawgolem.entity.ai;
 
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.crop.CropHandler;
 import com.t2pellet.strawgolem.crop.CropRegistry;
+import com.t2pellet.strawgolem.crop.WorldCrops;
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.network.HoldingPacket;
 import com.t2pellet.strawgolem.platform.Services;
@@ -51,7 +51,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         } else if (strawgolem.isHandEmpty() && !strawgolem.getHunger().isHungry()) {
             BlockPos harvestPos = strawgolem.harvestPos != null
                     ? strawgolem.harvestPos
-                    : CropHandler.INSTANCE.getNearestCrop(strawgolem.level, strawgolem.blockPosition(), StrawgolemConfig.Harvest.getSearchRange());
+                    : WorldCrops.of(strawgolem.level).getNearestCrop(strawgolem.blockPosition(), StrawgolemConfig.Harvest.getSearchRange());
             if (harvestPos != null) {
                 BlockState state = strawgolem.level.getBlockState(harvestPos);
                 BlockEntity entity = strawgolem.level.getBlockEntity(harvestPos);
@@ -62,10 +62,10 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                         return true;
                     } else if (harvestPos == strawgolem.harvestPos) {
                         // Put crop we're trying to resume harvesting back into the system if we can't reach it
-                        CropHandler.INSTANCE.addCrop(strawgolem.level, harvestPos);
+                        WorldCrops.of(strawgolem.level).addCrop(harvestPos);
                     }
                 } else {
-                    CropHandler.INSTANCE.removeCrop(strawgolem.level, harvestPos);
+                    WorldCrops.of(strawgolem.level).removeCrop(harvestPos);
                 }
             }
         }
@@ -76,7 +76,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     @Override
     public void start() {
         this.nextStartTick = nextStartTick(this.mob);
-        CropHandler.INSTANCE.removeCrop(strawgolem.level, blockPos); // Remove crop from handler, as its being harvested now
+        WorldCrops.of(strawgolem.level).removeCrop(blockPos); // Remove crop from handler, as its being harvested now
         strawgolem.playSound(GOLEM_INTERESTED, 1.0F, 1.0F);
     }
 
@@ -97,7 +97,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
         BlockState state = strawgolem.level.getBlockState(blockPos);
         BlockEntity entity = strawgolem.level.getBlockEntity(blockPos);
         if (CropRegistry.INSTANCE.isGrownCrop(state) || CropRegistry.INSTANCE.isGrownCrop(entity)) {
-            CropHandler.INSTANCE.addCrop(strawgolem.level, blockPos);
+            WorldCrops.of(strawgolem.level).addCrop(blockPos);
         }
         strawgolem.harvestPos = null;
     }

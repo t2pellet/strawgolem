@@ -1,6 +1,6 @@
 package com.t2pellet.strawgolem.events;
 
-import com.t2pellet.strawgolem.crop.CropHandler;
+import com.t2pellet.strawgolem.crop.WorldCrops;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -14,7 +14,7 @@ public class CropGrowthHandler {
 
     public static void onCropGrowth(Level world, BlockPos cropPos) {
         if (!world.isClientSide()) {
-            CropHandler.INSTANCE.addCrop(world, cropPos);
+            WorldCrops.of(world).addCrop(cropPos);
         }
     }
 }

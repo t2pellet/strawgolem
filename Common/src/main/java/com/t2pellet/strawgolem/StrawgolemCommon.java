@@ -12,7 +12,6 @@ import com.t2pellet.strawgolem.platform.services.ICommonRegistry;
 import com.t2pellet.strawgolem.platform.services.IPacketHandler;
 import com.t2pellet.strawgolem.registry.ClientRegistry;
 import com.t2pellet.strawgolem.registry.CommonRegistry;
-import com.t2pellet.strawgolem.storage.StrawgolemSaveData;
 import com.t2pellet.strawgolem.util.io.ConfigHelper;
 import net.minecraft.core.Registry;
 import org.apache.logging.log4j.LogManager;
@@ -25,8 +24,6 @@ public class StrawgolemCommon {
 
     public static final String MODID = "strawgolem";
     public static final Logger LOG = LogManager.getLogger(MODID);
-
-    public static StrawgolemSaveData data;
 
     public static void preInit() {
         StrawgolemCommon.LOG.info("Pre-init started!");
