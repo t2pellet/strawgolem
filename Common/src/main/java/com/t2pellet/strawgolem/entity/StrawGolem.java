@@ -292,7 +292,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
                 for (int j = -maxRange; j < maxRange; ++j) {
                     for (int k = -maxRange; k < maxRange; ++k) {
                         currPos = blockPosition().offset(i, j, k);
-                        if (CropRegistry.INSTANCE.isGrownCrop(level.getBlockState(currPos))) {
+                        if (CropRegistry.INSTANCE.isGrownCrop(level, currPos)) {
                             WorldCrops.of(level).addCrop(currPos);
                         }
                     }

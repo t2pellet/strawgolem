@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -30,6 +31,13 @@ class CropRegistryImpl implements CropRegistry {
     public <T extends BlockEntity> void register(BlockEntityType<T> id, IHarvestChecker<T> harvestChecker, IHarvestLogic<T> harvestLogic, IReplantLogic<T> replantLogic) {
         StrawgolemCommon.LOG.debug("Registering crop block: {}", id);
         entries.put(new CropKey<>(id), new CropVal<>(harvestChecker, harvestLogic, replantLogic));
+    }
+
+    @Override
+    public boolean isGrownCrop(LevelReader world, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
+        BlockEntity entity = world.getBlockEntity(pos);
+        return isGrownCrop(state) || isGrownCrop(entity);
     }
 
     @Override

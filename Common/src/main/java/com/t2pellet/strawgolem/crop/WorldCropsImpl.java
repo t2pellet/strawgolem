@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.Iterator;
@@ -17,22 +18,26 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
     private static final String TAG_POS = "pos";
     private static final int VERSION = 1;
 
-    PosTree tree;
+    private final Level level;
+    private PosTree tree;
 
-    WorldCropsImpl() {
+    WorldCropsImpl(Level level) {
         tree = PosTree.create();
+        this.level = level;
     }
 
-    static WorldCropsImpl load(CompoundTag tag) {
+    static WorldCropsImpl load(Level level, CompoundTag tag) {
         StrawgolemCommon.LOG.info("Loading strawgolem save data");
 
-        WorldCropsImpl crops = new WorldCropsImpl();
+        WorldCropsImpl crops = new WorldCropsImpl(level);
         if (!tag.contains(TAG_VERSION) || tag.getInt(TAG_VERSION) != VERSION) return crops;
 
         ListTag positions = tag.getList(TAG_POS, Tag.TAG_COMPOUND);
         for (Tag position : positions) {
             BlockPos pos = NbtUtils.readBlockPos((CompoundTag) position);
-            crops.addCrop(pos);
+            if (CropRegistry.INSTANCE.isGrownCrop(level, pos)) {
+                crops.addCrop(pos);
+            }
         }
         return crops;
     }
@@ -45,14 +50,15 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
         Iterator<BlockPos> cropIterator = getCrops();
         while (cropIterator.hasNext()) {
             BlockPos pos = cropIterator.next();
-            positionsTag.add(NbtUtils.writeBlockPos(pos));
+            if (CropRegistry.INSTANCE.isGrownCrop(level, pos)) {
+                positionsTag.add(NbtUtils.writeBlockPos(pos));
+            }
         }
         tag.put(TAG_POS, positionsTag);
         tag.putInt(TAG_VERSION, VERSION);
 
         return tag;
     }
-
 
     @Override
     public void reset() {

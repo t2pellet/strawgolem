@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -48,6 +49,16 @@ public interface CropRegistry {
 
     /**
      * Determine if crop is grown
+     *
+     * @param world the world the crop is in
+     * @param pos   the position of the crop
+     * @return whether there is a grown crop at the given world and pos
+     */
+    boolean isGrownCrop(LevelReader world, BlockPos pos);
+
+    /**
+     * Determine if crop is grown
+     *
      * @param state the state to check
      * @return whether the BlockState represents a grown crop
      */

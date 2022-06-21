@@ -23,8 +23,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.StemGrownBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -53,9 +51,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                     ? strawgolem.harvestPos
                     : WorldCrops.of(strawgolem.level).getNearestCrop(strawgolem.blockPosition(), StrawgolemConfig.Harvest.getSearchRange());
             if (harvestPos != null) {
-                BlockState state = strawgolem.level.getBlockState(harvestPos);
-                BlockEntity entity = strawgolem.level.getBlockEntity(harvestPos);
-                if (CropRegistry.INSTANCE.isGrownCrop(state) || CropRegistry.INSTANCE.isGrownCrop(entity)) {
+                if (CropRegistry.INSTANCE.isGrownCrop(strawgolem.level, harvestPos)) {
                     if (strawgolem.canReachBlock(strawgolem.level, harvestPos)) {
                         blockPos = harvestPos;
                         strawgolem.harvestPos = harvestPos;
@@ -94,9 +90,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     @Override
     public void stop() {
         // If we stopped while still harvesting, restore the crop and clear harvesting flag
-        BlockState state = strawgolem.level.getBlockState(blockPos);
-        BlockEntity entity = strawgolem.level.getBlockEntity(blockPos);
-        if (CropRegistry.INSTANCE.isGrownCrop(state) || CropRegistry.INSTANCE.isGrownCrop(entity)) {
+        if (CropRegistry.INSTANCE.isGrownCrop(strawgolem.level, blockPos)) {
             WorldCrops.of(strawgolem.level).addCrop(blockPos);
         }
         strawgolem.harvestPos = null;
@@ -125,9 +119,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
 
     @Override
     protected boolean isValidTarget(LevelReader worldIn, BlockPos pos) {
-        BlockState state = worldIn.getBlockState(pos);
-        BlockEntity entity = worldIn.getBlockEntity(pos);
-        return (CropRegistry.INSTANCE.isGrownCrop(state) || CropRegistry.INSTANCE.isGrownCrop(entity)) && strawgolem.isHandEmpty();
+        return CropRegistry.INSTANCE.isGrownCrop(worldIn, pos) && strawgolem.isHandEmpty();
     }
 
     /**
