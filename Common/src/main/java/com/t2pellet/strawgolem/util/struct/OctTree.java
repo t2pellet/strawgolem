@@ -3,263 +3,196 @@ package com.t2pellet.strawgolem.util.struct;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Stack;
 
-class OctBox {
 
-    final int minX, minY, minZ;
-    final int maxX, maxY, maxZ;
-    final BlockPos center;
+class OctTree implements PosTree {
 
-    public OctBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-        this.minX = minX;
-        this.minY = minY;
-        this.minZ = minZ;
-        this.maxX = maxX;
-        this.maxY = maxY;
-        this.maxZ = maxZ;
-        center = calculateCenter();
+    private static final int NUM_CHILDREN = 8;
+
+    private Vec3i point;
+    private Vec3i bottomCorner;
+    private Vec3i topCorner;
+    private OctTree[] children;
+    private int size;
+
+    private OctTree() {
     }
 
-    private BlockPos calculateCenter() {
-        int centerX = (minX + maxX) / 2;
-        int centerY = (minY + maxY) / 2;
-        int centerZ = (minZ + maxZ) / 2;
-        return new BlockPos(centerX, centerY, centerZ);
+    private OctTree(Vec3i point) {
+        this.point = point;
+        size = 1;
     }
 
-}
-
-public class OctTree implements PosTree {
-
-    private static final OctBox DEFAULT = new OctBox(-2147483645, -2147483645, -2147483645, 2147483645, 2147483645, 2147483645);
-    private static final HashMap<Triplet<Boolean, Boolean, Boolean>, Octant> octants = new HashMap<>();
-
-    static {
-        octants.put(new Triplet<>(true, true, true), Octant.FIRST);
-        octants.put(new Triplet<>(true, true, false), Octant.SECOND);
-        octants.put(new Triplet<>(false, true, true), Octant.THIRD);
-        octants.put(new Triplet<>(false, true, false), Octant.FOURTH);
-        octants.put(new Triplet<>(true, false, true), Octant.FIFTH);
-        octants.put(new Triplet<>(true, false, false), Octant.SIXTH);
-        octants.put(new Triplet<>(false, false, true), Octant.SEVENTH);
-        octants.put(new Triplet<>(false, false, false), Octant.EIGHTH);
-    }
-
-    private final OctTree parent;
-    private final OctBox boundary;
-    private final Vec3i center;
-    private final HashMap<Octant, OctTree> octTrees = new HashMap<>();
-    private BlockPos point;
-
-    private enum Octant {
-        FIRST, SECOND, THIRD, FOURTH, FIFTH, SIXTH, SEVENTH, EIGHTH
-    }
-
-    OctTree() {
-        parent = null;
-        boundary = DEFAULT;
-        center = BlockPos.ZERO;
-        buildMaps();
-    }
-
-    public OctTree(final OctTree parent, final Octant octant) {
-        this.parent = parent;
-        switch (octant) {
-            case FIRST ->
-                    boundary = new OctBox(parent.boundary.minX, parent.boundary.minY, parent.boundary.minZ, parent.center.getX(), parent.center.getY(), parent.center.getZ());
-            case SECOND ->
-                    boundary = new OctBox(parent.boundary.minX, parent.boundary.minY, parent.center.getZ(), parent.center.getX(), parent.center.getY(), parent.boundary.maxZ);
-            case THIRD ->
-                    boundary = new OctBox(parent.center.getX(), parent.boundary.minY, parent.boundary.minZ, parent.boundary.maxX, parent.center.getY(), parent.center.getZ());
-            case FOURTH ->
-                    boundary = new OctBox(parent.center.getX(), parent.boundary.minY, parent.center.getZ(), parent.boundary.maxX, parent.center.getY(), parent.boundary.maxZ);
-            case FIFTH ->
-                    boundary = new OctBox(parent.boundary.minX, parent.center.getY(), parent.boundary.minZ, parent.center.getX(), parent.boundary.maxY, parent.center.getZ());
-            case SIXTH ->
-                    boundary = new OctBox(parent.boundary.minX, parent.center.getY(), parent.center.getZ(), parent.center.getX(), parent.boundary.maxY, parent.boundary.maxZ);
-            case SEVENTH ->
-                    boundary = new OctBox(parent.center.getX(), parent.center.getY(), parent.boundary.minZ, parent.boundary.maxX, parent.boundary.maxY, parent.center.getZ());
-            default ->
-                    boundary = new OctBox(parent.center.getX(), parent.center.getY(), parent.center.getZ(), parent.boundary.maxX, parent.boundary.maxY, parent.boundary.maxZ);
+    public OctTree(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        if (maxX < minX || maxY < minY || maxZ < minZ) {
+            throw new IllegalArgumentException("Invalid OctTree boundaries");
         }
-        center = boundary.center;
-        buildMaps();
+        bottomCorner = new Vec3i(minX, minY, minZ);
+        topCorner = new Vec3i(maxX, maxY, maxZ);
+        point = null;
+        children = new OctTree[NUM_CHILDREN];
+        for (int i = 0; i < NUM_CHILDREN; ++i) {
+            children[i] = new OctTree();
+        }
     }
-
-    // ADT methods
 
     @Override
-    public void insert(BlockPos pos) {
-        if (pos == null) return;
-        OctTree result = search(pos);
-        if (pos.equals(result.point)) return;
+    public void insert(Vec3i pos) {
+        if (comparePoints(pos, bottomCorner) != 7 || comparePoints(pos, topCorner) != 0) {
+            throw new IllegalArgumentException("Attempting to insert point outside of boundary: " + pos);
+        }
 
-        if (result.isEmpty()) {
-            result.point = pos;
-        } else if (result.isLeaf()) {
-            result.insertToLeaf(pos);
+        Vec3i center = midPoint();
+        int childLoc = comparePoints(pos, center);
+
+        if (children[childLoc].size == 0) {
+            // empty, turn into leaf
+            children[childLoc] = new OctTree(pos);
+        } else if (children[childLoc].point == null) {
+            // region, pass along
+            children[childLoc].insert(pos);
         } else {
-            Octant posOctant = result.getOctant(pos);
-            OctTree posTree = new OctTree(result, posOctant);
-            posTree.point = pos;
-            result.setOctTree(posOctant, posTree);
-        }
-    }
-
-    @Override
-    public void delete(BlockPos pos) {
-        if (pos == null) return;
-        OctTree result = search(pos);
-
-        if (pos.equals(result.point)) {
-            result.point = null;
-            while (result.parent != null && result.isEmpty()) {
-                Octant octant = result.parent.getOctant(pos);
-                result.parent.setOctTree(octant, null);
-                result = result.parent;
+            // leaf, turn into region
+            Vec3i childPoint = children[childLoc].point;
+            if (childPoint.equals(pos)) return;
+            switch (childLoc) {
+                case 7 ->
+                        children[childLoc] = new OctTree(center.getX(), center.getY(), center.getZ(), topCorner.getX(), topCorner.getY(), topCorner.getZ());
+                case 6 ->
+                        children[childLoc] = new OctTree(center.getX(), center.getY(), bottomCorner.getZ(), topCorner.getX(), topCorner.getY(), center.getZ());
+                case 5 ->
+                        children[childLoc] = new OctTree(center.getX(), bottomCorner.getY(), center.getZ(), topCorner.getX(), center.getY(), topCorner.getZ());
+                case 4 ->
+                        children[childLoc] = new OctTree(center.getX(), bottomCorner.getY(), bottomCorner.getZ(), topCorner.getX(), center.getY(), center.getZ());
+                case 3 ->
+                        children[childLoc] = new OctTree(bottomCorner.getX(), center.getY(), center.getZ(), center.getX(), topCorner.getY(), topCorner.getZ());
+                case 2 ->
+                        children[childLoc] = new OctTree(bottomCorner.getX(), center.getY(), bottomCorner.getZ(), center.getX(), topCorner.getY(), center.getZ());
+                case 1 ->
+                        children[childLoc] = new OctTree(bottomCorner.getX(), bottomCorner.getY(), center.getZ(), center.getX(), center.getY(), topCorner.getZ());
+                case 0 ->
+                        children[childLoc] = new OctTree(bottomCorner.getX(), bottomCorner.getY(), bottomCorner.getZ(), center.getX(), center.getY(), center.getZ());
             }
+            children[childLoc].insert(childPoint);
+            children[childLoc].insert(pos);
         }
+        ++size;
     }
 
     @Override
-    public BlockPos findNearest(final BlockPos pos) {
-        if (isEmpty()) return null;
-        OctTree closestTree = search(pos);
-        if (pos.equals(closestTree.point)) return pos;
+    public void delete(Vec3i pos) {
+        if (comparePoints(pos, bottomCorner) != 7 || comparePoints(pos, topCorner) != 0) {
+            throw new IllegalArgumentException("Attempting to delete point outside of boundary: " + pos);
+        }
 
-        PriorityQueue<BlockPos> closestPQ = new PriorityQueue<>((o1, o2) -> Float.compare(o1.distManhattan(pos), o2.distManhattan(pos)));
+        Vec3i center = midPoint();
+        int childLoc = comparePoints(pos, center);
 
-        closestTree.buildPQ(closestPQ);
-        return closestPQ.poll();
-    }
-
-    private void buildPQ(PriorityQueue<BlockPos> pq) {
-        if (isLeaf()) pq.offer(point);
-        else {
-            for (Octant octant : Octant.values()) {
-                OctTree child = getOctTree(octant);
-                if (child != null) child.buildPQ(pq);
+        if (children[childLoc].size > 0) {
+            if (children[childLoc].point == null) {
+                // region, pass along
+                children[childLoc].delete(pos);
+            } else {
+                // leaf, check and delete if match
+                if (children[childLoc].point.equals(pos)) {
+                    children[childLoc] = new OctTree();
+                }
             }
+            --size;
         }
     }
 
     @Override
-    public boolean isEmpty() {
-        return isLeaf() && point == null;
+    public BlockPos findNearest(Vec3i pos) {
+        if (comparePoints(pos, bottomCorner) != 7 || comparePoints(pos, topCorner) != 0) {
+            throw new IllegalArgumentException("Attempting to find nearest point outside of boundary: " + pos);
+        }
+
+        return (BlockPos) findNearest(this, pos);
     }
+
+    static Vec3i findNearest(OctTree current, Vec3i pos) {
+        Vec3i center = current.midPoint();
+        int childLoc = comparePoints(pos, center);
+
+        if (current.children[childLoc].size == 0) {
+            // child is empty, check neighbours
+            Vec3i candidate = null;
+            double candidateDistance = Integer.MAX_VALUE;
+            for (OctTree child : current.children) {
+                if (child.size > 0) {
+                    Vec3i newCandidate = findNearest(child, pos);
+                    double newCandidateDistance = pos.distSqr(newCandidate);
+                    if (newCandidateDistance < candidateDistance) {
+                        candidate = newCandidate;
+                        candidateDistance = newCandidateDistance;
+                    }
+                }
+            }
+            return candidate;
+        } else if (current.children[childLoc].point == null) {
+            // child is region, pass along
+            return findNearest(current.children[childLoc], pos);
+        } else {
+            // child is leaf, return its point
+            return current.children[childLoc].point;
+        }
+    }
+
 
     @Override
     public Iterator<BlockPos> iterator() {
-        return new TreeIterator(this);
+        Stack<Vec3i> stack = new Stack<>();
+        buildStack(stack, this);
+
+        return new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                return !stack.empty();
+            }
+
+            @Override
+            public BlockPos next() {
+                return (BlockPos) stack.pop();
+            }
+        };
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof OctTree tree)) return false;
-        return boundary.equals(tree.boundary);
-    }
-
-    // Smaller helpers
-
-    private void buildMaps() {
-        octTrees.put(Octant.FIRST, null);
-        octTrees.put(Octant.SECOND, null);
-        octTrees.put(Octant.THIRD, null);
-        octTrees.put(Octant.FOURTH, null);
-        octTrees.put(Octant.FIFTH, null);
-        octTrees.put(Octant.SIXTH, null);
-        octTrees.put(Octant.SEVENTH, null);
-        octTrees.put(Octant.EIGHTH, null);
-    }
-
-    private Octant getOctant(final BlockPos query) {
-        Triplet<Boolean, Boolean, Boolean> queryValues = new Triplet<>(
-                query.getX() < center.getX(),
-                query.getY() < center.getY(),
-                query.getZ() < center.getZ());
-        return octants.get(queryValues);
-    }
-
-    private OctTree getOctTree(final Octant query) {
-        return octTrees.get(query);
-    }
-
-    private OctTree getOctTree(final BlockPos query) {
-        return getOctTree(getOctant(query));
-    }
-
-    private void setOctTree(Octant key, OctTree value) {
-        octTrees.put(key, value);
-    }
-
-    private boolean isLeaf() {
-        return octTrees.values().stream().allMatch(Objects::isNull);
-    }
-
-    // Bigger Helpers
-
-    private OctTree search(final BlockPos pos) {
-        if (pos.equals(point)) return this;
-        OctTree octTree = getOctTree(pos);
-        if (octTree != null) return octTree.search(pos);
-        return this;
-    }
-
-    private void insertToLeaf(BlockPos pos) {
-        OctTree tree = this;
-
-        Octant pointOctant = tree.getOctant(point);
-        Octant posOctant = tree.getOctant(pos);
-
-        while (pointOctant == posOctant) {
-            tree.setOctTree(pointOctant, new OctTree(tree, pointOctant));
-            tree = tree.getOctTree(pointOctant);
-
-            pointOctant = tree.getOctant(point);
-            posOctant = tree.getOctant(pos);
-        }
-
-        OctTree posTree = new OctTree(tree, posOctant);
-        posTree.point = pos;
-        tree.setOctTree(posOctant, posTree);
-
-        OctTree pointTree = new OctTree(tree, pointOctant);
-        pointTree.point = point;
-        tree.setOctTree(pointOctant, pointTree);
-
-        point = null;
-    }
-
-    // Iterator class
-    private static class TreeIterator implements Iterator<BlockPos> {
-
-        private final Stack<BlockPos> positions = new Stack<>();
-
-        private TreeIterator(OctTree tree) {
-            buildStack(tree);
-        }
-
-        @Override
-        public boolean hasNext() {
-            return !positions.isEmpty();
-        }
-
-        @Override
-        public BlockPos next() {
-            if (!hasNext()) throw new NoSuchElementException();
-            return positions.pop();
-        }
-
-        private void buildStack(OctTree parent) {
-            for (OctTree tree : parent.octTrees.values()) {
-                if (tree != null) {
-                    if (tree.point != null) positions.push(tree.point);
-                    else buildStack(tree);
+    private static void buildStack(Stack<Vec3i> stack, OctTree current) {
+        for (OctTree child : current.children) {
+            if (child.size > 0) {
+                if (child.point != null) {
+                    stack.push(child.point);
+                } else {
+                    buildStack(stack, child);
                 }
             }
         }
-
     }
 
+    private static int comparePoints(Vec3i point1, Vec3i point2) {
+        if (point1.getX() < point2.getX()) {
+            if (point1.getY() < point2.getY()) {
+                return point1.getZ() < point2.getZ() ? 0 : 1;
+            } else {
+                return point1.getZ() < point2.getZ() ? 2 : 3;
+            }
+        } else {
+            if (point1.getY() < point2.getY()) {
+                return point1.getZ() < point2.getZ() ? 4 : 5;
+            } else {
+                return point1.getZ() < point2.getZ() ? 6 : 7;
+            }
+        }
+    }
+
+    private Vec3i midPoint() {
+        int midX = bottomCorner.getX() + (topCorner.getX()) >> 1;
+        int midY = bottomCorner.getY() + (topCorner.getY()) >> 1;
+        int midZ = bottomCorner.getZ() + (topCorner.getZ()) >> 1;
+
+        return new Vec3i(midX, midY, midZ);
+    }
 }

@@ -1,6 +1,7 @@
 package com.t2pellet.strawgolem.util.struct;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 
 import java.util.Iterator;
 
@@ -11,33 +12,30 @@ public interface PosTree {
      * @return the instance
      */
     static PosTree create() {
-        return new OctTree();
+        return new OctTree(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
     }
 
     /**
-     * Return whether the tree is empty
-     * @return true if it has no nodes, false otherwise
-     */
-    boolean isEmpty();
-
-    /**
      * Insert a BlockPos into the tree
+     *
      * @param pos the position to insert
      */
-    void insert(BlockPos pos);
+    void insert(Vec3i pos);
 
     /**
      * Delete a BlockPos from the tree, or do nothing if not present
+     *
      * @param pos the position to delete
      */
-    void delete(BlockPos pos);
+    void delete(Vec3i pos);
 
     /**
      * Finds the nearest BlockPos to the given position, returns null if empty
+     *
      * @param pos the query position
      * @return the nearest position
      */
-    BlockPos findNearest(BlockPos pos);
+    BlockPos findNearest(Vec3i pos);
 
     /**
      * Returns iterator of BlockPos in the tree
