@@ -2,6 +2,7 @@ package com.t2pellet.strawgolem;
 
 import com.t2pellet.strawgolem.client.compat.ClothConfigCompat;
 import com.t2pellet.strawgolem.platform.ForgeCommonRegistry;
+import com.t2pellet.strawgolem.platform.Services;
 import com.t2pellet.strawgolem.storage.StrawgolemSaveData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.MinecraftForge;
@@ -71,6 +72,8 @@ public class StrawgolemForge {
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
-        ClothConfigCompat.registerConfigMenu();
+        if (Services.PLATFORM.isModLoaded("cloth_config")) {
+            ClothConfigCompat.registerConfigMenu();
+        }
     }
 }
