@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.entity.ai;
 
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.AbstractGolem;
@@ -13,10 +13,10 @@ import java.util.EnumSet;
  */
 public class PickupGolemGoal extends Goal {
 
-    private static final TargetingConditions predicate = TargetingConditions.forNonCombat().selector(e -> e instanceof EntityStrawGolem).range(10.0D);
+    private static final TargetingConditions predicate = TargetingConditions.forNonCombat().selector(e -> e instanceof StrawGolem).range(10.0D);
     private final double speed;
     private final AbstractGolem golemEntity;
-    private EntityStrawGolem strawGolem;
+    private StrawGolem strawGolem;
     private int pickupTime;
     private int cooldownTime;
 
@@ -37,7 +37,7 @@ public class PickupGolemGoal extends Goal {
                 --cooldownTime;
                 return false;
             }
-            strawGolem = golemEntity.level.getNearestEntity(EntityStrawGolem.class, predicate, this.golemEntity, this.golemEntity.getX(), this.golemEntity.getY(), this.golemEntity.getZ(), this.golemEntity.getBoundingBox().inflate(10.0D, 4.0D, 10.0D));
+            strawGolem = golemEntity.level.getNearestEntity(StrawGolem.class, predicate, this.golemEntity, this.golemEntity.getX(), this.golemEntity.getY(), this.golemEntity.getZ(), this.golemEntity.getBoundingBox().inflate(10.0D, 4.0D, 10.0D));
             return strawGolem != null && strawGolem.isHandEmpty() && strawGolem.getVehicle() == null;
         }
         return false;

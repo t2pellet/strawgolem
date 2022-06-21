@@ -2,7 +2,7 @@ package com.t2pellet.strawgolem.crop;
 
 import com.mojang.authlib.GameProfile;
 import com.t2pellet.strawgolem.StrawgolemCommon;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -76,7 +76,7 @@ public interface CropRegistry {
      * @param pos   the crop position
      * @return the items to harvest
      */
-    List<ItemStack> handleHarvest(ServerLevel level, EntityStrawGolem golem, BlockPos pos);
+    List<ItemStack> handleHarvest(ServerLevel level, StrawGolem golem, BlockPos pos);
 
     /**
      * Predicate for checking if the registered crop T is mature
@@ -166,7 +166,7 @@ public interface CropRegistry {
          * @param input the crop
          * @return the list of items to harvest
          */
-        List<ItemStack> doHarvest(ServerLevel level, EntityStrawGolem golem, BlockPos pos, T input);
+        List<ItemStack> doHarvest(ServerLevel level, StrawGolem golem, BlockPos pos, T input);
     }
 
     private static boolean isCropDrop(ItemStack drop) {

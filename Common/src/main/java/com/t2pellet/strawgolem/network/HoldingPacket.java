@@ -1,6 +1,6 @@
 package com.t2pellet.strawgolem.network;
 
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 
 public class HoldingPacket extends Packet<HoldingPacket> {
 
-    public HoldingPacket(EntityStrawGolem golem) {
+    public HoldingPacket(StrawGolem golem) {
         super();
         CompoundTag itemTag = new CompoundTag();
         golem.getMainHandItem().save(itemTag);
@@ -30,8 +30,8 @@ public class HoldingPacket extends Packet<HoldingPacket> {
         public void run() {
             ItemStack stack = ItemStack.of(tag.getCompound("heldStack"));
             Level world = net.minecraft.client.Minecraft.getInstance().level;
-            EntityStrawGolem golem = null;
-            if (world != null) golem = (EntityStrawGolem) world.getEntity(tag.getInt("id"));
+            StrawGolem golem = null;
+            if (world != null) golem = (StrawGolem) world.getEntity(tag.getInt("id"));
             if (golem != null) {
                 golem.getInventory().setItem(0, stack);
             }

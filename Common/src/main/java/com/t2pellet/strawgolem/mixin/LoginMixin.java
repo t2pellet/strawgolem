@@ -1,6 +1,6 @@
 package com.t2pellet.strawgolem.mixin;
 
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.entity.ai.GolemTemptGoal;
 import com.t2pellet.strawgolem.network.CapabilityPacket;
 import com.t2pellet.strawgolem.network.GreedyPacket;
@@ -39,8 +39,8 @@ public class LoginMixin {
     }
 
     public void sendPacket(ServerPlayer player) {
-        List<EntityStrawGolem> golems = player.level.getEntitiesOfClass(EntityStrawGolem.class, player.getBoundingBox().inflate(30), e -> true);
-        for (EntityStrawGolem golem : golems) {
+        List<StrawGolem> golems = player.level.getEntitiesOfClass(StrawGolem.class, player.getBoundingBox().inflate(30), e -> true);
+        for (StrawGolem golem : golems) {
             Services.PACKETS.sendTo(new CapabilityPacket(golem), player);
             Services.PACKETS.sendTo(new HoldingPacket(golem), player);
             boolean greedy = golem.isRunningGoal(GolemTemptGoal.class);

@@ -1,6 +1,6 @@
 package com.t2pellet.strawgolem.mixin;
 
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
@@ -20,7 +20,7 @@ public class RaiderMixin extends Mob {
 
     @Inject(method = "registerGoals", at = @At("TAIL"))
     public void registerGoals(CallbackInfo ci) {
-        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>((Raider) (Object) this, EntityStrawGolem.class, true));
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>((Raider) (Object) this, StrawGolem.class, true));
     }
 
 

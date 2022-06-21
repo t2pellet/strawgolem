@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.entity.ai;
 
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
@@ -11,10 +11,10 @@ import java.util.Optional;
 
 public class GolemPoutGoal extends Goal {
 
-    private final EntityStrawGolem golem;
+    private final StrawGolem golem;
     private final double originalSpeed;
 
-    public GolemPoutGoal(EntityStrawGolem golem) {
+    public GolemPoutGoal(StrawGolem golem) {
         this.golem = golem;
         originalSpeed = golem.getMoveControl().getSpeedModifier();
     }

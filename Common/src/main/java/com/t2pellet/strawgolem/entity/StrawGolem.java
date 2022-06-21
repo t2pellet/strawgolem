@@ -62,7 +62,7 @@ import java.util.Arrays;
 import static com.t2pellet.strawgolem.registry.CommonRegistry.Particles.getFlyParticle;
 import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.*;
 
-public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasTether {
+public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether {
 
     private static final ResourceLocation ResourceLocation = new ResourceLocation(StrawgolemCommon.MODID, "strawgolem");
     private static final int maxLifespan = StrawgolemConfig.Health.getLifespan() + StrawgolemConfig.Health.getWheatTicks();
@@ -82,7 +82,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
                 .add(Attributes.MOVEMENT_SPEED, moveSpeed);
     }
 
-    public EntityStrawGolem(EntityType<? extends EntityStrawGolem> type, Level levelIn) {
+    public StrawGolem(EntityType<? extends StrawGolem> type, Level levelIn) {
         super(type, levelIn);
         capabilities = CapabilityManager.newInstance();
         capabilities.addCapability(Lifespan.class);
@@ -265,7 +265,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     @Override
     public void thunderHit(ServerLevel world, LightningBolt bolt) {
         if (random.nextInt(10) == 0 && !level.isClientSide()) {
-            EntityStrawngGolem strawngGolem = CommonRegistry.Entities.getStrawngGolemType().create(level);
+            StrawngGolem strawngGolem = CommonRegistry.Entities.getStrawngGolemType().create(level);
             if (hasCustomName()) {
                 strawngGolem.setCustomName(getCustomName());
             }
@@ -457,7 +457,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
 
     @Override
     public void setPos(double posX, double posY, double posZ) {
-        if (getVehicle() instanceof IronGolem || getVehicle() instanceof EntityStrawngGolem) {
+        if (getVehicle() instanceof IronGolem || getVehicle() instanceof StrawngGolem) {
             AbstractGolem golemEntity = (AbstractGolem) getVehicle();
             double lookX = golemEntity.getLookAngle().x;
             double lookZ = golemEntity.getLookAngle().z;
@@ -473,7 +473,7 @@ public class EntityStrawGolem extends AbstractGolem implements IHasHunger, IHasT
     @Override
     public void stopRiding() {
         super.stopRiding();
-        if (getVehicle() instanceof IronGolem || getVehicle() instanceof EntityStrawngGolem) {
+        if (getVehicle() instanceof IronGolem || getVehicle() instanceof StrawngGolem) {
             LivingEntity ridingEntity = (LivingEntity) getVehicle();
             double lookX = ridingEntity.getLookAngle().x;
             double lookZ = ridingEntity.getLookAngle().z;

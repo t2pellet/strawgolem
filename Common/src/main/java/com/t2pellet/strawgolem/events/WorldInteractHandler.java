@@ -2,7 +2,7 @@ package com.t2pellet.strawgolem.events;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -43,7 +43,7 @@ public class WorldInteractHandler {
                     && Player.isShiftKeyDown()
                     && Player.getMainHandItem().isEmpty()
                     && playerToGolemMap.containsKey(Player.getUUID())) {
-                EntityStrawGolem golem = (EntityStrawGolem) world.getEntity(playerToGolemMap.get(Player.getUUID()));
+                StrawGolem golem = (StrawGolem) world.getEntity(playerToGolemMap.get(Player.getUUID()));
                 if (golem != null) {
                     golem.getMemory().setPriorityChest(blockHitResult.getBlockPos());
                     golem.getMemory().addPosition(world, blockHitResult.getBlockPos());

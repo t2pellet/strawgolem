@@ -3,7 +3,7 @@ package com.t2pellet.strawgolem.client.renderer.entity.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -15,7 +15,7 @@ import net.minecraft.world.entity.HumanoidArm;
 // TODO : Arms are slightly rotated for some reason
 
 // Originally made by the talented Fr3nderman
-public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements ArmedModel {
+public class StrawGolemModel extends EntityModel<StrawGolem> implements ArmedModel {
 
     private final ModelPart hat;
     private final ModelPart head;
@@ -29,7 +29,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Ar
     private boolean isHungry;
     private boolean tempted;
 
-    public ModelStrawGolem(ModelPart root) {
+    public StrawGolemModel(ModelPart root) {
         hat = root.getChild("hat");
         head = root.getChild("head");
         body = root.getChild("body");
@@ -72,7 +72,7 @@ public class ModelStrawGolem extends EntityModel<EntityStrawGolem> implements Ar
     }
 
     @Override
-    public void setupAnim(EntityStrawGolem entity, float limbAngle, float limbDistance, float tickDelta, float headYaw, float headPitch) {
+    public void setupAnim(StrawGolem entity, float limbAngle, float limbDistance, float tickDelta, float headYaw, float headPitch) {
         //Head rotation
         this.head.yRot = headYaw * 0.017453292F;
         this.hat.yRot = headYaw * 0.017453292F;

@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.client.renderer.entity.model;
 
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
-import com.t2pellet.strawgolem.entity.EntityStrawngGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
+import com.t2pellet.strawgolem.entity.StrawngGolem;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -11,7 +11,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
-public class ModelStrawngGolem extends HierarchicalModel<EntityStrawngGolem> {
+public class StrawngGolemModel extends HierarchicalModel<StrawngGolem> {
 
     private final ModelPart root;
     private final ModelPart head;
@@ -21,7 +21,7 @@ public class ModelStrawngGolem extends HierarchicalModel<EntityStrawngGolem> {
     private final ModelPart leftLeg;
     private final ModelPart rightLeg;
 
-    public ModelStrawngGolem(ModelPart root) {
+    public StrawngGolemModel(ModelPart root) {
         this.root = root;
         head = root.getChild("head");
         headBand = head.getChild("headBand");
@@ -69,7 +69,7 @@ public class ModelStrawngGolem extends HierarchicalModel<EntityStrawngGolem> {
     }
 
     @Override
-    public void setupAnim(EntityStrawngGolem entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(StrawngGolem entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         setRotationAngle(headBand, 0.0F, -0.2618F, 0.0F);
         this.head.yRot = headYaw * ((float) Math.PI / 180F);
         this.head.xRot = headPitch * ((float) Math.PI / 180F);
@@ -80,12 +80,12 @@ public class ModelStrawngGolem extends HierarchicalModel<EntityStrawngGolem> {
     }
 
     @Override
-    public void prepareMobModel(EntityStrawngGolem entity, float limbAngle, float limbDistance, float tickDelta) {
+    public void prepareMobModel(StrawngGolem entity, float limbAngle, float limbDistance, float tickDelta) {
         int attackTicks = entity.getAttackTicks();
         if (attackTicks > 0) {
             leftArm.xRot = -(float) Math.PI * (attackTicks - tickDelta) / 5;
             rightArm.xRot = -(float) Math.PI * (attackTicks - tickDelta) / 5;
-        } else if (entity.hasPassenger(e -> e instanceof EntityStrawGolem) && entity.getPassengers().size() == 1) {
+        } else if (entity.hasPassenger(e -> e instanceof StrawGolem) && entity.getPassengers().size() == 1) {
             leftArm.xRot = -0.45F * (float) Math.PI;
             rightArm.xRot = -0.45F * (float) Math.PI;
             leftArm.yRot = 0.34F;

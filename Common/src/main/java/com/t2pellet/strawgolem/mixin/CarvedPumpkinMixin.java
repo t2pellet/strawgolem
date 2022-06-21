@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.mixin;
 
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.registry.CommonRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -60,7 +60,7 @@ public class CarvedPumpkinMixin {
                 world.levelEvent(2001, blockInWorld.getPos(), Block.getId(blockInWorld.getState()));
             }
 
-            EntityStrawGolem golem = CommonRegistry.Entities.getStrawGolemType().create(world);
+            StrawGolem golem = CommonRegistry.Entities.getStrawGolemType().create(world);
             BlockPos golemPos = match.getBlock(0, 1, 0).getPos();
             golem.moveTo(golemPos, 0.0F, 0.0F);
             world.addFreshEntity(golem);

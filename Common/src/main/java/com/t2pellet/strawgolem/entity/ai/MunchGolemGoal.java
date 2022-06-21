@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.entity.ai;
 
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -12,10 +12,10 @@ import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_HURT;
 
 public class MunchGolemGoal extends Goal {
 
-    private static final TargetingConditions predicate = TargetingConditions.forNonCombat().selector(e -> e instanceof EntityStrawGolem).range(10.0D);
+    private static final TargetingConditions predicate = TargetingConditions.forNonCombat().selector(e -> e instanceof StrawGolem).range(10.0D);
     private final double speed;
     private final Animal animal;
-    private EntityStrawGolem strawGolem;
+    private StrawGolem strawGolem;
     private int cooldownTime;
     private boolean munched;
 
@@ -33,7 +33,7 @@ public class MunchGolemGoal extends Goal {
                 --cooldownTime;
                 return false;
             }
-            strawGolem = animal.level.getNearestEntity(EntityStrawGolem.class, predicate, this.animal, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getBoundingBox().inflate(10.0D, 4.0D, 10.0D));
+            strawGolem = animal.level.getNearestEntity(StrawGolem.class, predicate, this.animal, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getBoundingBox().inflate(10.0D, 4.0D, 10.0D));
             return strawGolem != null;
         }
         return false;

@@ -2,7 +2,7 @@ package com.t2pellet.strawgolem.entity.ai;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.network.GreedyPacket;
 import com.t2pellet.strawgolem.platform.Services;
 import net.minecraft.core.BlockPos;
@@ -16,9 +16,9 @@ public class GolemTemptGoal extends TemptGoal {
 
     private static final double SPEED = 0.8D;
 
-    private final EntityStrawGolem strawGolem;
+    private final StrawGolem strawGolem;
 
-    public GolemTemptGoal(EntityStrawGolem creatureIn) {
+    public GolemTemptGoal(StrawGolem creatureIn) {
         super(creatureIn, SPEED, Ingredient.of(StrawgolemConfig.Health.getFoodItem()), false);
         strawGolem = creatureIn;
     }

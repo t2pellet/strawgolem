@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.entity.ai;
 
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.monster.Monster;
 
@@ -11,9 +11,9 @@ public class GolemFleeGoal extends AvoidEntityGoal<Monster> {
     private static final double SLOW_SPEED = 0.8D;
     private static final double FAST_SPEED = 1.1D;
 
-    private final EntityStrawGolem strawGolem;
+    private final StrawGolem strawGolem;
 
-    public GolemFleeGoal(EntityStrawGolem entityIn) {
+    public GolemFleeGoal(StrawGolem entityIn) {
         super(entityIn, Monster.class, 12.0F, SLOW_SPEED, FAST_SPEED);
         strawGolem = entityIn;
     }

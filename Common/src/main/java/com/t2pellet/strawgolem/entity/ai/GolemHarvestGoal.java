@@ -3,7 +3,7 @@ package com.t2pellet.strawgolem.entity.ai;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
 import com.t2pellet.strawgolem.crop.CropHandler;
 import com.t2pellet.strawgolem.crop.CropRegistry;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.network.HoldingPacket;
 import com.t2pellet.strawgolem.platform.Services;
 import net.minecraft.core.BlockPos;
@@ -34,9 +34,9 @@ import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.GOLEM_STRAI
 
 public class GolemHarvestGoal extends MoveToBlockGoal {
 
-    private final EntityStrawGolem strawgolem;
+    private final StrawGolem strawgolem;
 
-    public GolemHarvestGoal(EntityStrawGolem strawgolem) {
+    public GolemHarvestGoal(StrawGolem strawgolem) {
         super(strawgolem, 0.7D, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
         this.strawgolem = strawgolem;
     }

@@ -2,10 +2,10 @@ package com.t2pellet.strawgolem.registry;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.client.particle.FlyParticle;
-import com.t2pellet.strawgolem.client.renderer.entity.RenderStrawGolem;
-import com.t2pellet.strawgolem.client.renderer.entity.RenderStrawngGolem;
-import com.t2pellet.strawgolem.client.renderer.entity.model.ModelStrawGolem;
-import com.t2pellet.strawgolem.client.renderer.entity.model.ModelStrawngGolem;
+import com.t2pellet.strawgolem.client.renderer.entity.StrawGolemRenderer;
+import com.t2pellet.strawgolem.client.renderer.entity.StrawngGolemRenderer;
+import com.t2pellet.strawgolem.client.renderer.entity.model.StrawGolemModel;
+import com.t2pellet.strawgolem.client.renderer.entity.model.StrawngGolemModel;
 import com.t2pellet.strawgolem.platform.Services;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 
@@ -35,8 +35,8 @@ public class ClientRegistry {
 
         public static void register() {
             StrawgolemCommon.LOG.info("Registering entity renderers");
-            Services.CLIENT_REGISTRY.registerEntityRenderer(STRAW_GOLEM_TYPE, RenderStrawGolem::new, Entities::getStrawGolemModel, ModelStrawGolem.createModelData());
-            Services.CLIENT_REGISTRY.registerEntityRenderer(STRAWNG_GOLEM_TYPE, RenderStrawngGolem::new, Entities::getStrawngGolemModel, ModelStrawngGolem.createModelData());
+            Services.CLIENT_REGISTRY.registerEntityRenderer(STRAW_GOLEM_TYPE, StrawGolemRenderer::new, Entities::getStrawGolemModel, StrawGolemModel.createModelData());
+            Services.CLIENT_REGISTRY.registerEntityRenderer(STRAWNG_GOLEM_TYPE, StrawngGolemRenderer::new, Entities::getStrawngGolemModel, StrawngGolemModel.createModelData());
         }
     }
 

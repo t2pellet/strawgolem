@@ -29,7 +29,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-public class EntityStrawngGolem extends AbstractGolem implements IHasTether {
+public class StrawngGolem extends AbstractGolem implements IHasTether {
 
     private static final ResourceLocation LOOT = new ResourceLocation(StrawgolemCommon.MODID, "strawnggolem");
 
@@ -48,7 +48,7 @@ public class EntityStrawngGolem extends AbstractGolem implements IHasTether {
 
     private final Tether tether;
 
-    public EntityStrawngGolem(EntityType<? extends EntityStrawngGolem> entityType, Level world) {
+    public StrawngGolem(EntityType<? extends StrawngGolem> entityType, Level world) {
         super(entityType, world);
         maxUpStep = 1.0F;
         tether = CapabilityHandler.INSTANCE.get(Tether.class).orElseThrow(() -> new InstantiationError("Failed to create tether cap"));

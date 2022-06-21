@@ -1,6 +1,6 @@
 package com.t2pellet.strawgolem.mixin;
 
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.client.model.IronGolemModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.Mth;
@@ -33,7 +33,7 @@ public class IronGolemModelMixin {
             if (j > 0) {
                 this.rightArm.xRot = -0.8F + 0.025F * Mth.triangleWave((float) j, 70.0F);
                 this.leftArm.xRot = 0.0F;
-            } else if (entity.hasPassenger(e -> e instanceof EntityStrawGolem) && entity.getPassengers().size() == 1) {
+            } else if (entity.hasPassenger(e -> e instanceof StrawGolem) && entity.getPassengers().size() == 1) {
                 leftArm.xRot = -0.45F * (float) Math.PI;
                 rightArm.xRot = -0.45F * (float) Math.PI;
                 leftArm.yRot = 0.18F;

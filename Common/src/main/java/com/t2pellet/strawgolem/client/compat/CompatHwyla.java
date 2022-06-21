@@ -2,7 +2,7 @@ package com.t2pellet.strawgolem.client.compat;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import mcp.mobius.waila.api.*;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -18,7 +18,7 @@ public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
             StrawgolemCommon.LOG.info("Registering Strawgolem HWYLA Compat");
             registrar.addConfig(LIFESPAN, StrawgolemConfig.Health.getLifespan() > 0);
             registrar.addConfig(HUNGER, StrawgolemConfig.Health.getHunger() > 0);
-            registrar.addComponent(this, TooltipPosition.BODY, EntityStrawGolem.class);
+            registrar.addComponent(this, TooltipPosition.BODY, StrawGolem.class);
         } else {
             StrawgolemCommon.LOG.info("Strawgolem HWYLA compat is disabled");
         }
@@ -26,7 +26,7 @@ public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
 
     @Override
     public void appendBody(ITooltip tooltip, IEntityAccessor accessor, IPluginConfig config) {
-        if (accessor.getEntity() instanceof EntityStrawGolem golem) {
+        if (accessor.getEntity() instanceof StrawGolem golem) {
             if (config.getBoolean(LIFESPAN) && StrawgolemConfig.Health.getLifespan() > 0) {
                 float daysLeftLife = golem.getLifespan().get() / 24000F;
                 if (daysLeftLife >= 1) {

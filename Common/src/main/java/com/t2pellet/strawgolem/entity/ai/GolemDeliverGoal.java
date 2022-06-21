@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.entity.ai;
 
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.network.HoldingPacket;
 import com.t2pellet.strawgolem.platform.Services;
 import net.minecraft.core.BlockPos;
@@ -20,11 +20,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 public class GolemDeliverGoal extends MoveToBlockGoal {
-    private final EntityStrawGolem strawGolem;
+    private final StrawGolem strawGolem;
     private boolean deliveringBlock;
     private boolean doneDepositing;
 
-    public GolemDeliverGoal(EntityStrawGolem strawGolem) {
+    public GolemDeliverGoal(StrawGolem strawGolem) {
         super(strawGolem, 0.7D, StrawgolemConfig.Harvest.getSearchRange(), StrawgolemConfig.Harvest.getSearchRange());
         this.strawGolem = strawGolem;
     }

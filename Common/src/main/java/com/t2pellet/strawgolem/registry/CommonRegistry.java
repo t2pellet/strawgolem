@@ -1,8 +1,8 @@
 package com.t2pellet.strawgolem.registry;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
-import com.t2pellet.strawgolem.entity.EntityStrawngGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
+import com.t2pellet.strawgolem.entity.StrawngGolem;
 import com.t2pellet.strawgolem.platform.Services;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
@@ -45,21 +45,21 @@ public class CommonRegistry {
     }
 
     public static class Entities {
-        static Supplier<EntityType<EntityStrawGolem>> STRAW_GOLEM_TYPE;
-        static Supplier<EntityType<EntityStrawngGolem>> STRAWNG_GOLEM_TYPE;
+        static Supplier<EntityType<StrawGolem>> STRAW_GOLEM_TYPE;
+        static Supplier<EntityType<StrawngGolem>> STRAWNG_GOLEM_TYPE;
 
-        public static EntityType<EntityStrawGolem> getStrawGolemType() {
+        public static EntityType<StrawGolem> getStrawGolemType() {
             return STRAW_GOLEM_TYPE.get();
         }
 
-        public static EntityType<EntityStrawngGolem> getStrawngGolemType() {
+        public static EntityType<StrawngGolem> getStrawngGolemType() {
             return STRAWNG_GOLEM_TYPE.get();
         }
 
         public static void register() {
             StrawgolemCommon.LOG.info("Registering entities");
-            STRAW_GOLEM_TYPE = Services.COMMON_REGISTRY.registerEntity("strawgolem", EntityStrawGolem::new, 0.6F, 0.9F, EntityStrawGolem::createMob);
-            STRAWNG_GOLEM_TYPE = Services.COMMON_REGISTRY.registerEntity("strawnggolem", EntityStrawngGolem::new, 1.25F, 3.5F, EntityStrawngGolem::createMob);
+            STRAW_GOLEM_TYPE = Services.COMMON_REGISTRY.registerEntity("strawgolem", StrawGolem::new, 0.6F, 0.9F, StrawGolem::createMob);
+            STRAWNG_GOLEM_TYPE = Services.COMMON_REGISTRY.registerEntity("strawnggolem", StrawngGolem::new, 1.25F, 3.5F, StrawngGolem::createMob);
         }
 
     }

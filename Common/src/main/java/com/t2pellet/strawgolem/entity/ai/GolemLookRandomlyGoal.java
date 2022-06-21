@@ -1,13 +1,13 @@
 package com.t2pellet.strawgolem.entity.ai;
 
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 
 public class GolemLookRandomlyGoal extends RandomLookAroundGoal {
 
-    private final EntityStrawGolem strawGolem;
+    private final StrawGolem strawGolem;
 
-    public GolemLookRandomlyGoal(EntityStrawGolem entitylivingIn) {
+    public GolemLookRandomlyGoal(StrawGolem entitylivingIn) {
         super(entitylivingIn);
         strawGolem = entitylivingIn;
     }

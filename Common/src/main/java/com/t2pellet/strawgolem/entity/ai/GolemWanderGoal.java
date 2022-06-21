@@ -1,14 +1,14 @@
 package com.t2pellet.strawgolem.entity.ai;
 
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 
 public class GolemWanderGoal extends WaterAvoidingRandomStrollGoal {
     private static final double speed = 0.5D;
 
-    private final EntityStrawGolem strawGolem;
+    private final StrawGolem strawGolem;
 
-    public GolemWanderGoal(EntityStrawGolem creature) {
+    public GolemWanderGoal(StrawGolem creature) {
         super(creature, speed);
         strawGolem = creature;
     }

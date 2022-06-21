@@ -1,14 +1,14 @@
 package com.t2pellet.strawgolem.entity.ai;
 
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.player.Player;
 
 public class GolemLookAtPlayerGoal extends LookAtPlayerGoal {
 
-    private final EntityStrawGolem strawGolem;
+    private final StrawGolem strawGolem;
 
-    public GolemLookAtPlayerGoal(EntityStrawGolem entityIn, float maxDistance) {
+    public GolemLookAtPlayerGoal(StrawGolem entityIn, float maxDistance) {
         super(entityIn, Player.class, maxDistance);
         strawGolem = entityIn;
     }

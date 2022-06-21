@@ -3,9 +3,9 @@ package com.t2pellet.strawgolem.client.renderer.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.client.renderer.entity.layers.StrawGolemHatLayer;
-import com.t2pellet.strawgolem.client.renderer.entity.model.ModelStrawGolem;
+import com.t2pellet.strawgolem.client.renderer.entity.model.StrawGolemModel;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.registry.ClientRegistry;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -24,7 +24,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGolem> {
+public class StrawGolemRenderer extends MobRenderer<StrawGolem, StrawGolemModel> {
 
     private static final Map<String, ResourceLocation> TEXTURE_MAP;
     private static final ResourceLocation TEXTURE_DEFAULT, TEXTURE_OLD, TEXTURE_DYING, TEXTURE_WINTER;
@@ -51,14 +51,14 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
         IS_DECEMBER = GregorianCalendar.getInstance().get(Calendar.MONTH) == Calendar.DECEMBER;
     }
 
-    public RenderStrawGolem(EntityRendererProvider.Context context) {
-        super(context, new ModelStrawGolem(context.bakeLayer(ClientRegistry.Entities.getStrawGolemModel())), 0.35f);
+    public StrawGolemRenderer(EntityRendererProvider.Context context) {
+        super(context, new StrawGolemModel(context.bakeLayer(ClientRegistry.Entities.getStrawGolemModel())), 0.35f);
         this.addLayer(new ItemInHandLayer<>(this));
         this.addLayer(new StrawGolemHatLayer(this));
     }
 
     @Override
-    public void render(EntityStrawGolem mobEntity, float f, float g, PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i) {
+    public void render(StrawGolem mobEntity, float f, float g, PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i) {
         this.getModel().setHoldingBlock(mobEntity.holdingFullBlock());
         this.getModel().setHoldingItem(!mobEntity.isHandEmpty());
         this.getModel().setHungry(mobEntity.getHunger().isHungry());
@@ -80,7 +80,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityStrawGolem golem) {
+    public ResourceLocation getTextureLocation(StrawGolem golem) {
         int lifespan = golem.getLifespan().get();
         int maxLifespan = StrawgolemConfig.Health.getLifespan();
         if (lifespan * 4 < maxLifespan && lifespan >= 0) return TEXTURE_DYING;
@@ -94,7 +94,7 @@ public class RenderStrawGolem extends MobRenderer<EntityStrawGolem, ModelStrawGo
     }
 
     @Override
-    protected void renderNameTag(EntityStrawGolem entity, Component text, PoseStack matrices, MultiBufferSource vertexConsumers, int light) {
+    protected void renderNameTag(StrawGolem entity, Component text, PoseStack matrices, MultiBufferSource vertexConsumers, int light) {
         if (!(entity.hasCustomName() && TEXTURE_MAP.containsKey(entity.getDisplayName().getString().toLowerCase()))) {
             super.renderNameTag(entity, text, matrices, vertexConsumers, light);
         }

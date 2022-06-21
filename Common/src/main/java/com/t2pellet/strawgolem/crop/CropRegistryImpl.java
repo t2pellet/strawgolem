@@ -2,7 +2,7 @@ package com.t2pellet.strawgolem.crop;
 
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.config.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.EntityStrawGolem;
+import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
@@ -57,7 +57,7 @@ class CropRegistryImpl implements CropRegistry {
     }
 
     @Override
-    public List<ItemStack> handleHarvest(ServerLevel level, EntityStrawGolem golem, BlockPos pos) {
+    public List<ItemStack> handleHarvest(ServerLevel level, StrawGolem golem, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         CropKey<Block> blockKey = new CropKey<>(state.getBlock());
         if (contains(blockKey)) {
@@ -91,7 +91,7 @@ class CropRegistryImpl implements CropRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> List<ItemStack> handleHarvest(CropKey<?> key, ServerLevel level, EntityStrawGolem golem, BlockPos pos, T val) {
+    private <T> List<ItemStack> handleHarvest(CropKey<?> key, ServerLevel level, StrawGolem golem, BlockPos pos, T val) {
         if (contains(key)) {
             CropVal<T> data = (CropVal<T>) entries.get(key);
             return data.harvestLogic.doHarvest(level, golem, pos, val);
