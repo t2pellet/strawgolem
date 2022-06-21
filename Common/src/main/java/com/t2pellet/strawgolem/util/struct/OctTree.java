@@ -123,7 +123,12 @@ class OctTree implements PosTree {
             double candidateDistance = Integer.MAX_VALUE;
             for (OctTree child : current.children) {
                 if (child.size > 0) {
-                    Vec3i newCandidate = findNearest(child, pos);
+                    Vec3i newCandidate;
+                    if (child.point == null) {
+                        newCandidate = findNearest(child, pos);
+                    } else {
+                        newCandidate = child.point;
+                    }
                     double newCandidateDistance = pos.distSqr(newCandidate);
                     if (newCandidateDistance < candidateDistance) {
                         candidate = newCandidate;
