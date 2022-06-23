@@ -134,8 +134,8 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
             }
             getLifespan().shrink(lifeTicks);
             getHunger().shrink(hungerTicks);
-            float curMaxHealth = maxHealth * Math.min(1.25F, getLifespan().getPercentage());
-            float curMoveSpeed = moveSpeed * Math.max(0.25F, Math.min(1.25F, getHunger().getPercentage()));
+            float curMaxHealth = maxHealth * Math.max(0.25F, Math.min(1.25F, getLifespan().getPercentage()));
+            float curMoveSpeed = moveSpeed * Math.max(0.25F, Math.min(1.15F, getHunger().getPercentage()));
             getAttribute(Attributes.MAX_HEALTH).setBaseValue(curMaxHealth);
             getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(curMoveSpeed);
             if (getLifespan().isOver()) {
@@ -321,9 +321,10 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
         } else {
             float scaledWidth = this.getDimensions(Pose.STANDING).width * 0.8F;
             AABB headBounds = AABB.ofSize(this.getEyePosition(), scaledWidth, 1.0E-6D, scaledWidth);
+            // Don't suffocate from stem grown blocks
             return BlockPos.betweenClosedStream(headBounds).anyMatch((pos) -> {
                 BlockState state = this.level.getBlockState(pos);
-                return !state.isAir() && state.isSuffocating(this.level, pos) && Shapes.joinIsNotEmpty(state.getCollisionShape(this.level, pos).move((double) pos.getX(), (double) pos.getY(), (double) pos.getZ()), Shapes.create(headBounds), BooleanOp.AND) && !(state.getBlock() instanceof StemGrownBlock);
+                return !state.isAir() && state.isSuffocating(this.level, pos) && Shapes.joinIsNotEmpty(state.getCollisionShape(this.level, pos).move(pos.getX(), pos.getY(), pos.getZ()), Shapes.create(headBounds), BooleanOp.AND) && !(state.getBlock() instanceof StemGrownBlock);
             });
         }
     }
