@@ -23,7 +23,7 @@ class StringConverterImpl implements StringConverter {
             case FLOAT -> (T) (Object) Float.parseFloat(value);
             case DOUBLE -> (T) (Object) Double.parseDouble(value);
             case STRING -> (T) value;
-            default -> throw new IllegalArgumentException("Invalid type: " + clazz.getTypeName());
+            default -> throw new IllegalArgumentException("Cannot convert to type: " + clazz.getTypeName());
         };
     }
 

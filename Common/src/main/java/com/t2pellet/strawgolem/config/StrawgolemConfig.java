@@ -22,29 +22,11 @@ public class StrawgolemConfig extends Config {
 
     @Section("Creating")
     public static class Creation {
-
-        @Section.Comment("Whether creating golems is enabled")
-        private static boolean golemConstructionEnabled = true;
+        
         @Section.Comment("Allow constructing head by shearing a pumpkin")
         private static boolean shearConstructionEnabled = true;
         @Section.Comment("Allow constructing golem with dispenser")
         private static boolean dispenserConstructionEnabled = true;
-        @Section.Comment("Potential head blocks to make a golem")
-        private static List<String> headBlocks = new ArrayList<>(List.of("minecraft:carved_pumpkin"));
-        @Section.Comment("Potential body blocks to make a golem")
-        private static List<String> bodyBlocks = new ArrayList<>(List.of("minecraft:hay_block"));
-
-        public static boolean isHeadBlock(Block block) {
-            return blockMatchesFilter(block, headBlocks, false);
-        }
-
-        public static boolean isBodyBlock(Block block) {
-            return blockMatchesFilter(block, bodyBlocks, false);
-        }
-
-        public static boolean isGolemConstructionEnabled() {
-            return golemConstructionEnabled;
-        }
 
         public static boolean isShearConstructionEnabled() {
             return shearConstructionEnabled;

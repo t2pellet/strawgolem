@@ -5,6 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.Supplier;
 
 public class ConfigHelper {
 
@@ -12,8 +13,8 @@ public class ConfigHelper {
     private ConfigHelper() {
     }
 
-    public static <T extends Config> void register(T config) throws IOException, IllegalAccessException {
-        config.load();
+    public static <T extends Config> void register(Supplier<T> config) throws IOException, IllegalAccessException {
+        config.get().load();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
