@@ -50,7 +50,7 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
         Iterator<BlockPos> cropIterator = getCrops();
         while (cropIterator.hasNext()) {
             BlockPos pos = cropIterator.next();
-            if (CropRegistry.INSTANCE.isGrownCrop(level, pos)) {
+            if (level.hasChunkAt(pos) && CropRegistry.INSTANCE.isGrownCrop(level, pos)) {
                 positionsTag.add(NbtUtils.writeBlockPos(pos));
             }
         }

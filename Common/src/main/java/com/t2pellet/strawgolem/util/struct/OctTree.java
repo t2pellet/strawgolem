@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.util.struct;
 
+import com.t2pellet.strawgolem.StrawgolemCommon;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 
@@ -40,6 +41,10 @@ class OctTree implements PosTree {
 
     @Override
     public void insert(Vec3i pos) {
+        if (pos == null) {
+            StrawgolemCommon.LOG.debug("Tried inserting null BlockPos into OctTree, ignoring");
+            return;
+        }
         if (comparePoints(pos, bottomCorner) != 7 || comparePoints(pos, topCorner) != 0) {
             throw new IllegalArgumentException("Attempting to insert point outside of boundary: " + pos);
         }
@@ -83,6 +88,10 @@ class OctTree implements PosTree {
 
     @Override
     public void delete(Vec3i pos) {
+        if (pos == null) {
+            StrawgolemCommon.LOG.debug("Tried deleting null pos from OctTree, ignoring");
+            return;
+        }
         if (comparePoints(pos, bottomCorner) != 7 || comparePoints(pos, topCorner) != 0) {
             throw new IllegalArgumentException("Attempting to delete point outside of boundary: " + pos);
         }
@@ -106,6 +115,10 @@ class OctTree implements PosTree {
 
     @Override
     public BlockPos findNearest(Vec3i pos) {
+        if (pos == null) {
+            StrawgolemCommon.LOG.debug("Tried to find nearest pos to null query - returning null");
+            return null;
+        }
         if (comparePoints(pos, bottomCorner) != 7 || comparePoints(pos, topCorner) != 0) {
             throw new IllegalArgumentException("Attempting to find nearest point outside of boundary: " + pos);
         }
@@ -113,7 +126,7 @@ class OctTree implements PosTree {
         return (BlockPos) findNearest(this, pos);
     }
 
-    static Vec3i findNearest(OctTree current, Vec3i pos) {
+    static Vec3i findNearest(OctTree current, final Vec3i pos) {
         Vec3i center = current.midPoint();
         int childLoc = comparePoints(pos, center);
 
@@ -129,10 +142,12 @@ class OctTree implements PosTree {
                     } else {
                         newCandidate = child.point;
                     }
-                    double newCandidateDistance = pos.distSqr(newCandidate);
-                    if (newCandidateDistance < candidateDistance) {
-                        candidate = newCandidate;
-                        candidateDistance = newCandidateDistance;
+                    if (newCandidate != null) {
+                        double newCandidateDistance = pos.distSqr(newCandidate);
+                        if (newCandidateDistance < candidateDistance) {
+                            candidate = newCandidate;
+                            candidateDistance = newCandidateDistance;
+                        }
                     }
                 }
             }
