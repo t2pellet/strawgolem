@@ -44,7 +44,7 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
 
     @Override
     public CompoundTag save(CompoundTag tag) {
-        StrawgolemCommon.LOG.info("Saving strawgolem save data");
+        StrawgolemCommon.LOG.debug("Saving strawgolem save data");
 
         ListTag positionsTag = new ListTag();
         Iterator<BlockPos> cropIterator = getCrops();
