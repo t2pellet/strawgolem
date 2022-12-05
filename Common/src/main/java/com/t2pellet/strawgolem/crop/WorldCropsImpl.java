@@ -50,7 +50,7 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
         Iterator<BlockPos> cropIterator = getCrops();
         while (cropIterator.hasNext()) {
             BlockPos pos = cropIterator.next();
-            if (level.hasChunkAt(pos) && CropRegistry.INSTANCE.isGrownCrop(level, pos)) {
+            if (level.hasChunk(pos.getX(), pos.getZ()) && CropRegistry.INSTANCE.isGrownCrop(level, pos)) {
                 positionsTag.add(NbtUtils.writeBlockPos(pos));
             }
         }
@@ -80,9 +80,7 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
 
     @Override
     public BlockPos getNearestCrop(BlockPos pos, int maxRange) {
-        BlockPos closest = tree.findNearest(pos);
-        if (closest == null || pos.distSqr(closest) > maxRange * maxRange) return null;
-        return closest;
+        return tree.findNearest(pos, maxRange);
     }
 
     @Override

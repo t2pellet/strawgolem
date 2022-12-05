@@ -20,14 +20,14 @@ public interface PosTree {
      *
      * @param pos the position to insert
      */
-    void insert(Vec3i pos);
+    void insert(final Vec3i pos);
 
     /**
      * Delete a BlockPos from the tree, or do nothing if not present
      *
      * @param pos the position to delete
      */
-    void delete(Vec3i pos);
+    void delete(final Vec3i pos);
 
     /**
      * Finds the nearest BlockPos to the given position, returns null if empty
@@ -35,7 +35,7 @@ public interface PosTree {
      * @param pos the query position
      * @return the nearest position
      */
-    BlockPos findNearest(Vec3i pos);
+    BlockPos findNearest(Vec3i pos, int maxRange);
 
     /**
      * Returns iterator of BlockPos in the tree
