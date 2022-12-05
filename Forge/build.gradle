@@ -83,9 +83,9 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly project(":Common")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    compileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-4.10.1")
-    testCompileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-4.10.1")
-    runtimeOnly fg.deobf("mcp.mobius.waila:wthit:forge-4.10.1")
+    compileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-4.13.5")
+    testCompileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-4.13.5")
+    runtimeOnly fg.deobf("mcp.mobius.waila:wthit:forge-4.13.5")
     runtimeOnly fg.deobf("lol.bai:badpackets:forge-0.1.2")
     runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:3784851")
     compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:6.2.62")
