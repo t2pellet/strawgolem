@@ -83,12 +83,12 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly project(":Common")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    compileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-5.1.4")
-    testCompileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-5.1.4")
-    runtimeOnly fg.deobf("mcp.mobius.waila:wthit:forge-5.1.4")
+    compileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-5.13.4")
+    testCompileOnly fg.deobf("mcp.mobius.waila:wthit-api:forge-5.13.4")
+    runtimeOnly fg.deobf("mcp.mobius.waila:wthit:forge-5.13.4")
     runtimeOnly fg.deobf("lol.bai:badpackets:forge-0.1.2")
-    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:7.0.72")
-    runtimeOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:7.0.72")
+    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:8.2.88")
+    runtimeOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:8.2.88")
 }
 
 tasks.withType(JavaCompile) {

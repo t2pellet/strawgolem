@@ -8,7 +8,7 @@ import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.impl.builders.*;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.ConfigGuiHandler;
+import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.fml.ModLoadingContext;
 
 import java.lang.reflect.Field;
@@ -21,8 +21,8 @@ public class ClothConfigCompat {
 
     public static void registerConfigMenu() {
         StrawgolemCommon.LOG.info("Registering cloth config compat");
-        ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,
-                () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> {
+        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
+                () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> {
                     try {
                         return createConfigBuilder().setParentScreen(screen).build();
                     } catch (IllegalAccessException e) {
