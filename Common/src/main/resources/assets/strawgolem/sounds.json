@@ -14,15 +14,6 @@
       "strawgolem:strawgolem-ambience9"
     ]
   },
-  "golem_strained": {
-    "category": "neutral",
-    "subtitle": "strawgolem.subtitle.golemStrained",
-    "sounds": [
-      "strawgolem:strawgolem-strain1",
-      "strawgolem:strawgolem-strain2",
-      "strawgolem:strawgolem-strain3"
-    ]
-  },
   "golem_hurt": {
     "category": "neutral",
     "subtitle": "strawgolem.subtitle.golemHurt",
@@ -52,6 +43,15 @@
       "strawgolem:strawgolem-happy4"
     ]
   },
+  "golem_interested": {
+    "category": "neutral",
+    "subtitle": "strawgolem.subtitle.golemInterested",
+    "sounds": [
+      "strawgolem:strawgolem-interest1",
+      "strawgolem:strawgolem-interest2",
+      "strawgolem:strawgolem-interest3"
+    ]
+  },
   "golem_scared": {
     "category": "neutral",
     "subtitle": "strawgolem.subtitle.golemScared",
@@ -62,20 +62,22 @@
       "strawgolem:strawgolem-scared4"
     ]
   },
-  "golem_interested": {
+  "golem_strained": {
     "category": "neutral",
-    "subtitle": "strawgolem.subtitle.golemInterested",
+    "subtitle": "strawgolem.subtitle.golemStrained",
     "sounds": [
-      "strawgolem:strawgolem-interest1",
-      "strawgolem:strawgolem-interest2",
-      "strawgolem:strawgolem-interest3"
+      "strawgolem:strawgolem-strain1",
+      "strawgolem:strawgolem-strain2",
+      "strawgolem:strawgolem-strain3"
     ]
   },
   "golem_disgusted": {
     "category": "neutral",
     "subtitle": "strawgolem.subtitle.golemDisgusted",
     "sounds": [
-      "strawgolem:strawgolem-disgusted"
+      "strawgolem:strawgolem-yuck1",
+      "strawgolem:strawgolem-yuck2",
+      "strawgolem:strawgolem-yuck3"
     ]
   }
 }
