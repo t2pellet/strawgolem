@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +20,6 @@ import net.minecraft.world.phys.Vec3;
 
 public class GolemDeliverGoal extends MoveToBlockGoal {
     private final StrawGolem strawGolem;
-    private boolean deliveringBlock;
     private boolean doneDepositing;
 
     public GolemDeliverGoal(StrawGolem strawGolem) {
@@ -36,7 +34,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canContinueToUse() {
-        return !strawGolem.getHunger().isHungry() && !strawGolem.isHandEmpty() && strawGolem.level.getBlockEntity(blockPos) instanceof Container && super.canContinueToUse();
+        return !strawGolem.getHunger().isHungry() && !strawGolem.isHandEmpty() && isValidTarget(strawGolem.level, blockPos);
     }
 
     @Override
@@ -56,13 +54,12 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     protected boolean isValidTarget(LevelReader worldIn, BlockPos pos) {
         BlockEntity be = worldIn.getBlockEntity(pos);
         Block b = worldIn.getBlockState(pos).getBlock();
-        return be instanceof Container && StrawgolemConfig.Delivery.isDeliveryAllowed(b);
+        return be instanceof BaseContainerBlockEntity && StrawgolemConfig.Delivery.isDeliveryAllowed(b);
     }
 
     @Override
     public void start() {
         super.start();
-        this.deliveringBlock = strawGolem.holdingFullBlock();
         this.doneDepositing = false;
     }
 
