@@ -27,23 +27,12 @@ public class GolemTetherGoal<T extends PathfinderMob & IHasTether> extends MoveT
 
     @Override
     public boolean canUse() {
-        if (entity instanceof IHasHunger hungerHaver && hungerHaver.getHunger().isHungry()) {
-            return false;
-        }
         final double currentDistance = getTetherDistance();
         if (currentDistance > StrawgolemConfig.Tether.getTetherMaxRange()) {
             this.blockPos = entity.getTether().get().getPos();
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean canContinueToUse() {
-        if (entity instanceof IHasHunger hungerHaver && hungerHaver.getHunger().isHungry()) {
-            return false;
-        }
-        return super.canContinueToUse();
     }
 
     @Override

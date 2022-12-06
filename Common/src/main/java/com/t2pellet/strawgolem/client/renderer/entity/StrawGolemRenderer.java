@@ -64,7 +64,7 @@ public class StrawGolemRenderer extends MobRenderer<StrawGolem, StrawGolemModel>
         this.getModel().setHungry(mobEntity.getHunger().isHungry());
         this.getModel().setTempted(mobEntity.isTempted());
         // Lower position for sitting
-        if (mobEntity.getHunger().isHungry()) {
+        if (mobEntity.getHunger().isHungry() && mobEntity.isHandEmpty()) {
             matrixStack.translate(0, -0.2F, 0);
         }
         // Shivering movement

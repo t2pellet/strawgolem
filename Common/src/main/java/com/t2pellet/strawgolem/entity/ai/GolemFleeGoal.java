@@ -19,11 +19,6 @@ public class GolemFleeGoal extends AvoidEntityGoal<Monster> {
     }
 
     @Override
-    public boolean canUse() {
-        return !strawGolem.getHunger().isHungry() && super.canUse();
-    }
-
-    @Override
     public void start() {
         this.pathNav.moveTo(this.path, SLOW_SPEED);
         if (StrawgolemConfig.Miscellaneous.isSoundsEnabled())

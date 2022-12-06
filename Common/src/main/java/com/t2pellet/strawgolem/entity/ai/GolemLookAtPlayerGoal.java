@@ -15,7 +15,7 @@ public class GolemLookAtPlayerGoal extends LookAtPlayerGoal {
 
     @Override
     public boolean canUse() {
-        return strawGolem.getVehicle() == null && !strawGolem.getHunger().isHungry() && super.canUse();
+        return strawGolem.getVehicle() == null && super.canUse();
     }
 
 }

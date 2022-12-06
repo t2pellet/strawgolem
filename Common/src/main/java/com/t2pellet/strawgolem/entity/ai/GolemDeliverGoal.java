@@ -29,12 +29,12 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canUse() {
-        return !strawGolem.isHandEmpty() && findNearestBlock();
+        return !strawGolem.isHandEmpty() && !strawGolem.getHunger().isHungry() && findNearestBlock();
     }
 
     @Override
     public boolean canContinueToUse() {
-        return !strawGolem.getHunger().isHungry() && !strawGolem.isHandEmpty() && isValidTarget(strawGolem.level, blockPos);
+        return !strawGolem.isHandEmpty() && isValidTarget(strawGolem.level, blockPos);
     }
 
     @Override

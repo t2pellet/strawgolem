@@ -87,7 +87,7 @@ public class StrawGolemModel extends EntityModel<StrawGolem> implements ArmedMod
         this.rightleg.xRot = Mth.cos(auxLimbSwing) * swingAmountLeg;
         this.leftleg.xRot = Mth.cos(auxLimbSwing + (float) Math.PI) * swingAmountLeg;
         // Animations
-        if (isHungry) {
+        if (isHungry && !holdingItem) {
             if (tempted) greedyArms(tickDelta);
             else idleArms(tickDelta);
             this.leftleg.xRot = -(float) Math.PI / 2;
