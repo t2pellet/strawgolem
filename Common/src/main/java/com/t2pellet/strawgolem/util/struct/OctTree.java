@@ -253,33 +253,21 @@ class OctTree implements PosTree {
             return null;
         }
 
-        OctBox.Octant childOctant = boundary.getOctant(pos);
-        Object child = children.get(childOctant);
-        if (child == null) { // empty
-            // gotta search the other octants, so we do a range search
-            return nearestFromRangeSearch(pos, maxRange);
-        } else if (child instanceof OctPoint point) { // point node
-            if (point.isInRange(pos, maxRange)) return point;
-            // gotta search the other octants, so we do a range search
-            return nearestFromRangeSearch(pos, maxRange);
-        } else { // region node
-            OctTree childTree = (OctTree) child;
-            OctPoint point = childTree.findNearest(pos, maxRange);
-            if (point == null || point.isInRange(pos, maxRange)) {
-                return point;
-            }
-            // gotta search the other octants, so we do a range search
-            return nearestFromRangeSearch(pos, maxRange);
-        }
-    }
-
-    private OctPoint nearestFromRangeSearch(OctPoint pos, int maxRange) {
         OctBox rangeBoundary = new OctBox(
                 pos.x - maxRange, pos.y - maxRange, pos.z - maxRange,
-                pos.x + maxRange, pos.y + maxRange, pos.z + maxRange);
+                pos.x + maxRange + 1, pos.y + maxRange + 1, pos.z + maxRange + 1);
         Queue<OctPoint> pointsInRange = rangeSearch(rangeBoundary);
-        if (pointsInRange != null && !pointsInRange.isEmpty()) {
-            return pointsInRange.poll();
+        if (pointsInRange != null) {
+            OctPoint closest = null;
+            int closestDistance = Integer.MAX_VALUE;
+            while (!pointsInRange.isEmpty()) {
+                OctPoint current = pointsInRange.poll();
+                if (closest == null || current.distApprox(pos) < closestDistance) {
+                    closestDistance = current.distApprox(pos);
+                    closest = current;
+                }
+            }
+            return closest;
         }
         return null;
     }
@@ -287,14 +275,14 @@ class OctTree implements PosTree {
     private Queue<OctPoint> rangeSearch(OctBox rangeBoundary) {
         if (boundary.isSubsetOf(rangeBoundary)) {
             // report all
-            PriorityQueue<OctPoint> octQueue = new PriorityQueue<>(Comparator.comparingInt(o -> o.distApprox(rangeBoundary.midPoint)));
+            Queue<OctPoint> octQueue = new ArrayDeque<>();
             return buildQueue(octQueue, this);
         } else if (boundary.isDiscreteWith(rangeBoundary)) {
             // nothing to report
             return null;
         }
 
-        PriorityQueue<OctPoint> result = new PriorityQueue<>(Comparator.comparingInt(o -> o.distApprox(rangeBoundary.midPoint)));
+        Queue<OctPoint> result = new ArrayDeque<>();
         for (OctBox.Octant octant : OctBox.Octant.values()) {
             Object child = children.get(octant);
             if (child instanceof OctPoint point) {
