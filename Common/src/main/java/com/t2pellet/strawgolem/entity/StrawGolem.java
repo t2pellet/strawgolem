@@ -135,7 +135,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
             getLifespan().shrink(lifeTicks);
             getHunger().shrink(hungerTicks);
             float curMaxHealth = maxHealth * Math.max(0.25F, Math.min(1.25F, getLifespan().getPercentage()));
-            float curMoveSpeed = moveSpeed * Math.max(0.25F, Math.min(1.15F, getHunger().getPercentage()));
+            float curMoveSpeed = moveSpeed * Math.max(0.5F, Math.min(1.25F, getHunger().getPercentage()));
             getAttribute(Attributes.MAX_HEALTH).setBaseValue(curMaxHealth);
             getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(curMoveSpeed);
             if (getLifespan().isOver()) {

@@ -19,7 +19,7 @@ class HungerImpl implements Hunger {
 
     @Override
     public float getPercentage() {
-        return StrawgolemConfig.Health.getHunger() < 0 ? 100 : (float) hunger / StrawgolemConfig.Health.getHunger();
+        return StrawgolemConfig.Health.getHunger() < 0 ? 1 : (float) hunger / StrawgolemConfig.Health.getHunger();
     }
 
     @Override
