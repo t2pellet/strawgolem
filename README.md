@@ -23,7 +23,8 @@ Shift-right-click on the golem with an *empty hand,* then immediately shift-righ
 
 ## Lifespan
 The Straw Golem has a limited lifespan of 7 in-game days. 
-- This lifespan goes down faster when the golem is exposed to the rain or cold, when it stands in water, or when it carries a heavy object, such as a pumpkin. 
+- This lifespan goes down faster when the golem is exposed to the rain or cold, when it stands in water, or when it carries a heavy object, such as a pumpkin
+- You can protect your golem from rain by building it a Straw Hat
 - Shivering indicates the prior two conditions, a custom animation the latter.
 - Lifespan is restored by feeding the golem wheat, which also heals it. 
 
@@ -31,7 +32,8 @@ As your golem approaches old age, it will begin to to decay, and you will see vi
 
 ## Hunger
 - Farming is hard labour, and the Straw Golems will get hungry over time.
-- When it is hungry, it will sit down, display a cute animation and pout until it is fed.
+- As golems get more hungry, they'll be slower
+- If you let them starve, they'll sit down and pout until fed.
 - Golems are fed using apples. If you are holding an apple, it will beg you for it, and follow you around while you hold it.
 
 ## Miscellaneous
