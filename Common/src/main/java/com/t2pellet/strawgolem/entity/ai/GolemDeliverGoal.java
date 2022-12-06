@@ -87,6 +87,7 @@ public class GolemDeliverGoal extends MoveToBlockGoal {
     private void doDeposit() {
         if (this.doneDepositing) return;
         strawGolem.getMemory().addPosition(strawGolem.level, blockPos);
+        strawGolem.getTether().set(strawGolem.level, blockPos);
         ServerLevel worldIn = (ServerLevel) this.strawGolem.level;
         BlockPos pos = this.blockPos;
         BaseContainerBlockEntity invBlock = (BaseContainerBlockEntity) worldIn.getBlockEntity(pos);
