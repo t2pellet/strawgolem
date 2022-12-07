@@ -73,9 +73,13 @@ class OctTree implements PosTree {
             this.bottomCorner = bottomCorner;
             this.topCorner = topCorner;
             this.midPoint = new OctPoint(
-                    (bottomCorner.x + topCorner.x) / 2,
-                    (bottomCorner.y + topCorner.y) / 2,
-                    (bottomCorner.z + topCorner.z) / 2);
+                    average(bottomCorner.x, topCorner.x),
+                    average(bottomCorner.y, topCorner.y),
+                    average(bottomCorner.z, topCorner.z));
+        }
+
+        private int average(int low, int high) {
+            return low + ((high - low) >>> 1);
         }
 
         boolean isInBoundary(OctPoint point) {
@@ -200,10 +204,10 @@ class OctTree implements PosTree {
         if (child == null) { // empty
             children.put(childOctant, pos);
         } else if (child instanceof OctPoint point) { // point node
-            OctTree newChild = new OctTree(boundary.getOctantBox(childOctant));
-            children.put(childOctant, newChild);
-            newChild.insert(pos);
-            newChild.insert(point);
+            OctTree tree = new OctTree(boundary.getOctantBox(childOctant));
+            children.put(childOctant, tree);
+            tree.insert(point);
+            tree.insert(pos);
         } else { // region node
             OctTree childTree = (OctTree) child;
             childTree.insert(pos);
