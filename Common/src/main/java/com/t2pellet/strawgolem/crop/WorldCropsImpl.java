@@ -3,12 +3,14 @@ package com.t2pellet.strawgolem.crop;
 import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.util.struct.PosTree;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Iterator;
 
@@ -80,11 +82,23 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
 
     @Override
     public BlockPos getNearestCrop(BlockPos pos, int maxRange) {
-        return tree.findNearest(pos, maxRange);
+        Vec3i result = tree.findNearest(pos, maxRange);
+        return result == null ? null : new BlockPos(result);
     }
 
     @Override
     public Iterator<BlockPos> getCrops() {
-        return tree.iterator();
+        Iterator<Vec3i> iterator = tree.iterator();
+        return new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public BlockPos next() {
+                return new BlockPos(iterator.next());
+            }
+        };
     }
 }
