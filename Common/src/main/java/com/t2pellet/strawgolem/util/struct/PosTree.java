@@ -1,6 +1,5 @@
 package com.t2pellet.strawgolem.util.struct;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 
 import java.util.Iterator;
@@ -35,11 +34,11 @@ public interface PosTree {
      * @param pos the query position
      * @return the nearest position
      */
-    BlockPos findNearest(Vec3i pos, int maxRange);
+    Vec3i findNearest(Vec3i pos, int maxRange);
 
     /**
      * Returns iterator of BlockPos in the tree
      * @return the iterator
      */
-    Iterator<BlockPos> iterator();
+    Iterator<Vec3i> iterator();
 }
