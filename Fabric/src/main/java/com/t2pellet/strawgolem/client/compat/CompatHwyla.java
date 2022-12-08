@@ -9,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 
 public class CompatHwyla implements IWailaPlugin, IEntityComponentProvider {
 
-    private static final ResourceLocation LIFESPAN = new ResourceLocation(StrawgolemCommon.MODID, "lifespan");
-    private static final ResourceLocation HUNGER = new ResourceLocation(StrawgolemCommon.MODID, "hunger");
+    protected static final ResourceLocation LIFESPAN = new ResourceLocation(StrawgolemCommon.MODID, "lifespan");
+    protected static final ResourceLocation HUNGER = new ResourceLocation(StrawgolemCommon.MODID, "hunger");
 
     @Override
     public void register(IRegistrar registrar) {

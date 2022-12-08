@@ -23,7 +23,6 @@ minecraft {
 
 dependencies {
     compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
-    compileOnly "mcp.mobius.waila:wthit-api:mojmap-4.10.1"
 }
 
 processResources {
