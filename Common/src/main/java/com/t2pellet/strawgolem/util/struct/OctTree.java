@@ -163,6 +163,8 @@ class OctTree implements PosTree {
         if (child == null) { // empty
             children.put(childOctant, pos);
         } else if (child instanceof Vec3i point) { // point node
+            if (child.equals(pos)) return; // node exists, nothing to do
+
             OctTree tree = new OctTree(boundary.getOctantBox(childOctant));
             children.put(childOctant, tree);
             tree.insert(point);
