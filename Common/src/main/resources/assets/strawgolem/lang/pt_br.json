@@ -1,0 +1,16 @@
+{
+    "entity.strawgolem.strawgolem": "Golem de Palha",
+    "entity.strawgolem.strawnggolem": "Golem de Palha Ambiente",
+    "strawgolem.subtitle.golemAmbient": "Ambiente do Golem de Palha",
+    "strawgolem.subtitle.golemHurt": "Dano do Golem de Palha",
+    "strawgolem.subtitle.golemDeath": "Morte do Golem de Palha",
+    "strawgolem.subtitle.golemHeal": "Golem de Palha Curado",
+    "strawgolem.subtitle.golemScared": "Golem de Palha Assustado",
+    "strawgolem.subtitle.golemInterested": "Golem de Palha Interessado",
+    "strawgolem.lifespan": "Tempo de vida: %s dias",
+    "strawgolem.hunger": "Nível de Fome: %s",
+    "strawgolem.deliver": "%s agora entregará a este contêiner",
+    "strawgolem.order": "Encomenda: %s",
+    "item.strawgolem.straw_hat": "Chapéu de palha",
+    "title.strawgolem.config": "Configuração do Golem de Palha Ambiente"
+}
