@@ -12,6 +12,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.client.ConfigGuiHandler;
 import net.minecraftforge.fml.ModLoadingContext;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -101,7 +102,8 @@ public class ClothConfigCompat {
     private static void setField(Field field, Object value) {
         try {
             field.set(null, value);
-        } catch (IllegalAccessException e) {
+            ConfigHelper.INSTANCE.save(StrawgolemConfig.class);
+        } catch (IllegalAccessException | IOException e) {
             throw new RuntimeException(e);
         }
     }

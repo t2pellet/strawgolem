@@ -29,7 +29,7 @@ public class StrawgolemCommon {
         StrawgolemCommon.LOG.info("Pre-init started!");
         try {
             LOG.info("Registering config");
-            ConfigHelper.register(StrawgolemConfig::new);
+            ConfigHelper.INSTANCE.register(StrawgolemConfig::new);
         } catch (IOException | IllegalAccessException e) {
             LOG.error("Failed to register config");
         }
