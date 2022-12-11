@@ -5,16 +5,28 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class ConfigHelper {
 
+    public static ConfigHelper INSTANCE = new ConfigHelper();
+
+    private final Map<Class<? extends Config>, Config> configMap;
 
     private ConfigHelper() {
+        configMap = new HashMap<>();
     }
 
-    public static <T extends Config> void register(Supplier<T> config) throws IOException, IllegalAccessException {
-        config.get().load();
+    public <T extends Config> void register(Supplier<T> configSupplier) throws IOException, IllegalAccessException {
+        T config = configSupplier.get();
+        config.load();
+        configMap.put(config.getClass(), config);
+    }
+
+    public <T extends Config> void save(Class<T> configClass) throws IOException, IllegalAccessException {
+        configMap.get(configClass).save();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
