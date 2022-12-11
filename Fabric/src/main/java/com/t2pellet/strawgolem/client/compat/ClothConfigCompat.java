@@ -12,6 +12,7 @@ import me.shedaniel.clothconfig2.impl.builders.*;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -102,7 +103,8 @@ public class ClothConfigCompat implements ModMenuApi {
     private static void setField(Field field, Object value) {
         try {
             field.set(null, value);
-        } catch (IllegalAccessException e) {
+            ConfigHelper.INSTANCE.save(StrawgolemConfig.class);
+        } catch (IllegalAccessException | IOException e) {
             throw new RuntimeException(e);
         }
     }
