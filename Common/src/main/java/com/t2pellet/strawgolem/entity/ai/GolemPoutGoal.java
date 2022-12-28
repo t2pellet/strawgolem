@@ -21,12 +21,12 @@ public class GolemPoutGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return !golem.isHandEmpty() && golem.getHunger().isHungry();
+        return !golem.isHarvesting() && golem.isHandEmpty() && golem.getHunger().isHungry();
     }
 
     @Override
     public boolean canContinueToUse() {
-        return !golem.isHandEmpty() && golem.getHunger().isHungry();
+        return golem.isHandEmpty() && golem.getHunger().isHungry();
     }
 
     @Override

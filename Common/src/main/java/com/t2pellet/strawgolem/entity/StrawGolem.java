@@ -73,6 +73,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
     private final CapabilityManager capabilities;
     private final SimpleContainer inventory;
     private boolean tempted;
+    private boolean isNew;
 
     public BlockPos harvestPos;
 
@@ -93,15 +94,15 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
         inventory = new SimpleContainer(1);
         harvestPos = null;
         tempted = false;
-        // Set default tether value
+        isNew = true;
     }
 
     @Override
     protected void registerGoals() {
         int priority = 0;
-        this.goalSelector.addGoal(++priority, new GolemPoutGoal(this));
         this.goalSelector.addGoal(++priority, new GolemFleeGoal(this));
         this.goalSelector.addGoal(++priority, new GolemTemptGoal(this));
+        this.goalSelector.addGoal(++priority, new GolemPoutGoal(this));
         this.goalSelector.addGoal(++priority, new GolemHarvestGoal(this));
         this.goalSelector.addGoal(++priority, new GolemDeliverGoal(this));
         if (StrawgolemConfig.Tether.isTetherEnabled()) {
@@ -121,30 +122,43 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
     public void baseTick() {
         super.baseTick();
         if (!level.isClientSide()) {
-            int lifeTicks = 1;
-            int hungerTicks = 1;
-            if (holdingFullBlock() && StrawgolemConfig.Health.isHeavyPenalty()) {
-                ++lifeTicks;
-                ++hungerTicks;
+            // Profile on first spawn
+            if (isNew) {
+                profileCrops();
+                isNew = false;
             }
-            if (isInWaterOrBubble() && StrawgolemConfig.Health.isWaterPenalty()) {
-                ++lifeTicks;
-            } else if (!getAccessory().hasHat() && isInWaterOrRain() && StrawgolemConfig.Health.isRainPenalty()) {
-                ++lifeTicks;
+
+            // Calculate lifespan and hunger decrease
+            if (StrawgolemConfig.Health.getLifespan() > 0) {
+                int lifeTicks = 1;
+                int hungerTicks = 1;
+                if (holdingFullBlock() && StrawgolemConfig.Health.isHeavyPenalty()) {
+                    ++lifeTicks;
+                    ++hungerTicks;
+                }
+                if (isInWaterOrBubble() && StrawgolemConfig.Health.isWaterPenalty()) {
+                    ++lifeTicks;
+                } else if (!getAccessory().hasHat() && isInWaterOrRain() && StrawgolemConfig.Health.isRainPenalty()) {
+                    ++lifeTicks;
+                }
+                getLifespan().shrink(lifeTicks);
+                getHunger().shrink(hungerTicks);
+                // Update health and speed
+                float curMaxHealth = maxHealth * Math.max(0.25F, Math.min(1.25F, getLifespan().getPercentage()));
+                float curMoveSpeed = moveSpeed * Math.max(0.5F, Math.min(1.25F, getHunger().getPercentage()));
+                getAttribute(Attributes.MAX_HEALTH).setBaseValue(curMaxHealth);
+                getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(curMoveSpeed);
+                // Kill if appropriate
+                if (getLifespan().isOver()) {
+                    kill();
+                }
             }
-            getLifespan().shrink(lifeTicks);
-            getHunger().shrink(hungerTicks);
-            float curMaxHealth = maxHealth * Math.max(0.25F, Math.min(1.25F, getLifespan().getPercentage()));
-            float curMoveSpeed = moveSpeed * Math.max(0.5F, Math.min(1.25F, getHunger().getPercentage()));
-            getAttribute(Attributes.MAX_HEALTH).setBaseValue(curMaxHealth);
-            getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(curMoveSpeed);
-            if (getLifespan().isOver()) {
-                kill();
-            }
+            // Capability packet update
             if (random.nextInt(40) == 0) {
                 Services.PACKETS.sendInRange(new CapabilityPacket(this), this, 25.0F);
             }
         }
+        // Fly particle
         if (StrawgolemConfig.Health.getLifespan() > 0 && getLifespan().get() * 4 < StrawgolemConfig.Health.getLifespan() && random.nextInt(240) == 0) {
             spawnFlyParticles(getX(), getY(), getZ());
         }
@@ -286,15 +300,19 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
         super.actuallyHurt(source, $$1);
         // Profile nearby crops when hit and idling
         if (source.getDirectEntity() instanceof Player && !isRunningGoal(GolemHarvestGoal.class, GolemDeliverGoal.class, GolemFleeGoal.class, GolemTemptGoal.class, GolemPoutGoal.class, GolemTetherGoal.class)) {
-            BlockPos currPos;
-            int maxRange = StrawgolemConfig.Harvest.getSearchRange();
-            for (int i = -maxRange; i < maxRange; ++i) {
-                for (int j = -maxRange; j < maxRange; ++j) {
-                    for (int k = -maxRange; k < maxRange; ++k) {
-                        currPos = blockPosition().offset(i, j, k);
-                        if (CropRegistry.INSTANCE.isGrownCrop(level, currPos)) {
-                            WorldCrops.of(level).addCrop(currPos);
-                        }
+            profileCrops();
+        }
+    }
+
+    private void profileCrops() {
+        BlockPos currPos;
+        int maxRange = StrawgolemConfig.Harvest.getSearchRange();
+        for (int i = -maxRange; i < maxRange; ++i) {
+            for (int j = -maxRange; j < maxRange; ++j) {
+                for (int k = -maxRange; k < maxRange; ++k) {
+                    currPos = blockPosition().offset(i, j, k);
+                    if (CropRegistry.INSTANCE.isGrownCrop(level, currPos)) {
+                        WorldCrops.of(level).addCrop(currPos);
                     }
                 }
             }
