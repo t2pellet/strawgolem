@@ -18,6 +18,7 @@ import com.t2pellet.strawgolem.network.CapabilityPacket;
 import com.t2pellet.strawgolem.platform.Services;
 import com.t2pellet.strawgolem.registry.CommonRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -59,7 +60,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 
 import java.util.Arrays;
 
-import static com.t2pellet.strawgolem.registry.CommonRegistry.Particles.getFlyParticle;
 import static com.t2pellet.strawgolem.registry.CommonRegistry.Sounds.*;
 
 public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether {
@@ -160,7 +160,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
         }
         // Fly particle
         if (StrawgolemConfig.Health.getLifespan() > 0 && getLifespan().get() * 4 < StrawgolemConfig.Health.getLifespan() && random.nextInt(240) == 0) {
-            spawnFlyParticles(getX(), getY(), getZ());
+            spawnParticle(CommonRegistry.Particles.getFlyParticle());
         }
     }
 
@@ -198,7 +198,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
                 playSound(GOLEM_HEAL, 1.0F, 1.0F);
                 playSound(SoundEvents.GRASS_STEP, 1.0F, 1.0F);
             }
-            spawnHealParticles(getX(), getY(), getZ());
+            spawnParticle(ParticleTypes.HEART);
             // Result
             return InteractionResult.CONSUME;
         } else if (heldItem == CommonRegistry.Items.getStrawHat()) {
@@ -235,7 +235,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
                 // Feedback
                 playSound(GOLEM_HEAL, 1.0F, 1.0F);
             }
-            spawnHappyParticles(getX(), getY(), getZ());
+            spawnParticle(ParticleTypes.HAPPY_VILLAGER);
             // Result
             return InteractionResult.CONSUME;
         } else if (heldItem == Items.AIR) {
@@ -255,25 +255,11 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
         return InteractionResult.FAIL;
     }
 
-    private void spawnFlyParticles(double x, double y, double z) {
-        level.addParticle(
-                getFlyParticle(),
-                x + random.nextDouble() - 0.5, y + 0.4D, z + random.nextDouble() - 0.5,
-                0, 0, 0);
-    }
-
-    private void spawnHealParticles(double x, double y, double z) {
-        level.addParticle(
-                ParticleTypes.HEART,
-                x + random.nextDouble() - 0.5, y + 0.4D, z + random.nextDouble() - 0.5,
-                this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
-    }
-
-    private void spawnHappyParticles(double x, double y, double z) {
-        level.addParticle(
-                ParticleTypes.HAPPY_VILLAGER,
-                x + random.nextDouble() - 0.5, y + 0.4D, z + random.nextDouble() - 0.5,
-                this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
+    private void spawnParticle(ParticleOptions type) {
+        Vec3 deltaMovement = this.getDeltaMovement();
+        level.addParticle(type,
+                getX() + random.nextDouble() - 0.5, getY() + 0.4D, getZ() + random.nextDouble() - 0.5,
+                deltaMovement.x, deltaMovement.y, deltaMovement.z);
     }
 
     @Override
@@ -299,7 +285,7 @@ public class StrawGolem extends AbstractGolem implements IHasHunger, IHasTether 
     protected void actuallyHurt(DamageSource source, float $$1) {
         super.actuallyHurt(source, $$1);
         // Profile nearby crops when hit and idling
-        if (source.getDirectEntity() instanceof Player && !isRunningGoal(GolemHarvestGoal.class, GolemDeliverGoal.class, GolemFleeGoal.class, GolemTemptGoal.class, GolemPoutGoal.class, GolemTetherGoal.class)) {
+        if (source.getDirectEntity() instanceof Player) {
             profileCrops();
         }
     }

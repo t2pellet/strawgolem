@@ -54,7 +54,6 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
                 if (CropRegistry.INSTANCE.isGrownCrop(strawgolem.level, harvestPos)) {
                     if (strawgolem.canReachBlock(strawgolem.level, harvestPos)) {
                         blockPos = harvestPos;
-                        strawgolem.harvestPos = harvestPos;
                         return true;
                     } else if (harvestPos == strawgolem.harvestPos) {
                         // Put crop we're trying to resume harvesting back into the system if we can't reach it
@@ -73,6 +72,7 @@ public class GolemHarvestGoal extends MoveToBlockGoal {
     public void start() {
         this.nextStartTick = nextStartTick(this.mob);
         WorldCrops.of(strawgolem.level).removeCrop(blockPos); // Remove crop from handler, as its being harvested now
+        strawgolem.harvestPos = blockPos;
         strawgolem.playSound(GOLEM_INTERESTED, 1.0F, 1.0F);
     }
 
