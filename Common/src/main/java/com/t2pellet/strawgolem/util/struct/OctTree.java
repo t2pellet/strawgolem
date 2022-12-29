@@ -134,10 +134,12 @@ class OctTree implements PosTree {
 
     private final OctBox boundary;
     private final Map<OctBox.Octant, Object> children;
+    private int validChildren;
 
     private OctTree(OctBox boundary) {
         this.boundary = boundary;
         this.children = new HashMap<>();
+        this.validChildren = 0;
         for (OctBox.Octant octant : OctBox.Octant.values()) {
             this.children.put(octant, null);
         }
@@ -162,9 +164,9 @@ class OctTree implements PosTree {
         Object child = children.get(childOctant);
         if (child == null) { // empty
             children.put(childOctant, pos);
+            ++validChildren;
         } else if (child instanceof Vec3i point) { // point node
             if (child.equals(pos)) return; // node exists, nothing to do
-
             OctTree tree = new OctTree(boundary.getOctantBox(childOctant));
             children.put(childOctant, tree);
             tree.insert(point);
@@ -191,10 +193,17 @@ class OctTree implements PosTree {
         if (child == null) { // empty
             StrawgolemCommon.LOG.error("Tried deleting pos from null child tree, ignoring");
         } else if (child instanceof Vec3i) { // point node
-            children.put(childOctant, null);
+            if (child.equals(pos)) { // delete if matching
+                children.put(childOctant, null);
+                --validChildren;
+            }
         } else { // region node
             OctTree childTree = (OctTree) child;
             childTree.delete(pos);
+            if (childTree.validChildren == 1) {
+                Object onlyChild = childTree.children.values().stream().filter(Objects::nonNull).findFirst().get();
+                children.put(childOctant, onlyChild);
+            }
         }
     }
 
