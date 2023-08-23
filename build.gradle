@@ -49,6 +49,7 @@ subprojects {
             url = 'https://maven.blamejared.com'
         }
         maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+        maven { url 'https://repo.ryandw11.com/repository/maven-releases/' }
     }
 
     tasks.withType(JavaCompile).configureEach {

@@ -1,0 +1,126 @@
+package com.t2pellet.strawgolem.entity;
+
+import com.t2pellet.strawgolem.entity.animations.StrawgolemIdleController;
+import com.t2pellet.strawgolem.entity.animations.StrawgolemItemController;
+import com.t2pellet.strawgolem.entity.animations.StrawgolemWalkController;
+import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
+import com.t2pellet.tlib.common.entity.capability.CapabilityManager;
+import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.animal.AbstractGolem;
+import net.minecraft.world.entity.monster.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
+
+public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
+
+    private static final double STOP_DISTANCE = 0.00001D;
+    private static final double WALK_DISTANCE = 0.0001D;
+    private static final double RUN_DISTANCE = 0.005D;
+
+
+    // Harvesting logic
+    public boolean isHarvestingItem = false;
+
+    // Capabilities
+    CapabilityManager capabilities = CapabilityManager.newInstance();
+    Decay decay;
+
+
+    public static AttributeSupplier.Builder createAttributes() {
+        return Mob.createMobAttributes()
+                .add(Attributes.MOVEMENT_SPEED, 0.25)
+                .add(Attributes.MAX_HEALTH, 5.0F);
+    }
+
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
+
+    protected StrawGolem(EntityType<? extends StrawGolem> type, Level level) {
+        super(type, level);
+        capabilities.addCapability(Decay.class);
+        decay = capabilities.getCapability(Decay.class);
+    }
+
+    @Override
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Monster.class, 8.0F, 0.5D, 0.5D));
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Evoker.class, 12.0F, 0.5D, 0.5D));
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Vindicator.class, 8.0F, 0.5D, 0.5D));
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Vex.class, 8.0F, 0.5D, 0.5D));
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Pillager.class, 15.0F, 0.5D, 0.5D));
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Illusioner.class, 12.0F, 0.5D, 0.5D));
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Zoglin.class, 10.0F, 0.5D, 0.5D));
+        this.goalSelector.addGoal(1, new PanicGoal(this, 0.8D));
+        this.goalSelector.addGoal(2, new WaterAvoidingRandomStrollGoal(this, 0.5D));
+        this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 6.0F));
+        this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
+    }
+
+    @Override
+    public void baseTick() {
+        super.baseTick();
+        decay.decay();
+    }
+
+    @Override
+    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+        ItemStack item = player.getItemInHand(hand);
+        if (item.getItem() == Items.WHEAT) {
+            boolean success = decay.repair();
+            if (success) item.shrink(1);
+            return InteractionResult.CONSUME;
+        }
+        return super.mobInteract(player, hand);
+    }
+
+    /* Animations */
+
+    @Override
+    public void registerControllers(AnimationData data) {
+        data.addAnimationController(new StrawgolemWalkController(this));
+        data.addAnimationController(new StrawgolemIdleController(this));
+//        data.addAnimationController(new StrawgolemItemController(this));
+    }
+
+    @Override
+    public AnimationFactory getFactory() {
+        return factory;
+    }
+
+    private double getSqrMovement() {
+        double xDiff = getX() - xOld;
+        double zDiff = getZ() - zOld;
+        return xDiff * xDiff + zDiff * zDiff;
+    }
+
+    public boolean isRunning() {
+        return getSqrMovement() >= RUN_DISTANCE;
+    }
+
+    public boolean isMoving() {
+        return getSqrMovement() >= WALK_DISTANCE;
+    }
+
+    public boolean isStopped() {
+        return getSqrMovement() < STOP_DISTANCE;
+    }
+
+    /* Capabilities */
+
+    @Override
+    public CapabilityManager getCapabilityManager() {
+        return capabilities;
+    }
+}

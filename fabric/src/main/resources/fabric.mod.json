@@ -17,6 +17,9 @@
     "entrypoints": {
         "main": [
             "com.t2pellet.strawgolem.StrawgolemFabric"
+        ],
+        "client": [
+            "com.t2pellet.strawgolem.StrawgolemFabric"
         ]
     },
     "mixins": [

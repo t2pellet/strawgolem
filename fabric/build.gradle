@@ -15,7 +15,7 @@ dependencies {
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
     implementation project(":common")
     modImplementation "software.bernie.geckolib:geckolib-fabric-1.19:${geckolib_version_fabric}"
-    modImplementation files('../lib/tlib-fabric-1.19.2-0.1.2-alpha.1.jar')
+    modImplementation files('../../tlib/Fabric/build/libs/tlib-fabric-1.19.2-0.1.4-alpha.8.jar')
 }
 
 loom {

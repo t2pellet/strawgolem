@@ -1,5 +1,7 @@
 package com.t2pellet.strawgolem;
 
+import com.t2pellet.strawgolem.entity.EntityTypes;
+import com.t2pellet.strawgolem.entity.capabilities.Capabilities;
 import com.t2pellet.tlib.common.TLibMod;
 import com.t2pellet.tlib.common.entity.capability.IModCapabilities;
 import com.t2pellet.tlib.common.network.IModPackets;
@@ -15,7 +17,7 @@ public class StrawgolemCommon extends TLibMod {
 
     @Override
     public IModEntities entities() {
-        return super.entities();
+        return new EntityTypes();
     }
 
     @Override
@@ -40,7 +42,7 @@ public class StrawgolemCommon extends TLibMod {
 
     @Override
     public IModCapabilities capabilities() {
-        return super.capabilities();
+        return new Capabilities();
     }
 
     @Override
