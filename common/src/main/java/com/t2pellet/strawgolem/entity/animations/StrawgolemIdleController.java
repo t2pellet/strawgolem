@@ -10,12 +10,15 @@ public class StrawgolemIdleController extends AnimationController<StrawGolem> {
 
     private static PlayState predicate(AnimationEvent<StrawGolem> event) {
         if (event.getAnimatable().isMoving()) return PlayState.STOP;
+        if (event.getAnimatable().getHarvester().isHarvesting()) return PlayState.STOP;
+        if (event.getAnimatable().getHeldItem().has()) return PlayState.STOP;
+
 
         event.getController().setAnimation(new AnimationBuilder().loop("idle"));
         return PlayState.CONTINUE;
     }
 
     public StrawgolemIdleController(StrawGolem animatable) {
-        super(animatable, "idle", 20, StrawgolemIdleController::predicate);
+        super(animatable, "idle", 0, StrawgolemIdleController::predicate);
     }
 }

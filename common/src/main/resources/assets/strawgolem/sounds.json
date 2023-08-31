@@ -1,0 +1,83 @@
+{
+  "golem_ambient": {
+    "category": "neutral",
+    "subtitle": "strawgolem.subtitle.golemAmbient",
+    "sounds": [
+      "strawgolem:strawgolem-ambience1",
+      "strawgolem:strawgolem-ambience2",
+      "strawgolem:strawgolem-ambience3",
+      "strawgolem:strawgolem-ambience4",
+      "strawgolem:strawgolem-ambience5",
+      "strawgolem:strawgolem-ambience6",
+      "strawgolem:strawgolem-ambience7",
+      "strawgolem:strawgolem-ambience8",
+      "strawgolem:strawgolem-ambience9"
+    ]
+  },
+  "golem_hurt": {
+    "category": "neutral",
+    "subtitle": "strawgolem.subtitle.golemHurt",
+    "sounds": [
+      "strawgolem:strawgolem-damage1",
+      "strawgolem:strawgolem-damage2",
+      "strawgolem:strawgolem-damage3",
+      "strawgolem:strawgolem-damage4",
+      "strawgolem:strawgolem-damage5"
+    ]
+  },
+  "golem_death": {
+    "category": "neutral",
+    "subtitle": "strawgolem.subtitle.golemDeath",
+    "sounds": [
+      "strawgolem:strawgolem-death1",
+      "strawgolem:strawgolem-death2"
+    ]
+  },
+  "golem_heal": {
+    "category": "neutral",
+    "subtitle": "strawgolem.subtitle.golemHeal",
+    "sounds": [
+      "strawgolem:strawgolem-happy1",
+      "strawgolem:strawgolem-happy2",
+      "strawgolem:strawgolem-happy3",
+      "strawgolem:strawgolem-happy4"
+    ]
+  },
+  "golem_interested": {
+    "category": "neutral",
+    "subtitle": "strawgolem.subtitle.golemInterested",
+    "sounds": [
+      "strawgolem:strawgolem-interest1",
+      "strawgolem:strawgolem-interest2",
+      "strawgolem:strawgolem-interest3"
+    ]
+  },
+  "golem_scared": {
+    "category": "neutral",
+    "subtitle": "strawgolem.subtitle.golemScared",
+    "sounds": [
+      "strawgolem:strawgolem-scared1",
+      "strawgolem:strawgolem-scared2",
+      "strawgolem:strawgolem-scared3",
+      "strawgolem:strawgolem-scared4"
+    ]
+  },
+  "golem_strained": {
+    "category": "neutral",
+    "subtitle": "strawgolem.subtitle.golemStrained",
+    "sounds": [
+      "strawgolem:strawgolem-strain1",
+      "strawgolem:strawgolem-strain2",
+      "strawgolem:strawgolem-strain3"
+    ]
+  },
+  "golem_disgusted": {
+    "category": "neutral",
+    "subtitle": "strawgolem.subtitle.golemDisgusted",
+    "sounds": [
+      "strawgolem:strawgolem-yuck1",
+      "strawgolem:strawgolem-yuck2",
+      "strawgolem:strawgolem-yuck3"
+    ]
+  }
+}

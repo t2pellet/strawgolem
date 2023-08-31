@@ -1,13 +1,13 @@
 package com.t2pellet.strawgolem.entity.capabilities.decay;
 
-import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.tlib.common.entity.capability.Capability;
-import com.t2pellet.tlib.common.entity.capability.IModCapabilities;
+import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
+import net.minecraft.world.entity.LivingEntity;
 
 public interface Decay extends Capability {
 
-    static Decay getInstance(StrawGolem golem) {
-        return new DecayImpl(golem);
+    static <E extends LivingEntity & ICapabilityHaver> Decay getInstance(E entity) {
+        return new DecayImpl<>(entity);
     }
 
     enum DecayState {

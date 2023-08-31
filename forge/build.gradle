@@ -77,7 +77,7 @@ dependencies {
     compileOnly project(":common")
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
     implementation "software.bernie.geckolib:geckolib-forge-1.19:${geckolib_version_forge}"
-    implementation files('../../tlib/Forge/build/libs/tlib-forge-1.19.2-0.1.4-alpha.8.jar')
+    implementation files('../../tlib/Forge/build/libs/tlib-forge-1.19.2-0.2.11-alpha.jar')
 }
 
 tasks.withType(JavaCompile).configureEach {

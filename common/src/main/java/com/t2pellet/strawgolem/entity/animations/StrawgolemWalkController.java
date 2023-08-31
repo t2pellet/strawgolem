@@ -26,7 +26,9 @@ public class StrawgolemWalkController extends AnimationController<StrawGolem> {
     }
 
     public StrawgolemWalkController(StrawGolem animatable) {
-        super(animatable, "walk", 0, StrawgolemWalkController::predicate);
+        super(animatable, "walk", 10, StrawgolemWalkController::predicate);
     }
+
+
 
 }

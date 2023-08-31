@@ -1,11 +1,15 @@
 package com.t2pellet.strawgolem.entity.capabilities.decay;
 
-import com.t2pellet.strawgolem.entity.StrawGolem;
+import com.t2pellet.tlib.common.entity.capability.AbstractCapability;
+import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
+
+import java.util.Random;
 
 
-class DecayImpl implements Decay {
+class DecayImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractCapability<E> implements Decay {
 
     private static final int TICKS_TO_DECAY = 12000;
     private static final int DECAY_CHANCE_IN = 5;
@@ -13,30 +17,34 @@ class DecayImpl implements Decay {
 
     private DecayState state = DecayState.NEW;
     private int ticksSinceLastDecay = 0;
-    private final StrawGolem golem;
+    private final Random rand;
 
-    public DecayImpl(StrawGolem golem) {
-        this.golem = golem;
+    protected DecayImpl(E e) {
+        super(e);
+        this.rand = new Random();
     }
+
 
     @Override
     public void decay() {
-        if (ticksSinceLastDecay == TICKS_TO_DECAY && golem.getRandom().nextInt(DECAY_CHANCE_IN) == 0) {
+        if (ticksSinceLastDecay == TICKS_TO_DECAY && rand.nextInt(DECAY_CHANCE_IN) == 0) {
             state = DecayState.fromValue(state.getValue() + 1);
             ticksSinceLastDecay = 0;
+            synchronize();
         } else ++ticksSinceLastDecay;
 
-        if (state == null) golem.kill();
+        if (state == null) e.kill();
     }
 
     @Override
     public boolean repair() {
         if (state == DecayState.NEW) return false;
 
-        if (golem.getRandom().nextInt(REPAIR_CHANCE_IN) == 0) {
+        if (rand.nextInt(REPAIR_CHANCE_IN) == 0) {
             state = DecayState.fromValue(state.getValue() - 1);
         }
 
+        synchronize();
         return true;
     }
 
@@ -55,7 +63,7 @@ class DecayImpl implements Decay {
 
     @Override
     public void readTag(Tag tag) {
-        CompoundTag compoundTag = new CompoundTag();
+        CompoundTag compoundTag = (CompoundTag) tag;
         ticksSinceLastDecay = compoundTag.getInt("ticksSinceLastDecay");
         state = DecayState.fromValue(compoundTag.getInt("decayState"));
     }

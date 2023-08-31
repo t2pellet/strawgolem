@@ -32,7 +32,7 @@ public class StrawgolemCommon extends TLibMod {
 
     @Override
     public IModSounds sounds() {
-        return super.sounds();
+        return new StrawgolemSounds();
     }
 
     @Override

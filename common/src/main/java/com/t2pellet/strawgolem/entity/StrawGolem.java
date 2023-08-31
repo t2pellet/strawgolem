@@ -1,14 +1,22 @@
 package com.t2pellet.strawgolem.entity;
 
+import com.t2pellet.strawgolem.StrawgolemSounds;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemIdleController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemItemController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemWalkController;
 import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
+import com.t2pellet.strawgolem.entity.capabilities.harvester.Harvester;
+import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
+import com.t2pellet.strawgolem.entity.goals.GolemWanderGoal;
+import com.t2pellet.strawgolem.entity.goals.HarvestCropGoal;
 import com.t2pellet.tlib.common.entity.capability.CapabilityManager;
 import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -19,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
@@ -30,14 +39,11 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     private static final double WALK_DISTANCE = 0.0001D;
     private static final double RUN_DISTANCE = 0.005D;
 
-
-    // Harvesting logic
-    public boolean isHarvestingItem = false;
-
     // Capabilities
-    CapabilityManager capabilities = CapabilityManager.newInstance();
-    Decay decay;
-
+    CapabilityManager capabilities = CapabilityManager.newInstance(this);
+    private final Decay decay;
+    private final HeldItem heldItem;
+    private final Harvester harvester;
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
@@ -49,8 +55,9 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     protected StrawGolem(EntityType<? extends StrawGolem> type, Level level) {
         super(type, level);
-        capabilities.addCapability(Decay.class);
-        decay = capabilities.getCapability(Decay.class);
+        decay = capabilities.addCapability(Decay.class);
+        heldItem = capabilities.addCapability(HeldItem.class);
+        harvester = capabilities.addCapability(Harvester.class);
     }
 
     @Override
@@ -63,15 +70,16 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Illusioner.class, 12.0F, 0.5D, 0.5D));
         this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Zoglin.class, 10.0F, 0.5D, 0.5D));
         this.goalSelector.addGoal(1, new PanicGoal(this, 0.8D));
-        this.goalSelector.addGoal(2, new WaterAvoidingRandomStrollGoal(this, 0.5D));
-        this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 6.0F));
-        this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(2, new HarvestCropGoal(this, 24));
+        this.goalSelector.addGoal(3, new GolemWanderGoal(this));
+        this.goalSelector.addGoal(4, new LookAtPlayerGoal(this, Player.class, 6.0F));
+        this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
     }
 
     @Override
     public void baseTick() {
         super.baseTick();
-        decay.decay();
+        getDecay().decay();
     }
 
     @Override
@@ -85,13 +93,28 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         return super.mobInteract(player, hand);
     }
 
+    /* Item */
+
+    @Override
+    public ItemStack getItemBySlot(EquipmentSlot slot) {
+        if (slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) return heldItem.get();
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public void setItemSlot(EquipmentSlot slot, ItemStack stack) {
+        if (slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) {
+            heldItem.set(stack);
+        }
+    }
+
     /* Animations */
 
     @Override
     public void registerControllers(AnimationData data) {
         data.addAnimationController(new StrawgolemWalkController(this));
         data.addAnimationController(new StrawgolemIdleController(this));
-//        data.addAnimationController(new StrawgolemItemController(this));
+        data.addAnimationController(new StrawgolemItemController(this));
     }
 
     @Override
@@ -122,5 +145,35 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     @Override
     public CapabilityManager getCapabilityManager() {
         return capabilities;
+    }
+
+    public Decay getDecay() {
+        return decay;
+    }
+
+    public HeldItem getHeldItem() {
+        return heldItem;
+    }
+
+    public Harvester getHarvester() {
+        return harvester;
+    }
+
+    /* Ambience */
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        if (isRunning()) return StrawgolemSounds.GOLEM_SCARED;
+        return StrawgolemSounds.GOLEM_AMBIENT;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return StrawgolemSounds.GOLEM_HURT;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return StrawgolemSounds.GOLEM_DEATH;
     }
 }

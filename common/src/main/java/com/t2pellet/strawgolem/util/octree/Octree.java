@@ -1,7 +1,6 @@
 package com.t2pellet.strawgolem.util.octree;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -14,6 +13,7 @@ interface IOctree {
     boolean remove(BlockPos pos);
     BlockPos findNearest(BlockPos query);
     List<BlockPos> search(AABB range);
+    List<BlockPos> getAll();
 }
 
 public class Octree implements IOctree {
@@ -46,8 +46,7 @@ public class Octree implements IOctree {
         if (points.size() < NODE_CAPACITY && northWestUp == null) {
             points.add(pos);
             return true;
-        }
-        if (northWestUp == null) {
+        } else if (northWestUp == null) {
             subdivide();
         }
 
@@ -64,7 +63,7 @@ public class Octree implements IOctree {
 
     @Override
     public boolean remove(BlockPos pos) {
-        if (!pointInBoundary(pos)) {
+        if (pos == null || !pointInBoundary(pos)) {
             return false;
         }
 
@@ -72,6 +71,7 @@ public class Octree implements IOctree {
             points.remove(pos);
             return true;
         }
+        if (northWestUp == null) return false;
 
         if (northWestUp.remove(pos)) return true;
         if (northWestDown.remove(pos)) return true;
@@ -110,12 +110,28 @@ public class Octree implements IOctree {
     }
 
     @Override
+    public List<BlockPos> getAll() {
+        if (northWestUp == null) return new ArrayList<>(points);
+
+        List<BlockPos> result = northWestUp.getAll();
+        result.addAll(northWestDown.getAll());
+        result.addAll(northEastUp.getAll());
+        result.addAll(northEastDown.getAll());
+        result.addAll(southWestUp.getAll());
+        result.addAll(southWestDown.getAll());
+        result.addAll(southEastUp.getAll());
+        result.addAll(southEastDown.getAll());
+
+        return result;
+    }
+
+    @Override
     public BlockPos findNearest(BlockPos query) {
         if (!pointInBoundary(query)) return null;
 
         if (points.size() > 0 && northWestUp == null) {
             return findNearestFromList(points, query);
-        }
+        } else if (northWestUp == null) return null;
 
         BlockPos closest = northWestUp.findNearest(query);
         if (closest == null) closest = northWestDown.findNearest(query);

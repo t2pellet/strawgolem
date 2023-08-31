@@ -18,7 +18,7 @@ dependencies {
      compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
      implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
      compileOnly "software.bernie.geckolib:geckolib-forge-1.19:${geckolib_version_forge}"
-     implementation files('../../tlib/Common/build/libs/tlib-common-1.19.2-0.1.4-alpha.8.jar')
+     implementation files('../../tlib/Common/build/libs/tlib-common-1.19.2-0.2.11-alpha.jar')
     implementation 'me.ryandw11:Octree:1.0'
 }
 
