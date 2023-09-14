@@ -1,25 +1,52 @@
-# MultiLoader Template
+# Straw Golem Reborn
+This mod adds a helpful (and awfully cute) little golem to do some of your farming for you. It can harvest, replant and deliver crops to a nearby chest. To download, head on over to CurseForge.
+- It's available in both [Fabric](https://www.curseforge.com/minecraft/mc-mods/straw-golem-reborn) and [Forge](https://www.curseforge.com/minecraft/mc-mods/strawgolem-reborn) editions, each in varying stages of development.
+- This mod, made for Minecraft 1.18+, is a spiritual successor to the [original](https://www.curseforge.com/minecraft/mc-mods/strawgolem) Straw Golem mod, built for Minecraft 1.12.
 
-This project provides a Gradle project template that can compile mods for both Forge and Fabric using a common sourceset. This project does not require any third party libraries or dependencies. If you have any questions or want to discuss the project join our [Discord](https://discord.myceliummod.network).
+| ![strawgolem-a-270x270](https://user-images.githubusercontent.com/26723535/166476673-a377f3f9-b941-4581-8ae3-dac79e2f87a2.png) | 
+|:--:| 
+| *Straw Golem Reborn!* |
 
 ## Getting Started
+To create a Straw Golem, stand near the crops or farm where you want it to do its thing. Then place a carved pumpkin on top of a hay bale. (Or carve a pumpkin that is already on a hay bale). After a moment of reflection about the life, the universe, and everything, your little guy will start look for & harvest a full-grown crop.
 
-## IntelliJ IDEA
-This guide will show how to import the MultiLoader Template into IntelliJ IDEA. The setup process is roughly equivalent to setting up Forge and Fabric independently and should be very familiar to anyone who has worked with their MDKs.
+![strawGolem_creating](https://user-images.githubusercontent.com/26723535/166479651-7c970834-3a87-40c7-aca3-27ca87e9bc2b.gif)
 
-1. Clone or download this repository to your computer.
-2. Configure the project by editing the `group`, `mod_name`, `mod_author`, and `mod_id` properties in the `gradle.properties` file. You will also need to change the `rootProject.name`  property in `settings.gradle`, this should match the folder name of your project, or else IDEA may complain.
-3. Open the template's root folder as a new project in IDEA. This is the folder that contains this README file and the gradlew executable.
-4. If your default JVM/JDK is not Java 17 you will encounter an error when opening the project. This error is fixed by going to `File > Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM`and changing the value to a valid Java 17 JVM. You will also need to set the Project SDK to Java 17. This can be done by going to `File > Project Structure > Project SDK`. Once both have been set open the Gradle tab in IDEA and click the refresh button to reload the project.
-5. Open the Gradle tab in IDEA if it has not already been opened. Navigate to `Your Project > Common > Tasks > vanilla gradle > decompile`. Run this task to decompile Minecraft.
-6. Open the Gradle tab in IDEA if it has not already been opened. Navigate to `Your Project > Forge > Tasks > forgegradle runs > genIntellijRuns`. Run this task to set up run configurations for Forge.
-7. Open your Run/Debug Configurations. Under the Application category there should now be options to run Forge and Fabric projects. Select one of the client options and try to run it.
-8. Assuming you were able to run the game in step 7 your workspace should now be set up.
+## Chest Usage
+Once a Straw Golem gathers a crop item, it will seek out a chest to store the item. Thus, a chest should be placed near the crops where the golem does its work, and you should make sure the chest have available space inside to hold the soon-to-be harvested crops.
+- Your golem is usually clever enough to locate an available chest on its own.
+- If you have more than one chest in the vicinity, the golem will choose a chest on its own
+- A golem will prioritize the first chest it used, unless you direct it otherwise
 
-### Eclipse
-While it is possible to use this template in Eclipse it is not recommended. During the development of this template multiple critical bugs and quirks related to Eclipse were found at nearly every level of the required build tools. While we continue to work with these tools to report and resolve issues support for projects like these are not there yet. For now Eclipse is considered unsupported by this project. The development cycle for build tools is notoriously slow so there are no ETAs available.
+You can also "order" a golem to use a particular chest:
+Shift-right-click on the golem with an *empty hand,* then immediately shift-right-click on the desired chest.
 
-## Development Guide
-When using this template the majority of your mod is developed in the Common project. The Common project is compiled against the vanilla game and is used to hold code that is shared between the different loader-specific versions of your mod. The Common project has no knowledge or access to ModLoader specific code, apis, or concepts. Code that requires something from a specific loader must be done through the project that is specific to that loader, such as the Forge or Fabric project.
+## Lifespan
+The Straw Golem has a limited lifespan of 7 in-game days.
+- This lifespan goes down faster when the golem is exposed to the rain or cold, when it stands in water, or when it carries a heavy object, such as a pumpkin
+- You can protect your golem from rain by building it a Straw Hat
+- Shivering indicates the prior two conditions, a custom animation the latter.
+- Lifespan is restored by feeding the golem wheat, which also heals it.
 
-Loader specific projects such as the Forge and Fabric project are used to load the Common project into the game. These projects also define code that is specific to that loader. Loader specific projects can access all of the code in the Common project. It is important to remember that the Common project can not access code from loader specific projects.
+As your golem approaches old age, it will begin to to decay, and you will see visual changes to its texture. You may also start to see flies hovering about. Moreover, as it ages, its max lifespan is lowered.
+
+## Hunger
+- Farming is hard labour, and the Straw Golems will get hungry over time.
+- As golems get more hungry, they'll be slower
+- If you let them starve, they'll sit down and pout until fed.
+- Golems are fed using apples. If you are holding an apple, it will beg you for it, and follow you around while you hold it.
+
+## Miscellaneous
+- A Straw Golem may change into a large 'Strawng Golem' if struck by lightning. It functions similarly to an iron golem; these mobs will protect their little relatives from hostile creatures.
+- In both editions, you might find it helpful to surround your crops with a fence. This protects the golems from mobs. It also helps to keep them from wandering too far.
+
+## Config
+The mod is made to be highly configurable. Users can toggle optional features (lifespan, hunger, etc.), set crops to include/exclude, tweak lifespan & hunger lengths, etc.
+
+## Compatability
+The mod has out-of-the-box compat for most modded crops. It also plays nice with many tooltip GUI mods, such as HWYLA, WTHIT, and Jade, so you can see golem health, hunger, and remaining days.
+
+## Downloads
+Visit these CurseForge pages:
+- [Fabric mod](https://www.curseforge.com/minecraft/mc-mods/straw-golem-reborn)
+- [Forge mod](https://www.curseforge.com/minecraft/mc-mods/strawgolem-reborn)
