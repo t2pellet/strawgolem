@@ -13,7 +13,9 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.phys.AABB;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public interface WorldCrops {
     String DATA_KEY = "WorldCrops";
@@ -36,6 +38,7 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
 
     private final ServerLevel level;
     private final Octree tree = new Octree(new AABB(Integer.MIN_VALUE + 1, Integer.MIN_VALUE + 1, Integer.MIN_VALUE + 1, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
+    private final Set<BlockPos> inProgressHarvestSet = new HashSet<>();
 
     WorldCropsImpl(ServerLevel level) {
         this.level = level;
@@ -65,6 +68,11 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
                 positionsTag.add(NbtUtils.writeBlockPos(pos));
             }
         }
+        for (BlockPos pos : inProgressHarvestSet) {
+            if (CropUtil.isGrownCrop(level, pos)) {
+                positionsTag.add(NbtUtils.writeBlockPos(pos));
+            }
+        }
         tag.put(TAG_POS, positionsTag);
         tag.putInt(TAG_VERSION, VERSION);
 
@@ -83,12 +91,15 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
 
     @Override
     public void remove(BlockPos pos) {
-        tree.remove(pos);
+        if (!inProgressHarvestSet.remove(pos)) tree.remove(pos);
         setDirty();
     }
 
     @Override
     public BlockPos findNearest(BlockPos pos) {
-        return tree.findNearest(pos);
+        BlockPos nearestPos = tree.findNearest(pos);
+        inProgressHarvestSet.add(nearestPos);
+        tree.remove(nearestPos);
+        return nearestPos;
     }
 }

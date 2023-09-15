@@ -8,9 +8,11 @@ import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
 import com.t2pellet.strawgolem.entity.capabilities.deliverer.Deliverer;
 import com.t2pellet.strawgolem.entity.capabilities.harvester.Harvester;
 import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
+import com.t2pellet.strawgolem.entity.capabilities.tether.Tether;
 import com.t2pellet.strawgolem.entity.goals.DeliverCropGoal;
 import com.t2pellet.strawgolem.entity.goals.GolemWanderGoal;
 import com.t2pellet.strawgolem.entity.goals.HarvestCropGoal;
+import com.t2pellet.strawgolem.entity.goals.ReturnToTetherGoal;
 import com.t2pellet.tlib.common.entity.capability.CapabilityManager;
 import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
 import net.minecraft.sounds.SoundEvent;
@@ -47,6 +49,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     private final HeldItem heldItem;
     private final Harvester harvester;
     private final Deliverer deliverer;
+    private final Tether tether;
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
@@ -62,6 +65,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         heldItem = capabilities.addCapability(HeldItem.class);
         harvester = capabilities.addCapability(Harvester.class);
         deliverer = capabilities.addCapability(Deliverer.class);
+        tether = capabilities.addCapability(Tether.class);
     }
 
     @Override
@@ -76,9 +80,10 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.goalSelector.addGoal(1, new PanicGoal(this, 0.8D));
         this.goalSelector.addGoal(2, new HarvestCropGoal(this, 24));
         this.goalSelector.addGoal(2, new DeliverCropGoal(this, 24));
-        this.goalSelector.addGoal(3, new GolemWanderGoal(this));
-        this.goalSelector.addGoal(4, new LookAtPlayerGoal(this, Player.class, 6.0F));
-        this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(3, new ReturnToTetherGoal(this));
+        this.goalSelector.addGoal(4, new GolemWanderGoal(this));
+        this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 6.0F));
+        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
     }
 
     @Override
@@ -88,9 +93,17 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     }
 
     @Override
+    public void moveTo(double $$0, double $$1, double $$2, float $$3, float $$4) {
+        super.moveTo($$0, $$1, $$2, $$3, $$4);
+        if (!tether.exists()) {
+            tether.update();
+        }
+    }
+
+    @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack item = player.getItemInHand(hand);
-        if (item.getItem() == Items.WHEAT) {
+        if (item.getItem() == Items.WHEAT && decay.getState() != Decay.DecayState.NEW) {
             boolean success = decay.repair();
             if (success) item.shrink(1);
             return InteractionResult.CONSUME;
@@ -166,6 +179,10 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     public Deliverer getDeliverer() {
         return deliverer;
+    }
+
+    public Tether getTether() {
+        return tether;
     }
 
     /* Ambience */

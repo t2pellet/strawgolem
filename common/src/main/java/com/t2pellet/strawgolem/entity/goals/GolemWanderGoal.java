@@ -14,6 +14,11 @@ public class GolemWanderGoal extends WaterAvoidingRandomStrollGoal {
 
     @Override
     public boolean canUse() {
-        return !golem.getHarvester().isHarvesting() && super.canUse();
+        return !golem.getHeldItem().has() && !golem.getHarvester().isHarvesting() && !golem.getTether().isTooFar() && super.canUse();
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        return super.canContinueToUse() && !golem.getTether().isTooFar();
     }
 }
