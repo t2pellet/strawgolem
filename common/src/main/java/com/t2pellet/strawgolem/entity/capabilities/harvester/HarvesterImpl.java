@@ -34,13 +34,8 @@ class HarvesterImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractC
         if (pos != harvestPos) {
             harvestPos = pos;
             synchronize();
-            Services.SIDE.scheduleServer(14, this::completeHarvest);
+            Services.SIDE.scheduleServer(24, this::completeHarvest);
         }
-    }
-
-    @Override
-    public BlockPos getHarvesting() {
-        return new BlockPos(harvestPos.getX(), harvestPos.getY(), harvestPos.getZ());
     }
 
     @Override

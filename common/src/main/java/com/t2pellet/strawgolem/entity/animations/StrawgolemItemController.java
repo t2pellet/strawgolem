@@ -1,7 +1,9 @@
 package com.t2pellet.strawgolem.entity.animations;
 
 import com.t2pellet.strawgolem.entity.StrawGolem;
+import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.Animation;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
@@ -13,10 +15,19 @@ public class StrawgolemItemController extends AnimationController<StrawGolem> {
         if (event.getAnimatable().getHarvester().isHarvesting()) {
             builder.playOnce("harvest_item");
         } else if (event.getAnimatable().getHeldItem().has()) {
-            builder.loop("hold_item");
+            // Let harvest animation finish
+            if (!isRunningHarvestingAnimation(event.getController())) {
+                builder.loop("hold_item");
+            }
         } else return PlayState.STOP;
         event.getController().setAnimation(builder);
         return PlayState.CONTINUE;
+    }
+
+    private static boolean isRunningHarvestingAnimation(AnimationController<StrawGolem> controller) {
+        Animation animation = controller.getCurrentAnimation();
+        AnimationState state = controller.getAnimationState();
+        return animation != null && state == AnimationState.Running && animation.animationName.equals("harvest_item");
     }
 
     public StrawgolemItemController(StrawGolem animatable) {

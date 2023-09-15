@@ -5,8 +5,10 @@ import com.t2pellet.strawgolem.entity.animations.StrawgolemIdleController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemItemController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemWalkController;
 import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
+import com.t2pellet.strawgolem.entity.capabilities.deliverer.Deliverer;
 import com.t2pellet.strawgolem.entity.capabilities.harvester.Harvester;
 import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
+import com.t2pellet.strawgolem.entity.goals.DeliverCropGoal;
 import com.t2pellet.strawgolem.entity.goals.GolemWanderGoal;
 import com.t2pellet.strawgolem.entity.goals.HarvestCropGoal;
 import com.t2pellet.tlib.common.entity.capability.CapabilityManager;
@@ -44,6 +46,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     private final Decay decay;
     private final HeldItem heldItem;
     private final Harvester harvester;
+    private final Deliverer deliverer;
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
@@ -58,6 +61,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         decay = capabilities.addCapability(Decay.class);
         heldItem = capabilities.addCapability(HeldItem.class);
         harvester = capabilities.addCapability(Harvester.class);
+        deliverer = capabilities.addCapability(Deliverer.class);
     }
 
     @Override
@@ -71,6 +75,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Zoglin.class, 10.0F, 0.5D, 0.5D));
         this.goalSelector.addGoal(1, new PanicGoal(this, 0.8D));
         this.goalSelector.addGoal(2, new HarvestCropGoal(this, 24));
+        this.goalSelector.addGoal(2, new DeliverCropGoal(this, 24));
         this.goalSelector.addGoal(3, new GolemWanderGoal(this));
         this.goalSelector.addGoal(4, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
@@ -157,6 +162,10 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     public Harvester getHarvester() {
         return harvester;
+    }
+
+    public Deliverer getDeliverer() {
+        return deliverer;
     }
 
     /* Ambience */

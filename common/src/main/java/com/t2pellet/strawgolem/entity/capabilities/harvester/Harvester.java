@@ -12,7 +12,6 @@ public interface Harvester extends Capability {
     }
 
     void harvest(BlockPos pos);
-    BlockPos getHarvesting();
     boolean isHarvesting();
 
 }
