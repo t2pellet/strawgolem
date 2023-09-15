@@ -38,8 +38,8 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
     private static final double STOP_DISTANCE = 0.00001D;
-    private static final double WALK_DISTANCE = 0.0001D;
-    private static final double RUN_DISTANCE = 0.005D;
+    private static final double WALK_DISTANCE = 0.00007D;
+    private static final double RUN_DISTANCE = 0.004D;
 
     // Capabilities
     CapabilityManager capabilities = CapabilityManager.newInstance(this);

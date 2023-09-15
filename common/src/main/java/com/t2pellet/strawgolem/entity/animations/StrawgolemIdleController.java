@@ -9,7 +9,7 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 public class StrawgolemIdleController extends AnimationController<StrawGolem> {
 
     private static PlayState predicate(AnimationEvent<StrawGolem> event) {
-        if (event.getAnimatable().isMoving()) return PlayState.STOP;
+        if (!event.getAnimatable().isStopped()) return PlayState.STOP;
         if (event.getAnimatable().getHarvester().isHarvesting()) return PlayState.STOP;
         if (event.getAnimatable().getHeldItem().has()) return PlayState.STOP;
 
