@@ -172,7 +172,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     @Override
     protected SoundEvent getAmbientSound() {
-        if (isRunning()) return StrawgolemSounds.GOLEM_SCARED;
+        if (isRunningGoal(PanicGoal.class, AvoidEntityGoal.class)) return StrawgolemSounds.GOLEM_SCARED;
         return StrawgolemSounds.GOLEM_AMBIENT;
     }
 
@@ -185,4 +185,16 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     protected SoundEvent getDeathSound() {
         return StrawgolemSounds.GOLEM_DEATH;
     }
+
+    /* Helpers */
+
+    private boolean isRunningGoal(Class<? extends Goal> ...classes) {
+        return goalSelector.getRunningGoals().anyMatch(goal -> {
+            for (Class<? extends Goal> clazz : classes) {
+                if (clazz.isInstance(goal.getGoal())) return true;
+            }
+            return false;
+        });
+    }
+
 }
