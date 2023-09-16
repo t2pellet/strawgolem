@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.entity.capabilities.harvester;
 
+import com.t2pellet.strawgolem.util.crop.CropUtil;
 import com.t2pellet.strawgolem.util.crop.SeedUtil;
 import com.t2pellet.strawgolem.world.WorldCrops;
 import com.t2pellet.tlib.Services;
@@ -13,6 +14,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.StemGrownBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -43,13 +46,17 @@ class HarvesterImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractC
         return harvestPos != null;
     }
 
+    @Override
+    public boolean isHarvestingBlock() {
+        return isHarvesting() && e.level.getBlockState(harvestPos).getBlock() instanceof StemGrownBlock;
+    }
+
     private void completeHarvest() {
-        if (!e.level.isClientSide) {
+        if (!e.level.isClientSide && CropUtil.isGrownCrop(e.level, harvestPos)) {
             BlockState state = e.level.getBlockState(harvestPos);
-            BlockState defaultState = state.getBlock().defaultBlockState();
+            BlockState defaultState = state.getBlock() instanceof StemGrownBlock ? Blocks.AIR.defaultBlockState() : state.getBlock().defaultBlockState();
             e.setItemSlot(EquipmentSlot.MAINHAND, pickupLoot(state));
             harvestBlock(harvestPos, defaultState);
-            harvestPos = null;
             WorldCrops.of((ServerLevel) e.level).remove(harvestPos);
             synchronize();
         } else harvestPos = null;
@@ -76,13 +83,15 @@ class HarvesterImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractC
     private void harvestBlock(BlockPos blockPos, BlockState defaultState) {
         e.level.destroyBlock(blockPos, false, e);
         e.level.setBlockAndUpdate(blockPos, defaultState);
-        e.level.gameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Context.of(e, defaultState));
+        e.level.gameEvent(defaultState.isAir() ? GameEvent.BLOCK_DESTROY : GameEvent.BLOCK_PLACE, blockPos, GameEvent.Context.of(e, defaultState));
+        harvestPos = null;
     }
 
     private ItemStack pickupLoot(BlockState state) {
+        if (state.getBlock() instanceof StemGrownBlock) return new ItemStack(state.getBlock().asItem(), 1);
         LootContext.Builder builder = new LootContext.Builder((ServerLevel) e.level).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withParameter(LootContextParams.ORIGIN, e.position());
         List<ItemStack> drops = state.getDrops(builder);
         Optional<ItemStack> pickupStack = drops.stream().filter((d) -> !SeedUtil.isSeed(d.getItem()) || d.getItem().isEdible()).findFirst();
-        return pickupStack.orElseGet(() -> ItemStack.EMPTY);
+        return pickupStack.orElse(ItemStack.EMPTY);
     }
 }

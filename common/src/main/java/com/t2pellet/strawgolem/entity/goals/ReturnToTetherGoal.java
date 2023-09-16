@@ -32,12 +32,12 @@ public class ReturnToTetherGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canUse() {
-        return !golem.getHarvester().isHarvesting() && !golem.getHeldItem().has() && findNearestBlock();
+        return !golem.getHeldItem().has() && findNearestBlock();
     }
 
     @Override
     public boolean canContinueToUse() {
-        return !golem.getHarvester().isHarvesting() && !golem.getHeldItem().has() && isValidTarget(level, blockPos);
+        return !golem.getHeldItem().has() && isValidTarget(level, blockPos);
     }
 
     @Override

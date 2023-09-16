@@ -9,7 +9,7 @@ public class ContainerUtil {
     private ContainerUtil() {}
 
     public static boolean isContainer(LevelAccessor level, BlockPos pos) {
-        return level.getBlockEntity(pos) instanceof Container;
+        return pos != null && level.getBlockEntity(pos) instanceof Container;
     }
 
 }

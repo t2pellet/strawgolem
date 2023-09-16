@@ -206,6 +206,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     @Override
     protected SoundEvent getAmbientSound() {
         if (isRunningGoal(PanicGoal.class, AvoidEntityGoal.class)) return StrawgolemSounds.GOLEM_SCARED;
+        if (isHoldingBlock()) return StrawgolemSounds.GOLEM_STRAINED;
         return StrawgolemSounds.GOLEM_AMBIENT;
     }
 
@@ -221,6 +222,12 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     /* Helpers */
 
+    public boolean isHoldingBlock() {
+        Item item = heldItem.get().getItem();
+        return item instanceof BlockItem blockItem && blockItem.getBlock() instanceof StemGrownBlock;
+    }
+
+    @SafeVarargs
     private boolean isRunningGoal(Class<? extends Goal> ...classes) {
         return goalSelector.getRunningGoals().anyMatch(goal -> {
             for (Class<? extends Goal> clazz : classes) {

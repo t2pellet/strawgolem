@@ -5,6 +5,7 @@ import com.t2pellet.strawgolem.compat.HarvestableState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.StemGrownBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -27,8 +28,7 @@ public class CropUtil {
             return cropBlock.isMaxAge(state);
         } else if (state instanceof HarvestableState cropBlock) {
             return cropBlock.isMaxAge();
-        }
-        return false;
+        } else return state.getBlock() instanceof StemGrownBlock;
     }
 
     public static boolean isCrop(BlockState state) {

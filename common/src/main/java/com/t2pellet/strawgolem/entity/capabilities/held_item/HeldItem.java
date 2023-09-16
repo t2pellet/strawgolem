@@ -5,6 +5,7 @@ import com.t2pellet.tlib.common.entity.capability.Capability;
 import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public interface HeldItem extends Capability {
 
@@ -14,8 +15,5 @@ public interface HeldItem extends Capability {
 
     void set (ItemStack stack);
     boolean has();
-
     ItemStack get();
-
-    ItemStack remove();
 }

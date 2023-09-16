@@ -56,7 +56,8 @@ public class DeliverCropGoal extends MoveToBlockGoal {
     @Override
     public void start() {
         super.start();
-        golem.playSound(StrawgolemSounds.GOLEM_INTERESTED);
+        if (golem.isHoldingBlock()) golem.playSound(StrawgolemSounds.GOLEM_STRAINED);
+        else golem.playSound(StrawgolemSounds.GOLEM_INTERESTED);
     }
 
     @Override

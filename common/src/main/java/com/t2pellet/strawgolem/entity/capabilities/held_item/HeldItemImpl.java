@@ -35,13 +35,6 @@ class HeldItemImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractCa
     }
 
     @Override
-    public ItemStack remove() {
-        ItemStack result = container.removeAllItems().get(0);
-        synchronize();
-        return result;
-    }
-
-    @Override
     public Tag writeTag() {
         return container.createTag();
     }

@@ -12,6 +12,8 @@ public interface Harvester extends Capability {
     }
 
     void harvest(BlockPos pos);
+    // Only used for animations
     boolean isHarvesting();
+    boolean isHarvestingBlock();
 
 }
