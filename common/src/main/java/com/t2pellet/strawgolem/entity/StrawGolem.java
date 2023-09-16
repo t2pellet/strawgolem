@@ -28,15 +28,25 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.StemGrownBlock;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
+// TODO : Verify sweet berry bush harvesting
+// TODO : Stem grown block harvesting
+// TODO : Hunger system
+// TODO : Decay fly
+// TODO : Mobs eat them
+// TODO : Feeding trough support for repair
+// TODO : Farmers delight compat
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
     private static final double STOP_DISTANCE = 0.00001D;
@@ -109,6 +119,12 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
             return InteractionResult.CONSUME;
         }
         return super.mobInteract(player, hand);
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(DamageSource $$0, int $$1, boolean $$2) {
+        spawnAtLocation(getHeldItem().get().copy());
+        getHeldItem().get().setCount(0);
     }
 
     /* Item */
