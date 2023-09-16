@@ -1,6 +1,11 @@
 package com.t2pellet.strawgolem.entity.animations;
 
 import com.t2pellet.strawgolem.entity.StrawGolem;
+import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemNameBlockItem;
+import net.minecraft.world.level.block.StemGrownBlock;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.Animation;
@@ -13,11 +18,17 @@ public class StrawgolemItemController extends AnimationController<StrawGolem> {
     private static PlayState predicate(AnimationEvent<StrawGolem> event) {
         AnimationBuilder builder = new AnimationBuilder();
         if (event.getAnimatable().getHarvester().isHarvesting()) {
-            builder.playOnce("harvest_item");
+            // Appropriate animation for regular crop or gourd crop
+            if (event.getAnimatable().getHarvester().isHarvestingBlock()) {
+                builder.playOnce("harvest_block");
+            } else builder.playOnce("harvest_item");
         } else if (event.getAnimatable().getHeldItem().has()) {
             // Let harvest animation finish
             if (!isRunningHarvestingAnimation(event.getController())) {
-                builder.loop("hold_item");
+                // Appropriate animation for regular crop or gourd crop
+                if (event.getAnimatable().isHoldingBlock()) {
+                    builder.loop("hold_block");
+                } else builder.loop("hold_item");
             }
         } else return PlayState.STOP;
         event.getController().setAnimation(builder);

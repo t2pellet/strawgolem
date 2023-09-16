@@ -10,6 +10,6 @@ public class StrawGolemRenderer extends GeoEntityRenderer<StrawGolem> {
 
     public StrawGolemRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new StrawgolemGeoModel());
-        this.addLayer(new StrawgolemItemLayer(this, renderManager.getItemInHandRenderer()));
+        this.addLayer(new StrawgolemItemLayer(this, (StrawgolemGeoModel) modelProvider, renderManager.getItemInHandRenderer()));
     }
 }

@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.StemGrownBlock;
 import net.minecraft.world.phys.Vec3;
 
 
@@ -69,6 +70,9 @@ public class HarvestCropGoal extends MoveToBlockGoal {
 
     @Override
     public double acceptedDistance() {
+        if (level.getBlockState(blockPos).getBlock() instanceof StemGrownBlock) {
+            return 2.6D;
+        }
         return 1.6D;
     }
 
