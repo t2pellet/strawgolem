@@ -47,6 +47,9 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 // TODO : Mobs eat them
 // TODO : Feeding trough support for repair
 // TODO : Farmers delight compat
+// TODO : Finish animations
+// TODO : Config
+// TODO : HWYLA compat
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
     private static final double STOP_DISTANCE = 0.00001D;
