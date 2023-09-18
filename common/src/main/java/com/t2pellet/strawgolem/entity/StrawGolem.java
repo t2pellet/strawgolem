@@ -41,15 +41,14 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
 // TODO : Verify sweet berry bush harvesting
-// TODO : Stem grown block harvesting
 // TODO : Hunger system
 // TODO : Decay fly
-// TODO : Mobs eat them
 // TODO : Feeding trough support for repair
 // TODO : Farmers delight compat
 // TODO : Finish animations
 // TODO : Config
 // TODO : HWYLA compat
+// TODO : Straw hat
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
     private static final double STOP_DISTANCE = 0.00001D;
@@ -103,6 +102,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     public void baseTick() {
         super.baseTick();
         getDecay().decay();
+        if (isInWaterRainOrBubble()) getDecay().decay();
     }
 
     @Override
