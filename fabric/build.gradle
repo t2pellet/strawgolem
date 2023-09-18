@@ -17,7 +17,8 @@ dependencies {
     modImplementation "software.bernie.geckolib:geckolib-fabric-1.19:${geckolib_version_fabric}"
     modImplementation files('../../tlib/Fabric/build/libs/tlib-fabric-1.19.2-0.2.12-alpha.jar')
     modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
-    modImplementation "curse.maven:farmers-delight-fabric-482834:${project.fd_version}"
+    modImplementation "curse.maven:farmers-delight-fabric-482834:${project.farmers_delight_version}"
+    modImplementation "curse.maven:animal-feeding-trough-445838:${project.feeding_trough_version}"
 }
 
 loom {

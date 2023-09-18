@@ -9,10 +9,8 @@ import com.t2pellet.strawgolem.entity.capabilities.deliverer.Deliverer;
 import com.t2pellet.strawgolem.entity.capabilities.harvester.Harvester;
 import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
 import com.t2pellet.strawgolem.entity.capabilities.tether.Tether;
-import com.t2pellet.strawgolem.entity.goals.DeliverCropGoal;
-import com.t2pellet.strawgolem.entity.goals.GolemWanderGoal;
-import com.t2pellet.strawgolem.entity.goals.HarvestCropGoal;
-import com.t2pellet.strawgolem.entity.goals.ReturnToTetherGoal;
+import com.t2pellet.strawgolem.entity.goals.*;
+import com.t2pellet.tlib.Services;
 import com.t2pellet.tlib.common.entity.capability.CapabilityManager;
 import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
 import net.minecraft.sounds.SoundEvent;
@@ -95,6 +93,9 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.goalSelector.addGoal(2, new DeliverCropGoal(this, 24));
         this.goalSelector.addGoal(3, new ReturnToTetherGoal(this));
         this.goalSelector.addGoal(4, new GolemWanderGoal(this));
+        if (Services.PLATFORM.isModLoaded("animal_feeding_trough")) {
+            this.goalSelector.addGoal(4, new GolemRepairSelfGoal(this, 24));
+        }
         this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
     }
