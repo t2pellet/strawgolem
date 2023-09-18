@@ -2,10 +2,7 @@ package com.t2pellet.strawgolem.entity.goals;
 
 import com.t2pellet.strawgolem.StrawgolemSounds;
 import com.t2pellet.strawgolem.entity.StrawGolem;
-import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
-import com.t2pellet.strawgolem.util.container.ContainerUtil;
-import com.t2pellet.tlib.Services;
-import net.minecraft.commands.arguments.blocks.BlockStateArgument;
+import com.t2pellet.strawgolem.entity.capabilities.decay.DecayState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -14,14 +11,10 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import slexom.vf.animal_feeding_trough.block.FeedingTroughBlock;
-import slexom.vf.animal_feeding_trough.block.entity.FeedingTroughBlockEntity;
-import software.bernie.example.registry.BlockRegistry;
 
 
 public class GolemRepairSelfGoal extends MoveToBlockGoal {
@@ -54,17 +47,17 @@ public class GolemRepairSelfGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canUse() {
-        return golem.getHeldItem().has() && golem.getDecay().getState() != Decay.DecayState.NEW && findNearestBlock();
+        return golem.getHeldItem().has() && golem.getDecay().getState() != DecayState.NEW && findNearestBlock();
     }
 
     @Override
     public boolean canContinueToUse() {
-        return super.canContinueToUse() && feeder != null && golem.getDecay().getState() != Decay.DecayState.NEW;
+        return super.canContinueToUse() && feeder != null && golem.getDecay().getState() != DecayState.NEW;
     }
 
     @Override
     public void tick() {
-        if (!level.isClientSide && feeder != null && golem.getDecay().getState() != Decay.DecayState.NEW) {
+        if (!level.isClientSide && feeder != null && golem.getDecay().getState() != DecayState.NEW) {
             if (feeder.getItem(0).getCount() >= 4) {
                 golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
             }

@@ -20,6 +20,7 @@ dependencies {
      compileOnly "software.bernie.geckolib:geckolib-forge-1.19:${geckolib_version_forge}"
      compileOnly "curse.maven:animal-feeding-trough-445838:${project.feeding_trough_version}"
      implementation files('../../tlib/Common/build/libs/tlib-common-1.19.2-0.2.12-alpha.jar')
+     compileOnly "curse.maven:jade-324717:${project.jade_api_id}"
 }
 
 publishing {

@@ -1,8 +1,8 @@
 package com.t2pellet.strawgolem.util.crop;
 
 import com.t2pellet.strawgolem.Constants;
-import com.t2pellet.strawgolem.compat.HarvestableBlock;
-import com.t2pellet.strawgolem.compat.HarvestableState;
+import com.t2pellet.strawgolem.compat.api.HarvestableBlock;
+import com.t2pellet.strawgolem.compat.api.HarvestableState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;

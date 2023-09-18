@@ -1,3 +1,8 @@
 {
-  "entity.strawgolem.strawgolem": "Straw Golem"
+  "entity.strawgolem.strawgolem": "Straw Golem",
+  "strawgolem.health.new": "Healthy",
+  "strawgolem.health.old": "Aging",
+  "strawgolem.health.withered": "Withered",
+  "config.jade.plugin_strawgolem.strawgolem_enabled": "Show Strawgolem Data",
+  "config.jade.plugin_strawgolem.strawgolem": "Strawgolem Config"
 }

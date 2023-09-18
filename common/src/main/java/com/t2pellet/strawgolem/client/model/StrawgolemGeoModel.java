@@ -5,6 +5,7 @@ import com.mojang.math.Quaternion;
 import com.t2pellet.strawgolem.Constants;
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
+import com.t2pellet.strawgolem.entity.capabilities.decay.DecayState;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.ZombieModel;
 import net.minecraft.resources.ResourceLocation;
@@ -36,7 +37,7 @@ public class StrawgolemGeoModel extends AnimatedGeoModel<StrawGolem> {
 
     @Override
     public ResourceLocation getTextureResource(StrawGolem golem) {
-        Decay.DecayState state = golem.getDecay().getState();
+        DecayState state = golem.getDecay().getState();
         switch (state) {
             case OLD -> {
                 return oldTextureResource;

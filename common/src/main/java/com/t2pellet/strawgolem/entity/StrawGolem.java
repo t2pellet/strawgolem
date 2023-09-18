@@ -5,6 +5,7 @@ import com.t2pellet.strawgolem.entity.animations.StrawgolemIdleController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemItemController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemWalkController;
 import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
+import com.t2pellet.strawgolem.entity.capabilities.decay.DecayState;
 import com.t2pellet.strawgolem.entity.capabilities.deliverer.Deliverer;
 import com.t2pellet.strawgolem.entity.capabilities.harvester.Harvester;
 import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
@@ -43,7 +44,6 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 // TODO : Decay fly
 // TODO : Finish animations
 // TODO : Config
-// TODO : HWYLA compat
 // TODO : Straw hat
 // TODO : Fix bug - Animation transition on world load
 // TODO : Fix bug - walking animation jank
@@ -120,7 +120,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack item = player.getItemInHand(hand);
-        if (item.getItem() == Items.WHEAT && decay.getState() != Decay.DecayState.NEW) {
+        if (item.getItem() == Items.WHEAT && decay.getState() != DecayState.NEW) {
             boolean success = decay.repair();
             if (success) item.shrink(1);
             return InteractionResult.CONSUME;

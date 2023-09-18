@@ -1,4 +1,4 @@
-package com.t2pellet.strawgolem.compat;
+package com.t2pellet.strawgolem.compat.api;
 
 import net.minecraft.world.level.block.state.BlockState;
 

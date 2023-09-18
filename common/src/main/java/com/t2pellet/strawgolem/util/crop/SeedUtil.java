@@ -1,6 +1,6 @@
 package com.t2pellet.strawgolem.util.crop;
 
-import com.t2pellet.strawgolem.compat.Seed;
+import com.t2pellet.strawgolem.compat.api.Seed;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;

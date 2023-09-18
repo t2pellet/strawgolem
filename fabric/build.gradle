@@ -19,6 +19,8 @@ dependencies {
     modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
     modImplementation "curse.maven:farmers-delight-fabric-482834:${project.farmers_delight_version}"
     modImplementation "curse.maven:animal-feeding-trough-445838:${project.feeding_trough_version}"
+    modImplementation "curse.maven:jade-324717:${project.jade_id}"
+
 }
 
 loom {

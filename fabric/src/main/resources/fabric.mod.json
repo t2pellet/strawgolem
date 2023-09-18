@@ -20,6 +20,9 @@
         ],
         "client": [
             "com.t2pellet.strawgolem.StrawgolemFabric"
+        ],
+        "jade": [
+            "com.t2pellet.strawgolem.compat.jade.StrawgolemJadePlugin"
         ]
     },
     "mixins": [
