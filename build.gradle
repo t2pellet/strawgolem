@@ -5,6 +5,14 @@ plugins {
     id("org.spongepowered.mixin") version "0.7-SNAPSHOT" apply(false)
 }
 
+static String terraformers() {
+    def url = "https://maven.terraformersmc.com/"
+    def conn = new URL(url).openConnection()
+    conn.connect()
+    url = conn.getResponseCode() == 521 ? "https://maven.kotlindiscord.com/repository/terraformers/" : url
+    return url
+}
+
 subprojects {
     apply plugin: 'java'
 
@@ -48,8 +56,15 @@ subprojects {
             name = 'BlameJared Maven (JEI / CraftTweaker / Bookshelf)'
             url = 'https://maven.blamejared.com'
         }
+        maven {
+            name = 'Curse Maven'
+            url = "https://www.cursemaven.com"
+        }
         maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
         maven { url 'https://repo.ryandw11.com/repository/maven-releases/' }
+        maven {
+            url = terraformers()
+        }
     }
 
     tasks.withType(JavaCompile).configureEach {

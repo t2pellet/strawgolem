@@ -40,16 +40,15 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-// TODO : Verify sweet berry bush harvesting
 // TODO : Hunger system
 // TODO : Decay fly
 // TODO : Feeding trough support for repair
-// TODO : Farmers delight compat
 // TODO : Finish animations
 // TODO : Config
 // TODO : HWYLA compat
 // TODO : Straw hat
-// TODO : Plays harvest animation on world load
+// TODO : Fix bug - Plays harvest animation on world load
+// TODO : Fix bug - not always walking fully to destination
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
     private static final double STOP_DISTANCE = 0.00001D;
