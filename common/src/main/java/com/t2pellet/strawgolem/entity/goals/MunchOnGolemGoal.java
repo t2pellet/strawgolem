@@ -28,7 +28,7 @@ public class MunchOnGolemGoal extends Goal {
     @Override
     public boolean canUse() {
         if (this.animal.getRandom().nextInt(200) != 0) return false;
-        this.target = this.animal.level.getNearestEntity(StrawGolem.class, predicate, animal, animal.getX(), animal.getY(), animal.getZ(), animal.getBoundingBox().inflate(within));
+        this.target = this.animal.level.getNearestEntity(StrawGolem.class, predicate, animal, animal.getX(), animal.getY(), animal.getZ(), animal.getBoundingBox().inflate(24.0D));
         if (this.target == null) {
             return false;
         } else return true;

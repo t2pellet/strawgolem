@@ -47,7 +47,8 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 // TODO : Config
 // TODO : HWYLA compat
 // TODO : Straw hat
-// TODO : Fix bug - Plays harvest animation on world load
+// TODO : Fix bug - Animation transition on world load
+// TODO : Fix bug - walking animation jank
 // TODO : Fix bug - not always walking fully to destination
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
