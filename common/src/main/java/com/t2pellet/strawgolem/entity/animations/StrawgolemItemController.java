@@ -1,11 +1,6 @@
 package com.t2pellet.strawgolem.entity.animations;
 
 import com.t2pellet.strawgolem.entity.StrawGolem;
-import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
-import net.minecraft.core.Registry;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemNameBlockItem;
-import net.minecraft.world.level.block.StemGrownBlock;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.Animation;
@@ -43,5 +38,10 @@ public class StrawgolemItemController extends AnimationController<StrawGolem> {
 
     public StrawgolemItemController(StrawGolem animatable) {
         super(animatable, "item", 10, StrawgolemItemController::predicate);
+        registerCustomInstructionListener(event -> {
+            if (event.instructions.equals("completeHarvest")) {
+                animatable.getHarvester().completeHarvest();
+            }
+        });
     }
 }
