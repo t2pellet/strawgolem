@@ -49,6 +49,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 // TODO : Config
 // TODO : HWYLA compat
 // TODO : Straw hat
+// TODO : Plays harvest animation on world load
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
     private static final double STOP_DISTANCE = 0.00001D;
@@ -128,6 +129,12 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     protected void dropCustomDeathLoot(DamageSource $$0, int $$1, boolean $$2) {
         spawnAtLocation(getHeldItem().get().copy());
         getHeldItem().get().setCount(0);
+    }
+
+    @Override
+    public boolean isDamageSourceBlocked(DamageSource source) {
+        if (source == DamageSource.SWEET_BERRY_BUSH) return true;
+        return super.isDamageSourceBlocked(source);
     }
 
     /* Item */
