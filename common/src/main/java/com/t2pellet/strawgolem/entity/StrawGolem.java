@@ -24,6 +24,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.AbstractGolem;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -38,9 +40,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-// TODO : Hunger system
 // TODO : Decay fly
-// TODO : Feeding trough support for repair
 // TODO : Finish animations
 // TODO : Config
 // TODO : HWYLA compat
@@ -88,6 +88,8 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Pillager.class, 15.0F, 0.5D, 0.5D));
         this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Illusioner.class, 12.0F, 0.5D, 0.5D));
         this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Zoglin.class, 10.0F, 0.5D, 0.5D));
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Sheep.class, 8.0F, 0.5D, 0.5D));
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Cow.class, 8.0F, 0.5D, 0.5D));
         this.goalSelector.addGoal(1, new PanicGoal(this, 0.8D));
         this.goalSelector.addGoal(2, new HarvestCropGoal(this, 24));
         this.goalSelector.addGoal(2, new DeliverCropGoal(this, 24));
