@@ -26,8 +26,7 @@ public class StrawgolemGeoModel extends AnimatedGeoModel<StrawGolem> {
     private static final ResourceLocation dyingTextureResource = new ResourceLocation(Constants.MOD_ID, "textures/straw_golem.png");
 
     // Magic numbers
-    private static final float ITEM_TRANSLATE_FACTOR = 0.17F;
-    private static final float BLOCK_TRANSLATE_FACTOR = 0.0F;
+    private static final float ITEM_TRANSLATE_FACTOR = 0.165F;
 
 
     @Override
@@ -71,12 +70,8 @@ public class StrawgolemGeoModel extends AnimatedGeoModel<StrawGolem> {
     public void translateToHand(StrawGolem golem, PoseStack poseStack) {
         IBone body = getBone("upper");
         IBone arms = getBone("arms");
-        boolean holdingBlock = golem.isHoldingBlock();
-        float translation = (body.getPositionY() + arms.getPositionY()) * (holdingBlock ? BLOCK_TRANSLATE_FACTOR : ITEM_TRANSLATE_FACTOR);
+        float translation = (body.getPositionY() + arms.getPositionY()) * ITEM_TRANSLATE_FACTOR;
         poseStack.mulPose(Quaternion.fromXYZ(body.getRotationX(), 0, body.getRotationZ()));
-        if (holdingBlock) {
-            poseStack.mulPose(Quaternion.fromXYZ(arms.getRotationX(), 0, 0));
-            poseStack.translate(0, -translation, 0);
-        } else poseStack.translate(0, translation, 0);
+        poseStack.translate(0, translation, 0);
     }
 }
