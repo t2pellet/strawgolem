@@ -183,6 +183,11 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         return getSqrMovement() < STOP_DISTANCE;
     }
 
+    public boolean isInCold() {
+        return level.getBiome(blockPosition()).value().getBaseTemperature() < 0.15F;
+    }
+
+
     /* Capabilities */
 
     @Override
