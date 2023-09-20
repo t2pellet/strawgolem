@@ -1,12 +1,12 @@
 package com.t2pellet.strawgolem;
 
 import com.t2pellet.tlib.config.Config;
-import com.t2pellet.tlib.config.property.*;
-import net.minecraft.network.chat.Component;
+import com.t2pellet.tlib.config.property.BoolProperty;
+import com.t2pellet.tlib.config.property.IntProperty;
+import com.t2pellet.tlib.config.property.ListProperty;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Config.ModConfig(comment = "Config for Straw Golem")
 public class StrawgolemConfig extends Config {

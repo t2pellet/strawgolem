@@ -2,20 +2,17 @@ package com.t2pellet.strawgolem.entity.goals;
 
 import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.StrawGolem;
-import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.phys.Vec3;
 
 public class MunchOnGolemGoal extends Goal {
 
     private static final TargetingConditions predicate = TargetingConditions.forNonCombat().selector(e -> e instanceof StrawGolem);
 
-    private Animal animal;
+    private final Animal animal;
     private final double speedModifier;
     private StrawGolem target;
     private boolean reachedTarget = false;
@@ -38,9 +35,7 @@ public class MunchOnGolemGoal extends Goal {
             // Occurs every 1-3 minutes
             this.nextStartTick = reducedTickDelay(600 + this.animal.getRandom().nextInt(3200));
             this.target = this.animal.level.getNearestEntity(StrawGolem.class, predicate, animal, animal.getX(), animal.getY(), animal.getZ(), animal.getBoundingBox().inflate(24.0D));
-            if (this.target == null) {
-                return false;
-            } else return true;
+            return this.target != null;
         }
     }
 

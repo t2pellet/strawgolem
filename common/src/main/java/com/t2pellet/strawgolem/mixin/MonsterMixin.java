@@ -3,7 +3,6 @@ package com.t2pellet.strawgolem.mixin;
 
 import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.goals.MonsterAttackGolemGoal;
-import com.t2pellet.strawgolem.entity.goals.RaiderAttackGolemGoal;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.raid.Raider;

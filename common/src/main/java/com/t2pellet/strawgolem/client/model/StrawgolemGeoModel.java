@@ -5,15 +5,10 @@ import com.mojang.math.Quaternion;
 import com.t2pellet.strawgolem.Constants;
 import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.StrawGolem;
-import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
 import com.t2pellet.strawgolem.entity.capabilities.decay.DecayState;
-import net.minecraft.client.model.ArmedModel;
-import net.minecraft.client.model.ZombieModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.HumanoidArm;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.processor.IBone;
-import software.bernie.geckolib3.geo.raw.pojo.Bone;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
