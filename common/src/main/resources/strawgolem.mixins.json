@@ -6,9 +6,10 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "CarvedPumpkinMixin",
-        "SheepMixin",
         "CowMixin",
-        "PillagerMixin"
+        "MonsterMixin",
+        "PillagerMixin",
+        "SheepMixin"
     ],
     "client": [
     ],
