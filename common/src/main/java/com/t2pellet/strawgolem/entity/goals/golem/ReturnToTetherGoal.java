@@ -1,4 +1,4 @@
-package com.t2pellet.strawgolem.entity.goals;
+package com.t2pellet.strawgolem.entity.goals.golem;
 
 import com.t2pellet.strawgolem.StrawgolemSounds;
 import com.t2pellet.strawgolem.entity.StrawGolem;
@@ -14,30 +14,36 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.phys.Vec3;
 
 
-public class DeliverCropGoal extends MoveToBlockGoal {
+public class ReturnToTetherGoal extends MoveToBlockGoal {
 
     private final StrawGolem golem;
     private final ServerLevel level;
 
-    public DeliverCropGoal(StrawGolem golem, int range) {
-        super(golem, 0.5, range);
+    public ReturnToTetherGoal(StrawGolem golem) {
+        super(golem, 0.5, 24);
         this.golem = golem;
         this.level = (ServerLevel) golem.level;
     }
 
     @Override
     protected boolean isValidTarget(LevelReader levelReader, BlockPos blockPos) {
-        return ContainerUtil.isContainer((LevelAccessor) levelReader, blockPos);
+        return golem.getTether().get().equals(blockPos);
     }
 
     @Override
     public boolean canUse() {
-        return golem.getHeldItem().has() && findNearestBlock();
+        return !golem.getHeldItem().has() && findNearestBlock();
     }
 
     @Override
     public boolean canContinueToUse() {
-        return golem.getHeldItem().has() && isValidTarget(golem.level, blockPos);
+        return !golem.getHeldItem().has() && isValidTarget(level, blockPos);
+    }
+
+    @Override
+    protected boolean findNearestBlock() {
+        blockPos = golem.getTether().get();
+        return golem.getTether().isTooFar();
     }
 
     @Override
@@ -47,8 +53,8 @@ public class DeliverCropGoal extends MoveToBlockGoal {
             if (!golem.getLookControl().isLookingAtTarget()) {
                 golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
             }
-            if (isReachedTarget() && isValidTarget(level, blockPos)) {
-                golem.getDeliverer().deliver(blockPos);
+            if (isReachedTarget()) {
+                stop();
             }
         }
     }
@@ -56,22 +62,11 @@ public class DeliverCropGoal extends MoveToBlockGoal {
     @Override
     public void start() {
         super.start();
-        if (golem.isHoldingBlock()) golem.playSound(StrawgolemSounds.GOLEM_STRAINED);
-        else golem.playSound(StrawgolemSounds.GOLEM_INTERESTED);
+        golem.playSound(StrawgolemSounds.GOLEM_INTERESTED);
     }
 
     @Override
     public double acceptedDistance() {
-        return 1.6D;
-    }
-
-    @Override
-    protected boolean findNearestBlock() {
-        BlockPos blockPos = golem.getDeliverer().getDeliverPos();
-        if (isValidTarget(mob.getLevel(), blockPos)) {
-            this.blockPos = blockPos;
-            return true;
-        }
-        return false;
+        return golem.getRandom().nextInt(8);
     }
 }

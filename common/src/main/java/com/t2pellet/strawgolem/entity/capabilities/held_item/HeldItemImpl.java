@@ -1,15 +1,14 @@
 package com.t2pellet.strawgolem.entity.capabilities.held_item;
 
-import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.tlib.common.entity.capability.AbstractCapability;
 import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 
-class HeldItemImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractCapability<E> implements HeldItem {
+class HeldItemImpl<E extends Entity & ICapabilityHaver> extends AbstractCapability<E> implements HeldItem {
 
     private final SimpleContainer container = new SimpleContainer(1);
 

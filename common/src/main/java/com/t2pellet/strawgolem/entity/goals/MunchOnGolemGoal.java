@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.entity.goals;
 
+import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
@@ -29,6 +30,7 @@ public class MunchOnGolemGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (!StrawgolemConfig.Behaviour.livestockEatGolems.get()) return false;
         if (this.nextStartTick > 0) {
             --this.nextStartTick;
             return false;

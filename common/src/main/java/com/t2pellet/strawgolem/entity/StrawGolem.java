@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.entity;
 
+import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.StrawgolemSounds;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemIdleController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemItemController;
@@ -10,7 +11,7 @@ import com.t2pellet.strawgolem.entity.capabilities.deliverer.Deliverer;
 import com.t2pellet.strawgolem.entity.capabilities.harvester.Harvester;
 import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
 import com.t2pellet.strawgolem.entity.capabilities.tether.Tether;
-import com.t2pellet.strawgolem.entity.goals.*;
+import com.t2pellet.strawgolem.entity.goals.golem.*;
 import com.t2pellet.tlib.Services;
 import com.t2pellet.tlib.common.entity.capability.CapabilityManager;
 import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
@@ -35,7 +36,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.StemGrownBlock;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
@@ -81,18 +81,17 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Monster.class, 8.0F, 0.5D, 0.5D));
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Evoker.class, 12.0F, 0.5D, 0.5D));
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Vindicator.class, 8.0F, 0.5D, 0.5D));
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Vex.class, 8.0F, 0.5D, 0.5D));
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Pillager.class, 15.0F, 0.5D, 0.5D));
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Illusioner.class, 12.0F, 0.5D, 0.5D));
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Zoglin.class, 10.0F, 0.5D, 0.5D));
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Sheep.class, 8.0F, 0.5D, 0.5D));
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, Cow.class, 8.0F, 0.5D, 0.5D));
-        this.goalSelector.addGoal(1, new PanicGoal(this, 0.8D));
-        this.goalSelector.addGoal(2, new HarvestCropGoal(this, 24));
-        this.goalSelector.addGoal(2, new DeliverCropGoal(this, 24));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Monster.class, 8.0F, 0.5D, 0.7D));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Evoker.class, 12.0F, 0.5D, 0.7D));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Vindicator.class, 8.0F, 0.5D, 0.7D));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Vex.class, 8.0F, 0.5D, 0.7D));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Pillager.class, 15.0F, 0.5D, 0.7D));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Illusioner.class, 12.0F, 0.5D, 0.7D));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Sheep.class, 8.0F, 0.5D, 0.7D));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Cow.class, 8.0F, 0.5D, 0.7D));
+        this.goalSelector.addGoal(1, new GolemPanicGoal(this));
+        this.goalSelector.addGoal(2, new HarvestCropGoal(this));
+        this.goalSelector.addGoal(2, new DeliverCropGoal(this));
         this.goalSelector.addGoal(3, new ReturnToTetherGoal(this));
         this.goalSelector.addGoal(4, new GolemWanderGoal(this));
         if (Services.PLATFORM.isModLoaded("animal_feeding_trough")) {
@@ -106,6 +105,13 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     public void baseTick() {
         super.baseTick();
         getDecay().decay();
+        if (isInWaterOrRain()) {
+            if (isInWater()) {
+                if (StrawgolemConfig.Lifespan.waterAcceleratesDecay.get()) getDecay().decay();
+            } else {
+                if (StrawgolemConfig.Lifespan.rainAcceleratesDecay.get()) getDecay().decay();
+            }
+        }
         if (isInWaterRainOrBubble()) getDecay().decay();
     }
 
@@ -159,9 +165,11 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     @Override
     public void registerControllers(AnimationData data) {
+        if (StrawgolemConfig.Visual.showHarvestAnimations.get()) {
+            data.addAnimationController(new StrawgolemItemController(this));
+        }
         data.addAnimationController(new StrawgolemWalkController(this));
         data.addAnimationController(new StrawgolemIdleController(this));
-        data.addAnimationController(new StrawgolemItemController(this));
     }
 
     @Override

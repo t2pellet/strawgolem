@@ -47,6 +47,6 @@ public class StrawgolemCommon extends TLibMod {
 
     @Override
     public Config config() {
-        return super.config();
+        return StrawgolemConfig.INSTANCE;
     }
 }

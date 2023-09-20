@@ -1,20 +1,17 @@
 package com.t2pellet.strawgolem.entity.capabilities.decay;
 
+import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.tlib.common.entity.capability.AbstractCapability;
 import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.Random;
 
 
-class DecayImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractCapability<E> implements Decay {
-
-    private static final int TICKS_TO_DECAY = 12000;
-    private static final int DECAY_CHANCE_IN = 5;
-    private static final int REPAIR_CHANCE_IN = 3;
-
+class DecayImpl<E extends Entity & ICapabilityHaver> extends AbstractCapability<E> implements Decay {
     private DecayState state = DecayState.NEW;
     private int ticksSinceLastDecay = 0;
     private final Random rand;
@@ -27,20 +24,24 @@ class DecayImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractCapab
 
     @Override
     public void decay() {
-        if (ticksSinceLastDecay == TICKS_TO_DECAY && rand.nextInt(DECAY_CHANCE_IN) == 0) {
+        if (!StrawgolemConfig.Lifespan.enabled.get()) return;
+
+        int ticksToDecay = StrawgolemConfig.Lifespan.ticksToDecayCheck.get();
+        int decayChance = StrawgolemConfig.Lifespan.decayChance.get();
+        if (ticksSinceLastDecay == ticksToDecay && rand.nextInt(decayChance) == 0) {
             state = DecayState.fromValue(state.getValue() + 1);
             ticksSinceLastDecay = 0;
             synchronize();
         } else ++ticksSinceLastDecay;
 
-        if (state == null) e.kill();
+        if (state == null) entity.kill();
     }
 
     @Override
     public boolean repair() {
         if (state == DecayState.NEW) return false;
 
-        if (rand.nextInt(REPAIR_CHANCE_IN) == 0) {
+        if (rand.nextInt(StrawgolemConfig.Lifespan.repairChance.get()) == 0) {
             state = DecayState.fromValue(state.getValue() - 1);
         }
 

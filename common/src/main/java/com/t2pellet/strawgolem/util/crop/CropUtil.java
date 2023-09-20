@@ -1,6 +1,7 @@
 package com.t2pellet.strawgolem.util.crop;
 
 import com.t2pellet.strawgolem.Constants;
+import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.compat.api.HarvestableBlock;
 import com.t2pellet.strawgolem.compat.api.HarvestableState;
 import net.minecraft.core.BlockPos;
@@ -14,11 +15,27 @@ import net.minecraft.world.level.block.StemGrownBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class CropUtil {
 
     private static final TagKey<Block> HARVESTABLE_CROPS = TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(Constants.MOD_ID, "crops"));
+    private static final Set<ResourceLocation> BLACKLISTED_CROPS = new HashSet<>();
+    private static final Set<ResourceLocation> WHITELISTED_CROPS = new HashSet<>();
 
     private CropUtil() {}
+
+    static {
+        List<String> blacklistKeys = StrawgolemConfig.Harvesting.blacklist.get();
+        for (String blacklistKey : blacklistKeys) {
+            BLACKLISTED_CROPS.add(new ResourceLocation(blacklistKey));
+        }
+        List<String> whitelistKeys = StrawgolemConfig.Harvesting.whitelist.get();
+        for (String whitelistKey : whitelistKeys) {
+            WHITELISTED_CROPS.add(new ResourceLocation(whitelistKey));
+        }
+    }
 
     public static boolean isCrop(LevelAccessor level, BlockPos pos) {
         return pos != null && isCrop(level.getBlockState(pos));
@@ -29,6 +46,7 @@ public class CropUtil {
     }
 
     public static boolean isGrownCrop(BlockState state) {
+        if (!isCrop(state)) return false;
         if (state.getBlock() instanceof CropBlock cropBlock) {
             return cropBlock.isMaxAge(state);
         } else if (state.getBlock() instanceof HarvestableBlock cropBlock) {
@@ -53,13 +71,30 @@ public class CropUtil {
             } else if (state.hasProperty(BlockStateProperties.AGE_25)) {
                 return state.getValue(BlockStateProperties.AGE_25).intValue() == BlockStateProperties.MAX_AGE_25;
             } else return false;
-        }
-        else return state.getBlock() instanceof StemGrownBlock;
+        } else return state.getBlock() instanceof StemGrownBlock;
     }
 
     // TODO : Should probably check here that it has one of the age properties if its from the tag system
     public static boolean isCrop(BlockState state) {
-        return state.getBlock() instanceof CropBlock || state.getBlock() instanceof HarvestableBlock || state instanceof HarvestableState || state.is(HARVESTABLE_CROPS);
+        boolean isCrop = state.getBlock() instanceof CropBlock
+                || state.getBlock() instanceof HarvestableBlock
+                || state instanceof HarvestableState
+                || state.is(HARVESTABLE_CROPS)
+                || StrawgolemConfig.Harvesting.shouldHarvestBlocks.get() && state.getBlock() instanceof StemGrownBlock;
+        if (StrawgolemConfig.Harvesting.enableWhitelist.get()) {
+            return isCrop || isWhitelisted(state.getBlock());
+        }
+        return isCrop && !isBlacklisted(state.getBlock());
+    }
+
+    private static boolean isBlacklisted(Block block) {
+        ResourceLocation location = Registry.BLOCK.getKey(block);
+        return BLACKLISTED_CROPS.contains(location);
+    }
+
+    private static boolean isWhitelisted(Block block) {
+        ResourceLocation location = Registry.BLOCK.getKey(block);
+        return WHITELISTED_CROPS.contains(location);
     }
 
 }

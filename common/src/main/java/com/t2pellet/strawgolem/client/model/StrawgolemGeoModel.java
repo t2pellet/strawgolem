@@ -3,6 +3,7 @@ package com.t2pellet.strawgolem.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.t2pellet.strawgolem.Constants;
+import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
 import com.t2pellet.strawgolem.entity.capabilities.decay.DecayState;
@@ -37,6 +38,8 @@ public class StrawgolemGeoModel extends AnimatedGeoModel<StrawGolem> {
 
     @Override
     public ResourceLocation getTextureResource(StrawGolem golem) {
+        if (!StrawgolemConfig.Visual.golemDecayingTexture.get()) return newTextureResource;
+
         DecayState state = golem.getDecay().getState();
         switch (state) {
             case OLD -> {

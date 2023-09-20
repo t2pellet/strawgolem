@@ -3,11 +3,12 @@ package com.t2pellet.strawgolem.entity.capabilities.tether;
 import com.t2pellet.tlib.common.entity.capability.Capability;
 import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 public interface Tether extends Capability {
 
-    static <E extends LivingEntity & ICapabilityHaver> Tether getInstance(E entity) {
+    static <E extends Entity & ICapabilityHaver> Tether getInstance(E entity) {
         return new TetherImpl<>(entity);
     }
 

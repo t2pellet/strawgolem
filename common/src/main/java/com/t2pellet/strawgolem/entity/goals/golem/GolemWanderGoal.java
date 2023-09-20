@@ -1,4 +1,4 @@
-package com.t2pellet.strawgolem.entity.goals;
+package com.t2pellet.strawgolem.entity.goals.golem;
 
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;

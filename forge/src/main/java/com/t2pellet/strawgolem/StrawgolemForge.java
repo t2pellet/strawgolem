@@ -6,9 +6,7 @@ import com.t2pellet.tlib.TLibForgeMod;
 import com.t2pellet.tlib.client.TLibModClient;
 import com.t2pellet.tlib.common.TLibMod;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.function.Consumer;

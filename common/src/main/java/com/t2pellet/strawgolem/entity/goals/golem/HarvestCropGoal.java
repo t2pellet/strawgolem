@@ -1,5 +1,6 @@
-package com.t2pellet.strawgolem.entity.goals;
+package com.t2pellet.strawgolem.entity.goals.golem;
 
+import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.StrawgolemSounds;
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.util.crop.CropUtil;
@@ -21,8 +22,8 @@ public class HarvestCropGoal extends MoveToBlockGoal {
     private final StrawGolem golem;
     private final ServerLevel level;
 
-    public HarvestCropGoal(StrawGolem golem, int range) {
-        super(golem, 0.5, range);
+    public HarvestCropGoal(StrawGolem golem) {
+        super(golem, 0.5, StrawgolemConfig.Harvesting.harvestRange.get());
         this.golem = golem;
         this.level = (ServerLevel) golem.level;
     }

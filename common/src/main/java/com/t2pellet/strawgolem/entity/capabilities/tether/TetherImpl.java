@@ -1,15 +1,16 @@
 package com.t2pellet.strawgolem.entity.capabilities.tether;
 
+import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.tlib.common.entity.capability.AbstractCapability;
 import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 // TODO : Consideration for when golem changes dimensions
-public class TetherImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractCapability<E> implements Tether {
+public class TetherImpl<E extends Entity & ICapabilityHaver> extends AbstractCapability<E> implements Tether {
 
     private BlockPos pos;
 
@@ -25,7 +26,7 @@ public class TetherImpl<E extends LivingEntity & ICapabilityHaver> extends Abstr
 
     @Override
     public void update() {
-        pos = e.blockPosition();
+        pos = entity.blockPosition();
     }
 
     @Override
@@ -35,7 +36,7 @@ public class TetherImpl<E extends LivingEntity & ICapabilityHaver> extends Abstr
 
     @Override
     public boolean isTooFar() {
-        return pos.distManhattan(e.blockPosition()) > 24;
+        return pos.distManhattan(entity.blockPosition()) > StrawgolemConfig.Behaviour.golemWanderRange.get();
     }
 
     @Override
