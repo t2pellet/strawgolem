@@ -11,6 +11,8 @@ import com.t2pellet.tlib.common.registry.IModParticles;
 import com.t2pellet.tlib.common.registry.IModSounds;
 import com.t2pellet.tlib.config.Config;
 
+import java.io.IOException;
+
 
 public class StrawgolemCommon extends TLibMod {
     public static final StrawgolemCommon INSTANCE = new StrawgolemCommon();
@@ -46,7 +48,7 @@ public class StrawgolemCommon extends TLibMod {
     }
 
     @Override
-    public Config config() {
-        return StrawgolemConfig.INSTANCE;
+    public Config config() throws IOException, IllegalAccessException {
+        return new StrawgolemConfig();
     }
 }

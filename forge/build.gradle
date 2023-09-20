@@ -78,6 +78,7 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
     implementation "software.bernie.geckolib:geckolib-forge-1.19:${geckolib_version_forge}"
     implementation files("../../tlib/Forge/build/libs/tlib-forge-${project.minecraft_version}-${project.tlib_version}.jar")
+    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${project.cloth_version}")
 }
 
 tasks.withType(JavaCompile).configureEach {

@@ -6,14 +6,13 @@ import com.t2pellet.tlib.config.property.IntProperty;
 import com.t2pellet.tlib.config.property.ListProperty;
 import net.minecraft.resources.ResourceLocation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 @Config.ModConfig(comment = "Config for Straw Golem")
 public class StrawgolemConfig extends Config {
 
-    public static final StrawgolemConfig INSTANCE = new StrawgolemConfig();
-
-    private StrawgolemConfig() {
+    public StrawgolemConfig() throws IOException, IllegalAccessException {
         super(Constants.MOD_ID);
     }
 
@@ -75,8 +74,10 @@ public class StrawgolemConfig extends Config {
         public static final BoolProperty golemShiversWhenCold = new BoolProperty(true);
         @Entry(comment = "Whether the golem texture should change as it decays")
         public static final BoolProperty golemDecayingTexture = new BoolProperty(true);
-        @Entry(comment = "Show harvesting animations. Requires restart")
-        public static final BoolProperty showHarvestAnimations = new BoolProperty(true);
+        @Entry(comment = "Show harvesting animation for regular crops. Requires restart")
+        public static final BoolProperty showHarvestItemAnimation = new BoolProperty(true);
+        @Entry(comment = "Show harvesting animation for block crops. Requires restart")
+        public static final BoolProperty showHarvestBlockAnimation = new BoolProperty(false);
     }
 
     private static ListProperty<String> createResourceLocationList() {

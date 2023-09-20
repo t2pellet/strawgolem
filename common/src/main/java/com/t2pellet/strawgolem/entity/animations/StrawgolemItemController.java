@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.entity.animations;
 
+import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.PlayState;
@@ -15,13 +16,14 @@ public class StrawgolemItemController extends AnimationController<StrawGolem> {
         if (event.getAnimatable().getHarvester().isHarvesting()) {
             // Appropriate animation for regular crop or gourd crop
             if (event.getAnimatable().getHarvester().isHarvestingBlock()) {
-                builder.playOnce("harvest_block");
-            } else builder.playOnce("harvest_item");
+                if (StrawgolemConfig.Visual.showHarvestBlockAnimation.get()) builder.playOnce("harvest_block");
+                else event.getAnimatable().getHarvester().completeHarvest(); // skip harvesting animation if disabled
+            } else if (StrawgolemConfig.Visual.showHarvestItemAnimation.get()) builder.playOnce("harvest_item");
         } else if (event.getAnimatable().getHeldItem().has()) {
             // Let harvest animation finish
             if (!isRunningHarvestingAnimation(event.getController())) {
                 // Appropriate animation for regular crop or gourd crop
-                if (event.getAnimatable().isHoldingBlock()) {
+                if (StrawgolemConfig.Visual.showHarvestBlockAnimation.get() && event.getAnimatable().isHoldingBlock()) {
                     builder.loop("hold_block");
                 } else builder.loop("hold_item");
             }
@@ -33,7 +35,10 @@ public class StrawgolemItemController extends AnimationController<StrawGolem> {
     private static boolean isRunningHarvestingAnimation(AnimationController<StrawGolem> controller) {
         Animation animation = controller.getCurrentAnimation();
         AnimationState state = controller.getAnimationState();
-        return animation != null && state == AnimationState.Running && animation.animationName.equals("harvest_item");
+        return animation != null
+                && state == AnimationState.Running
+                && (animation.animationName.equals("harvest_item")
+                    || animation.animationName.equals("harvest_block"));
     }
 
     public StrawgolemItemController(StrawGolem animatable) {

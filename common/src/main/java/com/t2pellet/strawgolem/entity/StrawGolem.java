@@ -43,7 +43,6 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 
 // TODO : Decay fly
 // TODO : Finish animations
-// TODO : Config
 // TODO : Straw hat
 // TODO : Fix bug - Animation transition on world load
 // TODO : Fix bug - walking animation jank
@@ -165,9 +164,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     @Override
     public void registerControllers(AnimationData data) {
-        if (StrawgolemConfig.Visual.showHarvestAnimations.get()) {
-            data.addAnimationController(new StrawgolemItemController(this));
-        }
+        data.addAnimationController(new StrawgolemItemController(this));
         data.addAnimationController(new StrawgolemWalkController(this));
         data.addAnimationController(new StrawgolemIdleController(this));
     }

@@ -65,6 +65,7 @@ subprojects {
         maven {
             url = terraformers()
         }
+        maven { url "https://maven.shedaniel.me/" }
     }
 
     tasks.withType(JavaCompile).configureEach {
