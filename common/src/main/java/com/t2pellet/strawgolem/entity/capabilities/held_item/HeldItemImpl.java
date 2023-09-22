@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.entity.capabilities.held_item;
 
-import com.t2pellet.tlib.common.entity.capability.AbstractCapability;
-import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
+import com.t2pellet.tlib.entity.capability.api.AbstractCapability;
+import com.t2pellet.tlib.entity.capability.api.ICapabilityHaver;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;

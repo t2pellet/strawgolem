@@ -1,16 +1,14 @@
 package com.t2pellet.strawgolem.entity.goals.golem;
 
 import com.t2pellet.strawgolem.StrawgolemConfig;
-import com.t2pellet.strawgolem.StrawgolemSounds;
 import com.t2pellet.strawgolem.entity.StrawGolem;
+import com.t2pellet.strawgolem.registry.StrawgolemSounds;
 import com.t2pellet.strawgolem.util.crop.CropUtil;
 import com.t2pellet.strawgolem.world.WorldCrops;
-import com.t2pellet.tlib.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.StemGrownBlock;
@@ -64,7 +62,7 @@ public class HarvestCropGoal extends MoveToBlockGoal {
     @Override
     public void start() {
         super.start();
-        golem.playSound(StrawgolemSounds.GOLEM_INTERESTED);
+        golem.playSound(StrawgolemSounds.GOLEM_INTERESTED.get());
         // Update the tether to the crop we're harvesting
         golem.getTether().update(blockPos);
     }

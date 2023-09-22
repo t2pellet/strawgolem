@@ -1,8 +1,8 @@
 package com.t2pellet.strawgolem.entity.goals.golem;
 
-import com.t2pellet.strawgolem.StrawgolemSounds;
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.entity.capabilities.decay.DecayState;
+import com.t2pellet.strawgolem.registry.StrawgolemSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -72,7 +72,7 @@ public class GolemRepairSelfGoal extends MoveToBlockGoal {
     @Override
     public void start() {
         super.start();
-        golem.playSound(StrawgolemSounds.GOLEM_INTERESTED);
+        golem.playSound(StrawgolemSounds.GOLEM_INTERESTED.get());
     }
 
     @Override

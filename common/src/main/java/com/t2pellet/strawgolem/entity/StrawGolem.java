@@ -1,7 +1,6 @@
 package com.t2pellet.strawgolem.entity;
 
 import com.t2pellet.strawgolem.StrawgolemConfig;
-import com.t2pellet.strawgolem.StrawgolemSounds;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemIdleController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemItemController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemWalkController;
@@ -12,9 +11,11 @@ import com.t2pellet.strawgolem.entity.capabilities.harvester.Harvester;
 import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
 import com.t2pellet.strawgolem.entity.capabilities.tether.Tether;
 import com.t2pellet.strawgolem.entity.goals.golem.*;
+import com.t2pellet.strawgolem.registry.StrawgolemParticles;
+import com.t2pellet.strawgolem.registry.StrawgolemSounds;
 import com.t2pellet.tlib.Services;
-import com.t2pellet.tlib.common.entity.capability.CapabilityManager;
-import com.t2pellet.tlib.common.entity.capability.ICapabilityHaver;
+import com.t2pellet.tlib.entity.capability.api.CapabilityManager;
+import com.t2pellet.tlib.entity.capability.api.ICapabilityHaver;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -69,7 +70,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
-    protected StrawGolem(EntityType<? extends StrawGolem> type, Level level) {
+    public StrawGolem(EntityType<? extends StrawGolem> type, Level level) {
         super(type, level);
         decay = capabilities.addCapability(Decay.class);
         heldItem = capabilities.addCapability(HeldItem.class);

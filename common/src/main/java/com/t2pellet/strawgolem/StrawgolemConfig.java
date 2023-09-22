@@ -1,9 +1,9 @@
 package com.t2pellet.strawgolem;
 
-import com.t2pellet.tlib.config.Config;
-import com.t2pellet.tlib.config.property.BoolProperty;
-import com.t2pellet.tlib.config.property.IntProperty;
-import com.t2pellet.tlib.config.property.ListProperty;
+import com.t2pellet.tlib.config.api.Config;
+import com.t2pellet.tlib.config.api.property.BoolProperty;
+import com.t2pellet.tlib.config.api.property.IntProperty;
+import com.t2pellet.tlib.config.api.property.ListProperty;
 import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
@@ -41,9 +41,9 @@ public class StrawgolemConfig extends Config {
         @Entry(comment = "How many ticks before checking to see if golem decays")
         public static final IntProperty ticksToDecayCheck = new IntProperty(12000);
         @Entry(comment = "Chance to decay on check. Its 1 in whatever number is here. So decayChance=5 means 1/5 chance")
-        public static final IntProperty decayChance = new IntProperty(5);
+        public static final IntProperty decayChance = new IntProperty(5, 1, 100);
         @Entry(comment = "Chance to repair on wheat usage. Same logic as decayChance")
-        public static final IntProperty repairChance = new IntProperty(3);
+        public static final IntProperty repairChance = new IntProperty(3, 1 ,100);
     }
 
     @Section(name = "Behaviour", description = "Golem and Mob behaviour options")

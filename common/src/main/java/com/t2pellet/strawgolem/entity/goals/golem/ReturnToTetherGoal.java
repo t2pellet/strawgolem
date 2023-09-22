@@ -1,7 +1,7 @@
 package com.t2pellet.strawgolem.entity.goals.golem;
 
-import com.t2pellet.strawgolem.StrawgolemSounds;
 import com.t2pellet.strawgolem.entity.StrawGolem;
+import com.t2pellet.strawgolem.registry.StrawgolemSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
@@ -57,7 +57,7 @@ public class ReturnToTetherGoal extends MoveToBlockGoal {
     @Override
     public void start() {
         super.start();
-        golem.playSound(StrawgolemSounds.GOLEM_INTERESTED);
+        golem.playSound(StrawgolemSounds.GOLEM_INTERESTED.get());
     }
 
     @Override

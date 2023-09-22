@@ -3,7 +3,8 @@ package com.t2pellet.strawgolem.entity.capabilities.decay;
 public enum DecayState {
     NEW("strawgolem.health.new", 0),
     OLD("strawgolem.health.old", 1),
-    WITHERED("strawgolem.health.withered", 2);
+    WITHERED("strawgolem.health.withered", 2),
+    DYING("strawgolem.health.dying", 3);
 
     private final String description;
     private final int value;

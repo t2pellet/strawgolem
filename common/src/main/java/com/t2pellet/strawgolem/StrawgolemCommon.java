@@ -1,15 +1,13 @@
 package com.t2pellet.strawgolem;
 
-import com.t2pellet.strawgolem.entity.EntityTypes;
-import com.t2pellet.strawgolem.entity.capabilities.Capabilities;
-import com.t2pellet.tlib.common.TLibMod;
-import com.t2pellet.tlib.common.entity.capability.IModCapabilities;
-import com.t2pellet.tlib.common.network.IModPackets;
-import com.t2pellet.tlib.common.registry.IModEntities;
-import com.t2pellet.tlib.common.registry.IModItems;
-import com.t2pellet.tlib.common.registry.IModParticles;
-import com.t2pellet.tlib.common.registry.IModSounds;
-import com.t2pellet.tlib.config.Config;
+import com.t2pellet.strawgolem.entity.capabilities.StrawgolemCapabilities;
+import com.t2pellet.strawgolem.registry.StrawgolemEntities;
+import com.t2pellet.strawgolem.registry.StrawgolemParticles;
+import com.t2pellet.strawgolem.registry.StrawgolemSounds;
+import com.t2pellet.tlib.TLibMod;
+import com.t2pellet.tlib.config.api.Config;
+import com.t2pellet.tlib.entity.capability.api.registry.IModCapabilities;
+import com.t2pellet.tlib.registry.api.RegistryClass;
 
 import java.io.IOException;
 
@@ -18,33 +16,23 @@ public class StrawgolemCommon extends TLibMod {
     public static final StrawgolemCommon INSTANCE = new StrawgolemCommon();
 
     @Override
-    public IModEntities entities() {
-        return new EntityTypes();
+    public Class<? extends RegistryClass> particles() {
+        return StrawgolemParticles.class;
     }
 
     @Override
-    public IModItems items() {
-        return super.items();
+    public Class<? extends RegistryClass> entities() {
+        return StrawgolemEntities.class;
     }
 
     @Override
-    public IModParticles particles() {
-        return super.particles();
-    }
-
-    @Override
-    public IModSounds sounds() {
-        return new StrawgolemSounds();
-    }
-
-    @Override
-    public IModPackets packets() {
-        return super.packets();
+    public Class<? extends RegistryClass> sounds() {
+        return StrawgolemSounds.class;
     }
 
     @Override
     public IModCapabilities capabilities() {
-        return new Capabilities();
+        return new StrawgolemCapabilities();
     }
 
     @Override

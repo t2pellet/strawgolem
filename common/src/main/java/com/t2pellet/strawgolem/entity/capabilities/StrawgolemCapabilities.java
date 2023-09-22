@@ -5,9 +5,9 @@ import com.t2pellet.strawgolem.entity.capabilities.deliverer.Deliverer;
 import com.t2pellet.strawgolem.entity.capabilities.harvester.Harvester;
 import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
 import com.t2pellet.strawgolem.entity.capabilities.tether.Tether;
-import com.t2pellet.tlib.common.entity.capability.IModCapabilities;
+import com.t2pellet.tlib.entity.capability.api.registry.IModCapabilities;
 
-public class Capabilities implements IModCapabilities {
+public class StrawgolemCapabilities implements IModCapabilities {
 
     @ICapability(Decay.class)
     public static final TLibCapability<Decay> decay = new TLibCapability<>(Decay::getInstance);

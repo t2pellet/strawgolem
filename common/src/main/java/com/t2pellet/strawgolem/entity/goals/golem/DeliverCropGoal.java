@@ -1,8 +1,8 @@
 package com.t2pellet.strawgolem.entity.goals.golem;
 
 import com.t2pellet.strawgolem.StrawgolemConfig;
-import com.t2pellet.strawgolem.StrawgolemSounds;
 import com.t2pellet.strawgolem.entity.StrawGolem;
+import com.t2pellet.strawgolem.registry.StrawgolemSounds;
 import com.t2pellet.strawgolem.util.container.ContainerUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -54,8 +54,8 @@ public class DeliverCropGoal extends MoveToBlockGoal {
     @Override
     public void start() {
         super.start();
-        if (golem.isHoldingBlock()) golem.playSound(StrawgolemSounds.GOLEM_STRAINED);
-        else golem.playSound(StrawgolemSounds.GOLEM_INTERESTED);
+        if (golem.isHoldingBlock()) golem.playSound(StrawgolemSounds.GOLEM_STRAINED.get());
+        else golem.playSound(StrawgolemSounds.GOLEM_INTERESTED.get());
     }
 
     @Override

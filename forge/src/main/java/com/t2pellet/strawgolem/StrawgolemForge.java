@@ -1,10 +1,11 @@
 package com.t2pellet.strawgolem;
 
+import com.t2pellet.strawgolem.client.StrawgolemClient;
 import com.t2pellet.strawgolem.events.CropGrowthEvent;
 import com.t2pellet.strawgolem.events.CropGrowthHandler;
 import com.t2pellet.tlib.TLibForgeMod;
+import com.t2pellet.tlib.TLibMod;
 import com.t2pellet.tlib.client.TLibModClient;
-import com.t2pellet.tlib.common.TLibMod;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
