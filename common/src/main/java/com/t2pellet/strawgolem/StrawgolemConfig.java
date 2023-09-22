@@ -39,9 +39,9 @@ public class StrawgolemConfig extends Config {
         @Entry(comment = "Whether being in water accelerated decay")
         public static final BoolProperty waterAcceleratesDecay = new BoolProperty(true);
         @Entry(comment = "How many ticks before checking to see if golem decays")
-        public static final IntProperty ticksToDecayCheck = new IntProperty(12000);
+        public static final IntProperty ticksToDecayCheck = new IntProperty(6000);
         @Entry(comment = "Chance to decay on check. Its 1 in whatever number is here. So decayChance=5 means 1/5 chance")
-        public static final IntProperty decayChance = new IntProperty(5, 1, 100);
+        public static final IntProperty decayChance = new IntProperty(4, 1, 100);
         @Entry(comment = "Chance to repair on wheat usage. Same logic as decayChance")
         public static final IntProperty repairChance = new IntProperty(3, 1 ,100);
     }
@@ -78,6 +78,8 @@ public class StrawgolemConfig extends Config {
         public static final BoolProperty showHarvestItemAnimation = new BoolProperty(true);
         @Entry(comment = "Show harvesting animation for block crops. Requires restart")
         public static final BoolProperty showHarvestBlockAnimation = new BoolProperty(false);
+        @Entry(comment = "Chance per tick for a dying golem to spawn a fly particle. Higher # = lower chance")
+        public static final IntProperty dyingGolemFlyChance = new IntProperty(80, 1, 2000);
     }
 
     private static ListProperty<String> createResourceLocationList() {

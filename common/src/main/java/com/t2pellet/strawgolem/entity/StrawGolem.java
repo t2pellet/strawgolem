@@ -37,12 +37,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.StemGrownBlock;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-// TODO : Decay fly
 // TODO : Finish animations
 // TODO : Straw hat
 // TODO : Fix bug - Animation transition on world load
@@ -104,15 +104,21 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     @Override
     public void baseTick() {
         super.baseTick();
-        getDecay().decay();
-        if (isInWaterOrRain()) {
-            if (isInWater()) {
-                if (StrawgolemConfig.Lifespan.waterAcceleratesDecay.get()) getDecay().decay();
-            } else {
-                if (StrawgolemConfig.Lifespan.rainAcceleratesDecay.get()) getDecay().decay();
+        // Server logic
+        if (!level.isClientSide) {
+            getDecay().decay();
+            if (isInWaterOrRain()) {
+                if (isInWater()) {
+                    if (StrawgolemConfig.Lifespan.waterAcceleratesDecay.get()) getDecay().decay();
+                } else {
+                    if (StrawgolemConfig.Lifespan.rainAcceleratesDecay.get()) getDecay().decay();
+                }
+            }
+        } else { // Client logic
+            if (getDecay().getState() == DecayState.DYING && getRandom().nextInt(StrawgolemConfig.Visual.dyingGolemFlyChance.get()) == 0) {
+                spawnFlyParticle();
             }
         }
-        if (isInWaterRainOrBubble()) getDecay().decay();
     }
 
     @Override
@@ -229,19 +235,19 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     @Override
     protected SoundEvent getAmbientSound() {
-        if (isRunningGoal(PanicGoal.class, AvoidEntityGoal.class)) return StrawgolemSounds.GOLEM_SCARED;
-        if (isHoldingBlock()) return StrawgolemSounds.GOLEM_STRAINED;
-        return StrawgolemSounds.GOLEM_AMBIENT;
+        if (isRunningGoal(PanicGoal.class, AvoidEntityGoal.class)) return StrawgolemSounds.GOLEM_SCARED.get();
+        if (isHoldingBlock()) return StrawgolemSounds.GOLEM_STRAINED.get();
+        return StrawgolemSounds.GOLEM_AMBIENT.get();
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return StrawgolemSounds.GOLEM_HURT;
+        return StrawgolemSounds.GOLEM_HURT.get();
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return StrawgolemSounds.GOLEM_DEATH;
+        return StrawgolemSounds.GOLEM_DEATH.get();
     }
 
     /* Helpers */
@@ -259,6 +265,12 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
             }
             return false;
         });
+    }
+
+    private void spawnFlyParticle() {
+        Vec3 pos = position();
+        Vec3 movement = getDeltaMovement();
+        level.addParticle(StrawgolemParticles.FLY_PARTICLE.get(), pos.x, pos.y + 0.15F, pos.z, movement.x, movement.y + 0.15F, movement.z);
     }
 
 }
