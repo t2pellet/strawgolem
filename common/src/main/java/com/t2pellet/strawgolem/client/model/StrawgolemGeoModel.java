@@ -49,6 +49,8 @@ public class StrawgolemGeoModel extends AnimatedGeoModel<StrawGolem> {
         }
     }
 
+
+
     @Override
     public ResourceLocation getAnimationResource(StrawGolem golem) {
         return animationResource;

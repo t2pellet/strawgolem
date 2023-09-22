@@ -60,7 +60,12 @@ subprojects {
             name = 'Curse Maven'
             url = "https://www.cursemaven.com"
         }
-        maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+        repositories {
+            maven {
+                name = 'GeckoLib'
+                url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+            }
+        }
         maven { url 'https://repo.ryandw11.com/repository/maven-releases/' }
         maven {
             url = terraformers()

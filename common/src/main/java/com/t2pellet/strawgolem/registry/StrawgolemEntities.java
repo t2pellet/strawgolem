@@ -10,6 +10,6 @@ import net.minecraft.world.entity.MobCategory;
 public class StrawgolemEntities implements RegistryClass {
 
     @IRegistryEntry
-    public static final EntityEntryType<StrawGolem> STRAW_GOLEM = new EntityEntryType<>("strawgolem", StrawGolem::new, StrawGolem.createAttributes(), MobCategory.CREATURE, 0.9F, 0.6F);
+    public static final EntityEntryType<StrawGolem> STRAW_GOLEM = new EntityEntryType<>("strawgolem", StrawGolem::new, StrawGolem::createAttributes, MobCategory.CREATURE, 0.9F, 0.6F);
 
 }
