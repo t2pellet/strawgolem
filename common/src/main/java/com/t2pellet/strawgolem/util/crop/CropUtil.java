@@ -15,8 +15,9 @@ import net.minecraft.world.level.block.StemGrownBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CropUtil {
 
@@ -47,13 +48,19 @@ public class CropUtil {
 
     public static boolean isGrownCrop(BlockState state) {
         if (!isCrop(state)) return false;
+
         if (state.getBlock() instanceof CropBlock cropBlock) {
             return cropBlock.isMaxAge(state);
         } else if (state.getBlock() instanceof HarvestableBlock cropBlock) {
             return cropBlock.isMaxAge(state);
         } else if (state instanceof HarvestableState cropBlock) {
             return cropBlock.isMaxAge();
-        } else if (state.is(HARVESTABLE_CROPS)) {
+        } else if (state.getBlock() instanceof StemGrownBlock) {
+            return true;
+        }
+
+        boolean whitelistedCrop = StrawgolemConfig.Harvesting.enableWhitelist.get() && isWhitelisted(state.getBlock());
+        if (state.is(HARVESTABLE_CROPS) || whitelistedCrop) {
             if (state.hasProperty(BlockStateProperties.AGE_1)) {
                 return state.getValue(BlockStateProperties.AGE_1).intValue() == BlockStateProperties.MAX_AGE_1;
             } else if (state.hasProperty(BlockStateProperties.AGE_2)) {
@@ -70,8 +77,9 @@ public class CropUtil {
                 return state.getValue(BlockStateProperties.AGE_15).intValue() == BlockStateProperties.MAX_AGE_15;
             } else if (state.hasProperty(BlockStateProperties.AGE_25)) {
                 return state.getValue(BlockStateProperties.AGE_25).intValue() == BlockStateProperties.MAX_AGE_25;
-            } else return false;
-        } else return state.getBlock() instanceof StemGrownBlock;
+            }
+        }
+        return false;
     }
 
     // TODO : Should probably check here that it has one of the age properties if its from the tag system
