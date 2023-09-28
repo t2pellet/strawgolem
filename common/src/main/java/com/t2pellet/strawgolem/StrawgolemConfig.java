@@ -4,6 +4,8 @@ import com.t2pellet.tlib.config.api.Config;
 import com.t2pellet.tlib.config.api.property.BoolProperty;
 import com.t2pellet.tlib.config.api.property.IntProperty;
 import com.t2pellet.tlib.config.api.property.ListProperty;
+import com.t2pellet.tlib.config.api.property.StringProperty;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
@@ -23,11 +25,11 @@ public class StrawgolemConfig extends Config {
         @Entry(comment = "Whether the golem should harvest gourd blocks like pumpkins and melons. Will apply over whitelist, but specific gourd blocks can still be blacklisted.")
         public static final BoolProperty shouldHarvestBlocks = new BoolProperty(true);
         @Entry(comment = "Blacklisted crops. Must use valid resource locations")
-        public static final ListProperty<String> blacklist = createResourceLocationList();
+        public static final ListProperty<String> blacklist = createBlockIDList();
         @Entry(comment = "Whether to enable whitelist. Will ignore blacklist")
         public static final BoolProperty enableWhitelist = new BoolProperty(false);
         @Entry(comment = "Whitelisted crops. Only applies if enableWhitelist=true. Must use valid resource locations")
-        public static final ListProperty<String>  whitelist = createResourceLocationList();
+        public static final ListProperty<String>  whitelist = createBlockIDList();
     }
 
     @Section(name = "Lifespan", description = "Golem lifespan options")
@@ -44,6 +46,10 @@ public class StrawgolemConfig extends Config {
         public static final IntProperty decayChance = new IntProperty(4, 1, 100);
         @Entry(comment = "Chance to repair on wheat usage. Same logic as decayChance")
         public static final IntProperty repairChance = new IntProperty(3, 1 ,100);
+        @Entry(comment = "Item to repair the golem with. Requires restart")
+        public static final StringProperty repairItem = new StringProperty("minecraft:wheat", s -> {
+            return ResourceLocation.isValidResourceLocation(s) && Registry.ITEM.containsKey(new ResourceLocation(s));
+        });
     }
 
     @Section(name = "Behaviour", description = "Golem and Mob behaviour options")
@@ -82,7 +88,9 @@ public class StrawgolemConfig extends Config {
         public static final IntProperty dyingGolemFlyChance = new IntProperty(80, 1, 2000);
     }
 
-    private static ListProperty<String> createResourceLocationList() {
-        return ListProperty.of(new ArrayList<>(), ResourceLocation::isValidResourceLocation);
+    private static ListProperty<String> createBlockIDList() {
+        return ListProperty.of(new ArrayList<>(), (s) -> {
+            return ResourceLocation.isValidResourceLocation(s) && Registry.BLOCK.containsKey(new ResourceLocation(s));
+        });
     }
 }

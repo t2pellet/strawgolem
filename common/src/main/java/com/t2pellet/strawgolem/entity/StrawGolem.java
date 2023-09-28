@@ -16,6 +16,8 @@ import com.t2pellet.strawgolem.registry.StrawgolemSounds;
 import com.t2pellet.tlib.Services;
 import com.t2pellet.tlib.entity.capability.api.CapabilityManager;
 import com.t2pellet.tlib.entity.capability.api.ICapabilityHaver;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -34,7 +36,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.StemGrownBlock;
 import net.minecraft.world.phys.Vec3;
@@ -50,6 +51,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 // TODO : Fix bug - not always walking fully to destination
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
+    public static final Item REPAIR_ITEM = Registry.ITEM.get(new ResourceLocation(StrawgolemConfig.Lifespan.repairItem.get()));
     private static final double STOP_DISTANCE = 0.00001D;
     private static final double WALK_DISTANCE = 0.00007D;
     private static final double RUN_DISTANCE = 0.004D;
@@ -89,35 +91,45 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Illusioner.class, 12.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Sheep.class, 8.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Cow.class, 8.0F, 0.5D, 0.7D));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Player.class, 8.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemPanicGoal(this));
         this.goalSelector.addGoal(2, new HarvestCropGoal(this));
         this.goalSelector.addGoal(2, new DeliverCropGoal(this));
-        this.goalSelector.addGoal(3, new ReturnToTetherGoal(this));
-        this.goalSelector.addGoal(4, new GolemWanderGoal(this));
+        this.goalSelector.addGoal(3, new GolemTemptGoal(this));
+        this.goalSelector.addGoal(4, new ReturnToTetherGoal(this));
+        this.goalSelector.addGoal(5, new GolemWanderGoal(this));
         if (Services.PLATFORM.isModLoaded("animal_feeding_trough")) {
-            this.goalSelector.addGoal(4, new GolemRepairSelfGoal(this, 24));
+            this.goalSelector.addGoal(5, new GolemRepairSelfGoal(this, 24));
         }
-        this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 6.0F));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
     }
 
     @Override
     public void baseTick() {
         super.baseTick();
-        // Server logic
-        if (!level.isClientSide) {
-            getDecay().decay();
-            if (isInWaterOrRain()) {
-                if (isInWater()) {
-                    if (StrawgolemConfig.Lifespan.waterAcceleratesDecay.get()) getDecay().decay();
-                } else {
-                    if (StrawgolemConfig.Lifespan.rainAcceleratesDecay.get()) getDecay().decay();
-                }
+        if (level.isClientSide) baseClientTick();
+        else baseServerTick();
+        baseCommonTick();
+    }
+
+    private void baseClientTick() {
+    }
+
+    private void baseServerTick() {
+        getDecay().decay();
+        if (isInWaterOrRain()) {
+            if (isInWater()) {
+                if (StrawgolemConfig.Lifespan.waterAcceleratesDecay.get()) getDecay().decay();
+            } else {
+                if (StrawgolemConfig.Lifespan.rainAcceleratesDecay.get()) getDecay().decay();
             }
-        } else { // Client logic
-            if (getDecay().getState() == DecayState.DYING && getRandom().nextInt(StrawgolemConfig.Visual.dyingGolemFlyChance.get()) == 0) {
-                spawnFlyParticle();
-            }
+        }
+    }
+
+    private void baseCommonTick() {
+        if (getDecay().getState() == DecayState.DYING && getRandom().nextInt(StrawgolemConfig.Visual.dyingGolemFlyChance.get()) == 0) {
+            spawnFlyParticle();
         }
     }
 
@@ -132,7 +144,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack item = player.getItemInHand(hand);
-        if (item.getItem() == Items.WHEAT && decay.getState() != DecayState.NEW) {
+        if (item.getItem() == REPAIR_ITEM && decay.getState() != DecayState.NEW) {
             boolean success = decay.repair();
             if (success) item.shrink(1);
             return InteractionResult.CONSUME;

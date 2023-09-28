@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -37,7 +36,7 @@ public class GolemRepairSelfGoal extends MoveToBlockGoal {
         Block block = levelReader.getBlockState(blockPos).getBlock();
         if (Registry.BLOCK.getKey(block).equals(FEEDING_TROUGH_RESOURCE) && blockEntity instanceof Container container) {
             ItemStack stack = container.getItem(0);
-            if (stack.getCount() >= 4 && stack.is(Items.WHEAT)) {
+            if (stack.getCount() >= 4 && stack.is(StrawGolem.REPAIR_ITEM)) {
                 this.feeder = container;
                 return true;
             }
