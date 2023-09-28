@@ -1,9 +1,8 @@
 package com.t2pellet.strawgolem.entity;
 
 import com.t2pellet.strawgolem.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.animations.StrawgolemIdleController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemItemController;
-import com.t2pellet.strawgolem.entity.animations.StrawgolemWalkController;
+import com.t2pellet.strawgolem.entity.animations.StrawgolemMovementController;
 import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
 import com.t2pellet.strawgolem.entity.capabilities.decay.DecayState;
 import com.t2pellet.strawgolem.entity.capabilities.deliverer.Deliverer;
@@ -183,9 +182,8 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     @Override
     public void registerControllers(AnimationData data) {
+        data.addAnimationController(new StrawgolemMovementController(this));
         data.addAnimationController(new StrawgolemItemController(this));
-        data.addAnimationController(new StrawgolemWalkController(this));
-        data.addAnimationController(new StrawgolemIdleController(this));
     }
 
     @Override
