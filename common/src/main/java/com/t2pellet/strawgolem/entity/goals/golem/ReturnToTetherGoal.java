@@ -32,7 +32,7 @@ public class ReturnToTetherGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canContinueToUse() {
-        return !golem.getHeldItem().has() && isValidTarget(level, blockPos);
+        return !golem.getHeldItem().has() && isValidTarget(level, blockPos) && !isReachedTarget();
     }
 
     @Override
@@ -47,9 +47,6 @@ public class ReturnToTetherGoal extends MoveToBlockGoal {
         if (!level.isClientSide) {
             if (!golem.getLookControl().isLookingAtTarget()) {
                 golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
-            }
-            if (isReachedTarget()) {
-                stop();
             }
         }
     }

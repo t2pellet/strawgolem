@@ -108,9 +108,9 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Cow.class, 8.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Player.class, 8.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemPanicGoal(this));
+        this.goalSelector.addGoal(2, new GolemBeShyGoal(this));
         this.goalSelector.addGoal(2, new HarvestCropGoal(this));
         this.goalSelector.addGoal(2, new DeliverCropGoal(this));
-        this.goalSelector.addGoal(2, new GolemBeShyGoal(this));
         this.goalSelector.addGoal(3, new GolemTemptGoal(this));
         this.goalSelector.addGoal(4, new ReturnToTetherGoal(this));
         this.goalSelector.addGoal(5, new GolemWanderGoal(this));

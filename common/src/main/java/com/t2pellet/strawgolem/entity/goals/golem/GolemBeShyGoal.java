@@ -9,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
 public class GolemBeShyGoal extends AvoidEntityGoal<Player> {
 
     public GolemBeShyGoal(StrawGolem golem) {
-        super(golem, Player.class, 6.0F, 0.4F, 0.6F);
+        super(golem, Player.class, 2.5F, 0.5D, 0.7D);
     }
 
     @Override
@@ -18,7 +18,7 @@ public class GolemBeShyGoal extends AvoidEntityGoal<Player> {
         if (this.toAvoid == null) {
             return false;
         } else {
-            Vec3 $$0 = DefaultRandomPos.getPosAway(this.mob, 16, 7, this.toAvoid.position());
+            Vec3 $$0 = DefaultRandomPos.getPosAway(this.mob, 4, 2, this.toAvoid.position());
             if ($$0 == null) {
                 return false;
             } else if (this.toAvoid.distanceToSqr($$0.x, $$0.y, $$0.z) < this.toAvoid.distanceToSqr(this.mob)) {

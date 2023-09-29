@@ -36,7 +36,7 @@ public class TetherImpl<E extends Entity & ICapabilityHaver> extends AbstractCap
 
     @Override
     public boolean isTooFar() {
-        return pos.distManhattan(entity.blockPosition()) > StrawgolemConfig.Behaviour.golemWanderRange.get();
+        return pos.distManhattan(entity.blockPosition()) >= StrawgolemConfig.Behaviour.golemWanderRange.get();
     }
 
     @Override
