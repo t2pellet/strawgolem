@@ -31,5 +31,13 @@ public class GolemPanicGoal extends PanicGoal {
         golem.getHeldItem().set(ItemStack.EMPTY);
         ItemEntity itemEntity = new ItemEntity(golem.level, golem.getX(), golem.getY() + 1, golem.getZ(), heldItem);
         golem.level.addFreshEntity(itemEntity);
+        // Scared
+        golem.setScared(true);
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        golem.setScared(false);
     }
 }

@@ -18,7 +18,10 @@ public class StrawgolemItemController extends AnimationController<StrawGolem> {
             if (event.getAnimatable().getHarvester().isHarvestingBlock()) {
                 if (StrawgolemConfig.Visual.showHarvestBlockAnimation.get()) builder.playOnce("harvest_block");
                 else event.getAnimatable().getHarvester().completeHarvest(); // skip harvesting animation if disabled
-            } else if (StrawgolemConfig.Visual.showHarvestItemAnimation.get()) builder.playOnce("harvest_item");
+            } else {
+                if (StrawgolemConfig.Visual.showHarvestItemAnimation.get()) builder.playOnce("harvest_item");
+                else event.getAnimatable().getHarvester().completeHarvest(); // skip harvesting animation if disabled
+            }
         } else if (event.getAnimatable().getHeldItem().has()) {
             // Let harvest animation finish
             if (!isRunningHarvestingAnimation(event.getController())) {
@@ -42,7 +45,7 @@ public class StrawgolemItemController extends AnimationController<StrawGolem> {
     }
 
     public StrawgolemItemController(StrawGolem animatable) {
-        super(animatable, "item", 10, StrawgolemItemController::predicate);
+        super(animatable, "item", 0, StrawgolemItemController::predicate);
         registerCustomInstructionListener(event -> {
             if (event.instructions.equals("completeHarvest")) {
                 animatable.getHarvester().completeHarvest();

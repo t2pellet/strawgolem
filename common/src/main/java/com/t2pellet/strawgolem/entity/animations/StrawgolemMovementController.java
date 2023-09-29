@@ -9,37 +9,33 @@ public class StrawgolemMovementController extends AnimationController<StrawGolem
 
     public static final String NAME = "move_controller";
 
-    public StrawgolemMovementController(StrawGolem animatable) {
-        super(animatable, NAME, 4, PREDICATE);
-    }
-
     private static final IAnimationPredicate<StrawGolem> PREDICATE = event -> {
         StrawGolem golem = event.getAnimatable();
         AnimationController<StrawGolem> controller = event.getController();
         String currentAnimation = getAnimation(controller);
-        AnimationBuilder builder = new AnimationBuilder();
-        if (currentAnimation.equals("idle")) {
-            if (golem.isRunning()) controller.setAnimation(builder.loop("run"));
-            else if (golem.isMoving()) controller.setAnimation(builder.loop("walk"));
-            else if (golem.isStopped()) {
-                return isIdleEligible(golem) ? PlayState.CONTINUE : PlayState.STOP;
+        String nextAnimation = "";
+
+        if (golem.isRunning()) {
+            if (golem.isScared()) {
+                nextAnimation = "run_scared";
+            } else if (golem.getHeldItem().has()) {
+                nextAnimation = "run_item";
             }
-        } else if (currentAnimation.equals("walk")) {
-            if (golem.isRunning()) controller.setAnimation(builder.loop("run"));
-            else if (golem.isMoving()) return PlayState.CONTINUE;
-            else if (golem.isStopped() && isIdleEligible(golem)) {
-                controller.setAnimation(builder.loop("idle"));
+            else nextAnimation = "run";
+        } else if (golem.isMoving()) {
+            if (golem.getHeldItem().has()) {
+                nextAnimation = "walk_item";
             }
-        } else if (currentAnimation.equals("run")) {
-            if (golem.isRunning()) return PlayState.CONTINUE;
-            else if (golem.isMoving()) controller.setAnimation(builder.loop("walk"));
-            else if (golem.isStopped() && isIdleEligible(golem)) {
-                controller.setAnimation(builder.loop("idle"));
-            }
-        } else if (currentAnimation.isEmpty()) {
-            if (golem.isRunning()) controller.setAnimation(builder.loop("run"));
-            else if (golem.isMoving()) controller.setAnimation(builder.loop("walk"));
-            else if (golem.isStopped() && isIdleEligible(golem)) controller.setAnimation(builder.loop("idle"));
+            else nextAnimation = "walk";
+        } else if (golem.isStopped()) {
+            if (!isIdleEligible(golem)) return PlayState.STOP;
+            else nextAnimation = "idle";
+        }
+
+
+        if (!nextAnimation.isEmpty() && !nextAnimation.equals(currentAnimation)) {
+            System.out.println("animation: " + nextAnimation);
+            controller.setAnimation(new AnimationBuilder().loop(nextAnimation));
         }
         return PlayState.CONTINUE;
     };
@@ -53,4 +49,9 @@ public class StrawgolemMovementController extends AnimationController<StrawGolem
     private static boolean isIdleEligible(StrawGolem golem) {
         return !golem.getHarvester().isHarvesting() && !golem.getHeldItem().has();
     }
+
+    public StrawgolemMovementController(StrawGolem animatable) {
+        super(animatable, NAME, 4, PREDICATE);
+    }
+
 }

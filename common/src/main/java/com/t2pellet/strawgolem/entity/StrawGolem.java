@@ -16,6 +16,9 @@ import com.t2pellet.tlib.Services;
 import com.t2pellet.tlib.entity.capability.api.CapabilityManager;
 import com.t2pellet.tlib.entity.capability.api.ICapabilityHaver;
 import net.minecraft.core.Registry;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -26,7 +29,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.PanicGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Sheep;
@@ -46,7 +52,6 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 // TODO : Finish animations
 // TODO : Straw hat
 // TODO : Fix bug - Animation transition on world load
-// TODO : Fix bug - walking animation jank
 // TODO : Fix bug - not always walking fully to destination
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
@@ -54,6 +59,9 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     private static final double STOP_DISTANCE = 0.00001D;
     private static final double WALK_DISTANCE = 0.00007D;
     private static final double RUN_DISTANCE = 0.004D;
+
+    // Synched Data
+    private static final EntityDataAccessor<Boolean> IS_SCARED = SynchedEntityData.defineId(StrawGolem.class, EntityDataSerializers.BOOLEAN);
 
     // Capabilities
     CapabilityManager capabilities = CapabilityManager.newInstance(this);
@@ -81,6 +89,14 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     }
 
     @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(IS_SCARED, false);
+    }
+
+    /* AI */
+
+    @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Monster.class, 8.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Evoker.class, 12.0F, 0.5D, 0.7D));
@@ -100,8 +116,15 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         if (Services.PLATFORM.isModLoaded("animal_feeding_trough")) {
             this.goalSelector.addGoal(5, new GolemRepairSelfGoal(this, 24));
         }
-        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+    }
+
+    public boolean isScared() {
+        return entityData.get(IS_SCARED);
+    }
+
+    public void setScared(boolean isScared) {
+        this.entityData.set(IS_SCARED, isScared);
     }
 
     @Override
@@ -182,8 +205,8 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     @Override
     public void registerControllers(AnimationData data) {
-        data.addAnimationController(new StrawgolemMovementController(this));
         data.addAnimationController(new StrawgolemItemController(this));
+        data.addAnimationController(new StrawgolemMovementController(this));
     }
 
     @Override
@@ -268,7 +291,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     }
 
     @SafeVarargs
-    private boolean isRunningGoal(Class<? extends Goal> ...classes) {
+    public final boolean isRunningGoal(Class<? extends Goal>... classes) {
         return goalSelector.getRunningGoals().anyMatch(goal -> {
             for (Class<? extends Goal> clazz : classes) {
                 if (clazz.isInstance(goal.getGoal())) return true;

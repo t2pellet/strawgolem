@@ -39,7 +39,7 @@ class HarvesterImpl<E extends Entity & ICapabilityHaver> extends AbstractCapabil
         if (pos != harvestPos) {
             harvestPos = pos;
             harvestingBlock = entity.level.getBlockState(pos).getBlock() instanceof StemGrownBlock;
-            Services.SIDE.scheduleServer(24, this::completeHarvest);
+            Services.SIDE.scheduleServer(14, this::completeHarvest);
             synchronize();
         }
     }

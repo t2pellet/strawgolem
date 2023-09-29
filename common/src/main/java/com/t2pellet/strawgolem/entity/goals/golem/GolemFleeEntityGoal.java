@@ -10,8 +10,11 @@ import net.minecraft.world.entity.raid.Raider;
 
 public class GolemFleeEntityGoal<T extends LivingEntity> extends AvoidEntityGoal<T> {
 
+    private final StrawGolem golem;
+
     public GolemFleeEntityGoal(StrawGolem mob, Class<T> clazz, float distance, double walkSpeed, double sprintSpeed) {
         super(mob, clazz, distance, walkSpeed, sprintSpeed);
+        this.golem = mob;
     }
 
     @Override
@@ -24,5 +27,17 @@ public class GolemFleeEntityGoal<T extends LivingEntity> extends AvoidEntityGoal
             return StrawgolemConfig.Behaviour.golemsRunFromLivestock.get() && super.canUse();
         }
         return super.canUse();
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        golem.setScared(true);
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        golem.setScared(false);
     }
 }
