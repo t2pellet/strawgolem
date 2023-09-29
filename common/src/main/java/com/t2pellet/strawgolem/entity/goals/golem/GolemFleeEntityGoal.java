@@ -32,6 +32,7 @@ public class GolemFleeEntityGoal<T extends LivingEntity> extends AvoidEntityGoal
     @Override
     public void start() {
         super.start();
+        golem.getHeldItem().drop();
         golem.setScared(true);
     }
 

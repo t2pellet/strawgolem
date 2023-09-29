@@ -14,4 +14,5 @@ public interface HeldItem extends Capability {
     void set (ItemStack stack);
     boolean has();
     ItemStack get();
+    void drop();
 }

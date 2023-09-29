@@ -6,6 +6,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 
 class HeldItemImpl<E extends Entity & ICapabilityHaver> extends AbstractCapability<E> implements HeldItem {
@@ -31,6 +32,14 @@ class HeldItemImpl<E extends Entity & ICapabilityHaver> extends AbstractCapabili
     @Override
     public ItemStack get() {
         return container.getItem(0);
+    }
+
+    @Override
+    public void drop() {
+        ItemStack heldItem = get();
+        set(ItemStack.EMPTY);
+        ItemEntity itemEntity = new ItemEntity(entity.level, entity.getX(), entity.getY() + 1, entity.getZ(), heldItem);
+        entity.level.addFreshEntity(itemEntity);
     }
 
     @Override
