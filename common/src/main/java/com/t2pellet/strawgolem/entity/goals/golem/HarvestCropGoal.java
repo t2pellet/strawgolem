@@ -50,12 +50,12 @@ public class HarvestCropGoal extends MoveToBlockGoal {
     public void tick() {
         super.tick();
         if (!level.isClientSide) {
-            if (!golem.getLookControl().isLookingAtTarget()) {
-                golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
-            }
             if (isReachedTarget() && isValidTarget(level, blockPos)) {
                 golem.getHarvester().harvest(blockPos);
             }
+        }
+        if (!golem.getLookControl().isLookingAtTarget()) {
+            golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
         }
     }
 

@@ -56,7 +56,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
     public static final Item REPAIR_ITEM = Registry.ITEM.get(new ResourceLocation(StrawgolemConfig.Lifespan.repairItem.get()));
-    private static final double STOP_DISTANCE = 0.00001D;
+    private static final double STOP_DISTANCE = 0.000007D;
     private static final double WALK_DISTANCE = 0.00007D;
     private static final double RUN_DISTANCE = 0.004D;
 
@@ -110,6 +110,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.goalSelector.addGoal(1, new GolemPanicGoal(this));
         this.goalSelector.addGoal(2, new HarvestCropGoal(this));
         this.goalSelector.addGoal(2, new DeliverCropGoal(this));
+        this.goalSelector.addGoal(2, new GolemBeShyGoal(this));
         this.goalSelector.addGoal(3, new GolemTemptGoal(this));
         this.goalSelector.addGoal(4, new ReturnToTetherGoal(this));
         this.goalSelector.addGoal(5, new GolemWanderGoal(this));

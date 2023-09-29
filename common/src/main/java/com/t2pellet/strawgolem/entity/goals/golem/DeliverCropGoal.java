@@ -42,12 +42,12 @@ public class DeliverCropGoal extends MoveToBlockGoal {
     public void tick() {
         super.tick();
         if (!level.isClientSide) {
-            if (!golem.getLookControl().isLookingAtTarget()) {
-                golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
-            }
             if (isReachedTarget() && isValidTarget(level, blockPos)) {
                 golem.getDeliverer().deliver(blockPos);
             }
+        }
+        if (!golem.getLookControl().isLookingAtTarget()) {
+            golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
         }
     }
 
