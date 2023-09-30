@@ -23,7 +23,9 @@ public class StrawgolemMovementController extends AnimationController<StrawGolem
             }
             else nextAnimation = "run";
         } else if (golem.isMoving()) {
-            if (golem.getHeldItem().has()) {
+            if (golem.isScared()) {
+                nextAnimation = "walk_scared";
+            } else if (golem.getHeldItem().has()) {
                 nextAnimation = "walk_item";
             }
             else nextAnimation = "walk";

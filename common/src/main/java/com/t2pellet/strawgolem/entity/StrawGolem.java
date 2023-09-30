@@ -52,7 +52,8 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
 // TODO : Finish animations
-// TODO : Straw hat
+// TODO : Straw hat texture
+// TODO : Wood armor (for straw golem to protect from cow / sheep and other things)
 // TODO : Fix bug - Animation transition on world load
 // TODO : Fix bug - not always walking fully to destination
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
