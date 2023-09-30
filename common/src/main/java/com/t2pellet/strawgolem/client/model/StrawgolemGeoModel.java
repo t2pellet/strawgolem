@@ -56,6 +56,8 @@ public class StrawgolemGeoModel extends AnimatedGeoModel<StrawGolem> {
         return animationResource;
     }
 
+
+
     @Override
     public void setCustomAnimations(StrawGolem animatable, int instanceId, AnimationEvent animationEvent) {
         super.setCustomAnimations(animatable, instanceId, animationEvent);

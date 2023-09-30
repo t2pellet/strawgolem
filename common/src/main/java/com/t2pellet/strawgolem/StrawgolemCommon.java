@@ -2,6 +2,7 @@ package com.t2pellet.strawgolem;
 
 import com.t2pellet.strawgolem.entity.capabilities.StrawgolemCapabilities;
 import com.t2pellet.strawgolem.registry.StrawgolemEntities;
+import com.t2pellet.strawgolem.registry.StrawgolemItems;
 import com.t2pellet.strawgolem.registry.StrawgolemParticles;
 import com.t2pellet.strawgolem.registry.StrawgolemSounds;
 import com.t2pellet.tlib.TLibMod;
@@ -23,6 +24,11 @@ public class StrawgolemCommon extends TLibMod {
     @Override
     public Class<? extends RegistryClass> entities() {
         return StrawgolemEntities.class;
+    }
+
+    @Override
+    public Class<? extends RegistryClass> items() {
+        return StrawgolemItems.class;
     }
 
     @Override

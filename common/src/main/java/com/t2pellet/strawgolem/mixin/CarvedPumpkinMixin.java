@@ -1,10 +1,13 @@
 package com.t2pellet.strawgolem.mixin;
 
+import com.t2pellet.strawgolem.Constants;
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import com.t2pellet.strawgolem.registry.StrawgolemEntities;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -22,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 @Mixin(CarvedPumpkinBlock.class)
@@ -58,9 +62,11 @@ public class CarvedPumpkinMixin {
             strawGolem.moveTo(Vec3.atCenterOf(blockPos));
             level.addFreshEntity(strawGolem);
 
-            // Summon trigger
+            // Summon trigger & recipe unlock
+            Optional<? extends Recipe<?>> recipe = level.getServer().getRecipeManager().byKey(new ResourceLocation(Constants.MOD_ID, "straw_hat"));
             for(ServerPlayer serverplayer : level.getEntitiesOfClass(ServerPlayer.class, strawGolem.getBoundingBox().inflate(5.0D))) {
                 CriteriaTriggers.SUMMONED_ENTITY.trigger(serverplayer, strawGolem);
+                recipe.ifPresent(r -> serverplayer.getRecipeBook().add(r));
             }
 
             // Block update

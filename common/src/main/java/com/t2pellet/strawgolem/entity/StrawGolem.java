@@ -10,12 +10,14 @@ import com.t2pellet.strawgolem.entity.capabilities.harvester.Harvester;
 import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
 import com.t2pellet.strawgolem.entity.capabilities.tether.Tether;
 import com.t2pellet.strawgolem.entity.goals.golem.*;
+import com.t2pellet.strawgolem.registry.StrawgolemItems;
 import com.t2pellet.strawgolem.registry.StrawgolemParticles;
 import com.t2pellet.strawgolem.registry.StrawgolemSounds;
 import com.t2pellet.tlib.Services;
 import com.t2pellet.tlib.entity.capability.api.CapabilityManager;
 import com.t2pellet.tlib.entity.capability.api.ICapabilityHaver;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -62,6 +64,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     // Synched Data
     private static final EntityDataAccessor<Boolean> IS_SCARED = SynchedEntityData.defineId(StrawGolem.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> HAS_HAT = SynchedEntityData.defineId(StrawGolem.class, EntityDataSerializers.BOOLEAN);
 
     // Capabilities
     CapabilityManager capabilities = CapabilityManager.newInstance(this);
@@ -92,6 +95,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(IS_SCARED, false);
+        this.entityData.define(HAS_HAT, false);
     }
 
     /* AI */
@@ -144,7 +148,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         if (isInWaterOrRain()) {
             if (isInWater()) {
                 if (StrawgolemConfig.Lifespan.waterAcceleratesDecay.get()) getDecay().decay();
-            } else {
+            } else if (!hasHat()) {
                 if (StrawgolemConfig.Lifespan.rainAcceleratesDecay.get()) getDecay().decay();
             }
         }
@@ -170,6 +174,10 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         if (item.getItem() == REPAIR_ITEM && decay.getState() != DecayState.NEW) {
             boolean success = decay.repair();
             if (success) item.shrink(1);
+            return InteractionResult.CONSUME;
+        } else if (item.getItem() == StrawgolemItems.strawHat.get() && !hasHat()) {
+            this.entityData.set(HAS_HAT, true);
+            item.shrink(1);
             return InteractionResult.CONSUME;
         }
         return super.mobInteract(player, hand);
@@ -263,6 +271,22 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     public Tether getTether() {
         return tether;
+    }
+
+    public boolean hasHat() {
+        return this.entityData.get(HAS_HAT);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        tag.putBoolean("hasHat", this.hasHat());
+        super.readAdditionalSaveData(tag);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        this.entityData.set(HAS_HAT, tag.getBoolean("hasHat"));
+        super.addAdditionalSaveData(tag);
     }
 
     /* Ambience */
