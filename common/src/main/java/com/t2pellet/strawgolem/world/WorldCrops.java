@@ -1,6 +1,7 @@
 package com.t2pellet.strawgolem.world;
 
 import com.t2pellet.strawgolem.Constants;
+import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.util.crop.CropUtil;
 import com.t2pellet.strawgolem.util.octree.Octree;
 import net.minecraft.core.BlockPos;
@@ -28,6 +29,8 @@ public interface WorldCrops {
     void add(BlockPos pos);
     void remove(BlockPos pos);
     BlockPos findNearest(BlockPos pos);
+    void lock(BlockPos pos);
+    void unlock(BlockPos pos);
 }
 
 class WorldCropsImpl extends SavedData implements WorldCrops {
@@ -91,15 +94,28 @@ class WorldCropsImpl extends SavedData implements WorldCrops {
 
     @Override
     public void remove(BlockPos pos) {
-        if (!inProgressHarvestSet.remove(pos)) tree.remove(pos);
+        if (!inProgressHarvestSet.remove(pos)) {
+            tree.remove(pos);
+        }
         setDirty();
     }
 
     @Override
     public BlockPos findNearest(BlockPos pos) {
-        BlockPos nearestPos = tree.findNearest(pos);
-        inProgressHarvestSet.add(nearestPos);
-        tree.remove(nearestPos);
-        return nearestPos;
+        return tree.findNearest(pos, StrawgolemConfig.Harvesting.harvestRange.get());
+    }
+
+    @Override
+    public void lock(BlockPos pos) {
+        if (tree.remove(pos) && CropUtil.isGrownCrop(level, pos)) {
+            inProgressHarvestSet.add(pos);
+        }
+    }
+
+    @Override
+    public void unlock(BlockPos pos) {
+        if (inProgressHarvestSet.remove(pos) && CropUtil.isGrownCrop(level, pos)) {
+            tree.insert(pos);
+        }
     }
 }

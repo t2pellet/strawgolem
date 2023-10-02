@@ -11,7 +11,7 @@ interface IOctree {
 
     boolean insert(BlockPos pos);
     boolean remove(BlockPos pos);
-    BlockPos findNearest(BlockPos query);
+    BlockPos findNearest(BlockPos query, int range);
     List<BlockPos> search(AABB range);
     List<BlockPos> getAll();
 }
@@ -126,27 +126,29 @@ public class Octree implements IOctree {
     }
 
     @Override
-    public BlockPos findNearest(BlockPos query) {
+    public BlockPos findNearest(BlockPos query, int range) {
         if (!pointInBoundary(query)) return null;
 
-        if (points.size() > 0 && northWestUp == null) {
-            return findNearestFromList(points, query);
+        if (!points.isEmpty() && northWestUp == null) {
+            List<BlockPos> pointsInRange = points.stream().filter(pos -> pos.distManhattan(query) <= range).toList();
+            return pointsInRange.isEmpty() ? null : findNearestFromList(pointsInRange, query);
         } else if (northWestUp == null) return null;
 
-        BlockPos closest = northWestUp.findNearest(query);
-        if (closest == null) closest = northWestDown.findNearest(query);
-        if (closest == null) closest = northEastUp.findNearest(query);
-        if (closest == null) closest = northEastDown.findNearest(query);
-        if (closest == null) closest = southWestUp.findNearest(query);
-        if (closest == null) closest = southWestDown.findNearest(query);
-        if (closest == null) closest = southEastUp.findNearest(query);
-        if (closest == null) closest = southEastDown.findNearest(query);
+        BlockPos closest = northWestUp.findNearest(query, range);
+        if (closest == null) closest = northWestDown.findNearest(query, range);
+        if (closest == null) closest = northEastUp.findNearest(query, range);
+        if (closest == null) closest = northEastDown.findNearest(query, range);
+        if (closest == null) closest = southWestUp.findNearest(query, range);
+        if (closest == null) closest = southWestDown.findNearest(query, range);
+        if (closest == null) closest = southEastUp.findNearest(query, range);
+        if (closest == null) closest = southEastDown.findNearest(query, range);
 
         int closestDistance = closest.distManhattan(query);
-        Vec3 corner1 = Vec3.atCenterOf(closest).add(closestDistance, closestDistance, closestDistance);
-        Vec3 corner2 = Vec3.atCenterOf(closest).add(-closestDistance, -closestDistance, -closestDistance);
-        AABB range = new AABB(corner1, corner2);
-        List<BlockPos> rangeResults = search(range);
+        int clampedClosestDistance = Math.min(closestDistance, range);
+        Vec3 corner1 = Vec3.atCenterOf(closest).add(clampedClosestDistance, clampedClosestDistance, clampedClosestDistance);
+        Vec3 corner2 = Vec3.atCenterOf(closest).add(-clampedClosestDistance, -clampedClosestDistance, -clampedClosestDistance);
+        AABB rangeBox = new AABB(corner1, corner2);
+        List<BlockPos> rangeResults = search(rangeBox);
         return findNearestFromList(rangeResults, query);
     }
 

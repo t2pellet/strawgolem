@@ -65,6 +65,14 @@ public class HarvestCropGoal extends MoveToBlockGoal {
         golem.playSound(StrawgolemSounds.GOLEM_INTERESTED.get());
         // Update the tether to the crop we're harvesting
         golem.getTether().update(blockPos);
+        // Lock the block so no one else harvests it
+        WorldCrops.of(level).lock(blockPos);
+    }
+
+    @Override
+    public void stop() {
+        WorldCrops.of(level).unlock(blockPos);
+        super.stop();
     }
 
     @Override

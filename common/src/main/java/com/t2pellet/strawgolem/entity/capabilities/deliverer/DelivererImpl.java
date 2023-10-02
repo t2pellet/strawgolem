@@ -1,5 +1,6 @@
 package com.t2pellet.strawgolem.entity.capabilities.deliverer;
 
+import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
 import com.t2pellet.strawgolem.util.container.ContainerUtil;
 import com.t2pellet.strawgolem.util.octree.Octree;
@@ -40,7 +41,7 @@ public class DelivererImpl<E extends Entity & ICapabilityHaver> extends Abstract
             level = entity.level.dimension().location();
         }
         BlockPos query = entity.blockPosition();
-        BlockPos cachedPos = tree.findNearest(query);
+        BlockPos cachedPos = tree.findNearest(query, StrawgolemConfig.Harvesting.harvestRange.get());
         if (cachedPos == null) return scanForDeliverable(query);
         if (ContainerUtil.isContainer(entity.level, cachedPos)) {
             return cachedPos;
