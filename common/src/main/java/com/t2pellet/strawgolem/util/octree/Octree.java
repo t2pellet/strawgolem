@@ -142,6 +142,7 @@ public class Octree implements IOctree {
         if (closest == null) closest = southWestDown.findNearest(query, range);
         if (closest == null) closest = southEastUp.findNearest(query, range);
         if (closest == null) closest = southEastDown.findNearest(query, range);
+        if (closest == null) return null;
 
         int closestDistance = closest.distManhattan(query);
         int clampedClosestDistance = Math.min(closestDistance, range);
