@@ -92,7 +92,7 @@ public class DelivererImpl<E extends LivingEntity & ICapabilityHaver> extends Ab
                 if (stack.isEmpty()) break;
             }
             entity.level.gameEvent(entity, GameEvent.CONTAINER_OPEN, pos);
-            entity.level.playSound(null, entity, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+            entity.level.playSound(null, pos, SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
         entity.level.addFreshEntity(new ItemEntity(entity.level, pos.getX(), pos.getY() + 1, pos.getZ(), stack));
         entity.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);

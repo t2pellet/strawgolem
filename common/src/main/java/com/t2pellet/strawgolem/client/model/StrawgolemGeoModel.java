@@ -1,7 +1,6 @@
 package com.t2pellet.strawgolem.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import com.t2pellet.strawgolem.Constants;
 import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.StrawGolem;
@@ -9,8 +8,10 @@ import com.t2pellet.strawgolem.entity.capabilities.decay.DecayState;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.processor.IBone;
+import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
+import software.bernie.geckolib3.util.RenderUtils;
 
 public class StrawgolemGeoModel extends AnimatedGeoModel<StrawGolem> {
 
@@ -70,11 +71,12 @@ public class StrawgolemGeoModel extends AnimatedGeoModel<StrawGolem> {
         }
     }
 
-    public void translateToHand(StrawGolem golem, PoseStack poseStack) {
-        IBone body = getBone("upper");
-        IBone arms = getBone("arms");
-        float translation = (body.getPositionY() + arms.getPositionY()) * ITEM_TRANSLATE_FACTOR;
-        poseStack.mulPose(Quaternion.fromXYZ(body.getRotationX(), 0, body.getRotationZ()));
-        poseStack.translate(0, translation, 0);
+    public void translateToHand(PoseStack poseStack) {
+        GeoBone arms = (GeoBone) getBone("arms");
+        GeoBone upper = (GeoBone) getBone("upper");
+        RenderUtils.prepMatrixForBone(poseStack, upper);
+        RenderUtils.translateAndRotateMatrixForBone(poseStack, upper);
+        RenderUtils.prepMatrixForBone(poseStack, arms);
+        RenderUtils.translateAndRotateMatrixForBone(poseStack, arms);
     }
 }

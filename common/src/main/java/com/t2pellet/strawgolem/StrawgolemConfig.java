@@ -83,7 +83,7 @@ public class StrawgolemConfig extends Config {
         @Entry(comment = "Show harvesting animation for regular crops. Requires restart")
         public static final BoolProperty showHarvestItemAnimation = new BoolProperty(true);
         @Entry(comment = "Show harvesting animation for block crops. Requires restart")
-        public static final BoolProperty showHarvestBlockAnimation = new BoolProperty(false);
+        public static final BoolProperty showHarvestBlockAnimation = new BoolProperty(true);
         @Entry(comment = "Chance per tick for a dying golem to spawn a fly particle. Higher # = lower chance")
         public static final IntProperty dyingGolemFlyChance = new IntProperty(80, 1, 2000);
     }

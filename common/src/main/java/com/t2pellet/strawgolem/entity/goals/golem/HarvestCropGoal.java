@@ -11,7 +11,6 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.StemGrownBlock;
 import net.minecraft.world.phys.Vec3;
 
 
@@ -38,7 +37,7 @@ public class HarvestCropGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canContinueToUse() {
-        return !golem.getHeldItem().has() && super.canContinueToUse();
+        return !golem.getHeldItem().has() && this.isValidTarget(this.mob.level, this.blockPos) && !golem.getHarvester().isHarvesting();
     }
 
     @Override
@@ -48,14 +47,17 @@ public class HarvestCropGoal extends MoveToBlockGoal {
 
     @Override
     public void tick() {
-        super.tick();
-        if (!level.isClientSide) {
-            if (isReachedTarget() && isValidTarget(level, blockPos)) {
-                golem.getHarvester().harvest(blockPos);
+        BlockPos blockpos = this.getMoveToTarget();
+        if (blockPos.closerToCenterThan(this.mob.position(), this.acceptedDistance())) {
+            golem.getNavigation().stop();
+            golem.getHarvester().harvest(blockPos);
+        } else {
+            if (this.shouldRecalculatePath()) {
+                this.mob.getNavigation().moveTo((double)((float)blockpos.getX()) + 0.5D, (double)blockpos.getY() + 0.5D, (double)((float)blockpos.getZ()) + 0.5D, this.speedModifier);
             }
-        }
-        if (!golem.getLookControl().isLookingAtTarget()) {
-            golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
+            if (!golem.getLookControl().isLookingAtTarget()) {
+                golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
+            }
         }
     }
 
@@ -71,15 +73,14 @@ public class HarvestCropGoal extends MoveToBlockGoal {
 
     @Override
     public void stop() {
-        WorldCrops.of(level).unlock(blockPos);
+        if (CropUtil.isGrownCrop(level, blockPos)) {
+            WorldCrops.of(level).unlock(blockPos);
+        }
         super.stop();
     }
 
     @Override
     public double acceptedDistance() {
-        if (level.getBlockState(blockPos).getBlock() instanceof StemGrownBlock) {
-            return 2.6D;
-        }
         return 1.6D;
     }
 

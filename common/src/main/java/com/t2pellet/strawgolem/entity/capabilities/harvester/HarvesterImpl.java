@@ -36,12 +36,18 @@ class HarvesterImpl<E extends Entity & ICapabilityHaver> extends AbstractCapabil
 
     @Override
     public void harvest(BlockPos pos) {
-        if (pos != harvestPos) {
+        if (!pos.equals(harvestPos)) {
             harvestPos = pos;
             harvestingBlock = entity.level.getBlockState(pos).getBlock() instanceof StemGrownBlock;
             Services.SIDE.scheduleServer(14, this::completeHarvest);
             synchronize();
         }
+    }
+
+    @Override
+    public void clear() {
+        harvestPos = null;
+        harvestingBlock = false;
     }
 
     @Override
@@ -56,16 +62,15 @@ class HarvesterImpl<E extends Entity & ICapabilityHaver> extends AbstractCapabil
 
     @Override
     public void completeHarvest() {
-        if (!entity.level.isClientSide && CropUtil.isGrownCrop(entity.level, harvestPos) && isHarvesting()) {
+        if (!entity.level.isClientSide && isHarvesting() && CropUtil.isGrownCrop(entity.level, harvestPos)) {
             BlockState state = entity.level.getBlockState(harvestPos);
             BlockState defaultState = state.getBlock() instanceof StemGrownBlock ? Blocks.AIR.defaultBlockState() : state.getBlock().defaultBlockState();
             entity.setItemSlot(EquipmentSlot.MAINHAND, pickupLoot(state));
             harvestCrop(harvestPos, defaultState);
             WorldCrops.of((ServerLevel) entity.level).remove(harvestPos);
-        } else {
-            harvestPos = null;
-            harvestingBlock = false;
-        }
+            // Sometimes the animation doesn't fire properly, and the client won't clear harvesting state in that case. This will clear it manually as a backup
+            Services.SIDE.scheduleServer(20, this::synchronize);
+        } else clear();
     }
 
     @Override

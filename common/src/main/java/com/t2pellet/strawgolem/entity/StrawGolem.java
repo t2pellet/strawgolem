@@ -1,7 +1,8 @@
 package com.t2pellet.strawgolem.entity;
 
 import com.t2pellet.strawgolem.StrawgolemConfig;
-import com.t2pellet.strawgolem.entity.animations.StrawgolemItemController;
+import com.t2pellet.strawgolem.entity.animations.StrawgolemArmsController;
+import com.t2pellet.strawgolem.entity.animations.StrawgolemHarvestController;
 import com.t2pellet.strawgolem.entity.animations.StrawgolemMovementController;
 import com.t2pellet.strawgolem.entity.capabilities.decay.Decay;
 import com.t2pellet.strawgolem.entity.capabilities.decay.DecayState;
@@ -51,7 +52,6 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-// TODO : Finish animations
 // TODO : Straw hat texture
 // TODO : Wood armor (for straw golem to protect from cow / sheep and other things)
 // TODO : Fix bug - Animation transition on world load
@@ -59,8 +59,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
     public static final Item REPAIR_ITEM = Registry.ITEM.get(new ResourceLocation(StrawgolemConfig.Lifespan.repairItem.get()));
-    private static final double STOP_DISTANCE = 0.000005D;
-    private static final double WALK_DISTANCE = 0.00007D;
+    private static final double WALK_DISTANCE = 0.00000005D;
     private static final double RUN_DISTANCE = 0.004D;
 
     // Synched Data
@@ -113,10 +112,10 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Cow.class, 8.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Player.class, 8.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemPanicGoal(this));
+        this.goalSelector.addGoal(2, new GolemTemptGoal(this));
         this.goalSelector.addGoal(2, new GolemBeShyGoal(this));
         this.goalSelector.addGoal(3, new HarvestCropGoal(this));
         this.goalSelector.addGoal(3, new DeliverCropGoal(this));
-        this.goalSelector.addGoal(4, new GolemTemptGoal(this));
         this.goalSelector.addGoal(5, new ReturnToTetherGoal(this));
         this.goalSelector.addGoal(6, new GolemWanderGoal(this));
         if (Services.PLATFORM.isModLoaded("animal_feeding_trough")) {
@@ -215,8 +214,9 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     @Override
     public void registerControllers(AnimationData data) {
-        data.addAnimationController(new StrawgolemItemController(this));
         data.addAnimationController(new StrawgolemMovementController(this));
+        data.addAnimationController(new StrawgolemArmsController(this));
+        data.addAnimationController(new StrawgolemHarvestController(this));
     }
 
     @Override
@@ -236,10 +236,6 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     public boolean isMoving() {
         return getSqrMovement() >= WALK_DISTANCE;
-    }
-
-    public boolean isStopped() {
-        return getSqrMovement() < STOP_DISTANCE;
     }
 
     public boolean isInCold() {
@@ -282,6 +278,8 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     public void readAdditionalSaveData(CompoundTag tag) {
         tag.putBoolean("hasHat", this.hasHat());
         super.readAdditionalSaveData(tag);
+        // We don't actually want harvest capability to persist
+        harvester.clear();
     }
 
     @Override

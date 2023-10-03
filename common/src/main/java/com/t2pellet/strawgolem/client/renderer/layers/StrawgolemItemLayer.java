@@ -8,9 +8,6 @@ import com.t2pellet.strawgolem.entity.capabilities.held_item.HeldItem;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.item.ItemStack;
-import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
@@ -30,7 +27,7 @@ public class StrawgolemItemLayer extends GeoLayerRenderer<StrawGolem> {
         HeldItem heldItem = golem.getHeldItem();
         if (heldItem.has()) {
             matrixStackIn.pushPose();
-            this.model.translateToHand(golem, matrixStackIn);
+            this.model.translateToHand(matrixStackIn);
             this.renderItem(matrixStackIn, bufferIn, packedLightIn, golem);
             matrixStackIn.popPose();
         }
@@ -38,10 +35,12 @@ public class StrawgolemItemLayer extends GeoLayerRenderer<StrawGolem> {
 
     private void renderItem(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, StrawGolem golem) {
         HeldItem heldItem = golem.getHeldItem();
+        boolean isBlock = golem.isHoldingBlock();
         matrixStackIn.pushPose();
-        matrixStackIn.translate(0, 0.6F, -0.3F);
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(isBlock ? -180.0F : -90.0F));
+        matrixStackIn.translate(0, isBlock ? -0.3F : -0.45F, isBlock ? 0.0F : -0.15F);
         matrixStackIn.scale(0.5F, 0.5F, 0.5F);
-        this.itemInHandRenderer.renderItem(golem, heldItem.get(), ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, packedLightIn);
+        this.itemInHandRenderer.renderItem(golem, heldItem.get(), ItemTransforms.TransformType.NONE, false, matrixStackIn, bufferIn, packedLightIn);
         matrixStackIn.popPose();
     }
 }
