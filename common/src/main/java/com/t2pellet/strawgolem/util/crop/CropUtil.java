@@ -5,10 +5,13 @@ import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.compat.api.HarvestableBlock;
 import com.t2pellet.strawgolem.compat.api.HarvestableState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.AttachedStemBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.StemGrownBlock;
@@ -43,10 +46,9 @@ public class CropUtil {
     }
 
     public static boolean isGrownCrop(LevelAccessor level, BlockPos pos) {
-        return pos != null && isGrownCrop(level.getBlockState(pos));
-    }
+        if (pos == null) return false;
 
-    public static boolean isGrownCrop(BlockState state) {
+        BlockState state = level.getBlockState(pos);
         if (!isCrop(state)) return false;
 
         if (state.getBlock() instanceof CropBlock cropBlock) {
@@ -56,7 +58,12 @@ public class CropUtil {
         } else if (state instanceof HarvestableState cropBlock) {
             return cropBlock.isMaxAge();
         } else if (state.getBlock() instanceof StemGrownBlock) {
-            return true;
+            for (Direction direction : Direction.values()) {
+                if (isValidStem(level, pos.offset(direction.getNormal()), direction.getOpposite())) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         boolean whitelistedCrop = StrawgolemConfig.Harvesting.enableWhitelist.get() && isWhitelisted(state.getBlock());
@@ -81,6 +88,16 @@ public class CropUtil {
         }
         return false;
     }
+
+    private static boolean isValidStem(LevelReader level, BlockPos pos, Direction direction) {
+        BlockState state = level.getBlockState(pos);
+        if (state.getBlock() instanceof AttachedStemBlock) {
+            Direction property = state.getValue(AttachedStemBlock.FACING);
+            return property == direction;
+        }
+        return false;
+    }
+
 
     // TODO : Should probably check here that it has one of the age properties if its from the tag system
     public static boolean isCrop(BlockState state) {

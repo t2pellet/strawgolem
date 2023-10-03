@@ -19,13 +19,15 @@ public class GrowthMixin {
     @Inject(method = "setBlock", at = @At("TAIL"))
     public void grow(BlockPos pos, BlockState newState, int i, CallbackInfoReturnable<Boolean> info) {
         if ((Object) this instanceof ServerLevel level) {
-            BlockPos cropPos = pos;
+            BlockPos cropPos;
             if (newState.getBlock() instanceof AttachedStemBlock) {
                 cropPos = pos.offset(newState.getValue(AttachedStemBlock.FACING).getNormal());
+            } else {
+                cropPos = pos;
             }
             if (CropUtil.isGrownCrop(level, cropPos)) {
                 Constants.LOG.debug("Crop grown in world: {}, at pos: {}", level.toString(), pos.toShortString());
-                level.getServer().execute(() -> CropGrowthCallback.EVENT.invoker().grow(level, pos));
+                level.getServer().execute(() -> CropGrowthCallback.EVENT.invoker().grow(level, cropPos));
             }
         }
     }
