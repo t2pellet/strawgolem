@@ -48,3 +48,6 @@ The mod has out-of-the-box compat for most modded crops. It also plays nice with
 ## Downloads
 Visit here:
 https://modrinth.com/mod/straw-golem
+
+# Support Me
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G7PTE10)
