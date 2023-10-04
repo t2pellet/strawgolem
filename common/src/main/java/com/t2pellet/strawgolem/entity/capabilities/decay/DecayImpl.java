@@ -5,12 +5,13 @@ import com.t2pellet.tlib.entity.capability.api.AbstractCapability;
 import com.t2pellet.tlib.entity.capability.api.ICapabilityHaver;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 
 import java.util.Random;
 
 
-class DecayImpl<E extends Entity & ICapabilityHaver> extends AbstractCapability<E> implements Decay {
+class DecayImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractCapability<E> implements Decay {
     private DecayState state = DecayState.NEW;
     private int ticksSinceLastDecay = 0;
     private final Random rand;
@@ -30,10 +31,22 @@ class DecayImpl<E extends Entity & ICapabilityHaver> extends AbstractCapability<
         if (ticksSinceLastDecay == ticksToDecay && rand.nextInt(decayChance) == 0) {
             state = DecayState.fromValue(state.getValue() + 1);
             ticksSinceLastDecay = 0;
-            synchronize();
+            if (state == null) {
+                entity.kill();
+            }
+            else {
+                updateHealthFromState();
+                synchronize();
+            }
         } else ++ticksSinceLastDecay;
 
-        if (state == null) entity.kill();
+    }
+
+    @Override
+    public void setFromHealth() {
+        state = DecayState.fromHealth(entity.getHealth());
+        updateHealthFromState();
+        synchronize();
     }
 
     @Override
@@ -45,7 +58,14 @@ class DecayImpl<E extends Entity & ICapabilityHaver> extends AbstractCapability<
         }
 
         synchronize();
+        updateHealthFromState();
         return true;
+    }
+
+    private void updateHealthFromState() {
+        float health = state.getHealth();
+        entity.getAttribute(Attributes.MAX_HEALTH).setBaseValue(health);
+        if (entity.getHealth() > health) entity.setHealth(health);
     }
 
     @Override

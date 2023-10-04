@@ -36,6 +36,8 @@ public class StrawgolemConfig extends Config {
     public static class Lifespan {
         @Entry(comment = "Whether to enable lifespan/decay feature")
         public static final BoolProperty enabled = new BoolProperty(true);
+        @Entry(comment = "Base health. Requires restart")
+        public static final IntProperty baseHealth = new IntProperty(5, 1, 10);
         @Entry(comment = "Whether being in the rain accelerates decay")
         public static final BoolProperty rainAcceleratesDecay = new BoolProperty(true);
         @Entry(comment = "Whether being in water accelerated decay")

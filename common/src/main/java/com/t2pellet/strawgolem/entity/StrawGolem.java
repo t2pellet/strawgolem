@@ -77,7 +77,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
-                .add(Attributes.MAX_HEALTH, 5.0F);
+                .add(Attributes.MAX_HEALTH, StrawgolemConfig.Lifespan.baseHealth.get());
     }
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
@@ -132,6 +132,8 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.entityData.set(IS_SCARED, isScared);
     }
 
+    /* Base Logic */
+
     @Override
     public void baseTick() {
         super.baseTick();
@@ -163,6 +165,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
     @Override
     public void moveTo(double $$0, double $$1, double $$2, float $$3, float $$4) {
         super.moveTo($$0, $$1, $$2, $$3, $$4);
+        // Initially set tether
         if (!tether.exists()) {
             tether.update();
         }
@@ -183,11 +186,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         return super.mobInteract(player, hand);
     }
 
-    @Override
-    protected void dropCustomDeathLoot(DamageSource $$0, int $$1, boolean $$2) {
-        spawnAtLocation(getHeldItem().get().copy());
-        getHeldItem().get().setCount(0);
-    }
+    /* Damage */
 
     @Override
     public boolean isDamageSourceBlocked(DamageSource source) {
@@ -195,7 +194,19 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         return super.isDamageSourceBlocked(source);
     }
 
-    /* Item */
+    @Override
+    protected void actuallyHurt(DamageSource $$0, float $$1) {
+        super.actuallyHurt($$0, $$1);
+        decay.setFromHealth();
+    }
+
+    /* Items */
+
+    @Override
+    protected void dropCustomDeathLoot(DamageSource $$0, int $$1, boolean $$2) {
+        spawnAtLocation(getHeldItem().get().copy());
+        getHeldItem().get().setCount(0);
+    }
 
     @Override
     public ItemStack getItemBySlot(EquipmentSlot slot) {
