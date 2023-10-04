@@ -32,3 +32,9 @@ mandatory = true
 versionRange = "*"
 ordering = "BEFORE"
 side = "BOTH"
+[[dependencies.strawgolem]]
+modId = "geckolib3"
+mandatory = true
+versionRange = "*"
+ordering = "BEFORE"
+side = "BOTH"

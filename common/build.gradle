@@ -14,6 +14,9 @@ minecraft {
     }
 }
 
+//JavaDocs error with GeckoLib code as it shadows two dependencies that aren't found in the classpath, so we disable them.
+javadoc.enabled(false)
+
 dependencies {
      compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
      implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'

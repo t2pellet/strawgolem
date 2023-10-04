@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "id": "strawgolem",
-    "version": "2.0.0",
+    "version": "${version}",
     "name": "Strawgolem",
     "description": "Adds a helpful lil' Straw Golem. He's a farmer!",
     "authors": [
@@ -33,7 +33,8 @@
         "fabricloader": ">=0.14",
         "fabric": "*",
         "minecraft": ">=1.19",
-        "java": ">=17"
+        "java": ">=17",
+        "geckolib3": "*"
     },
     "suggests": {
         "another-mod": "*"
