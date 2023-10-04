@@ -59,7 +59,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
     public static final Item REPAIR_ITEM = Registry.ITEM.get(new ResourceLocation(StrawgolemConfig.Lifespan.repairItem.get()));
-    private static final double WALK_DISTANCE = 0.00000005D;
+    private static final double WALK_DISTANCE = 0.00000002D;
     private static final double RUN_DISTANCE = 0.004D;
 
     // Synched Data
