@@ -6,47 +6,45 @@ This mod adds a helpful (and awfully cute) little golem to do some of your farmi
 | ![strawgolem-a-270x270](https://user-images.githubusercontent.com/26723535/166476673-a377f3f9-b941-4581-8ae3-dac79e2f87a2.png) | 
 |:--:| 
 | *Straw Golem Reborn!* |
+# Straw Golem Reborn
+This mod adds a helpful (and awfully cute) little golem to do some of your farming for you. It can harvest, replant and deliver crops to a nearby chest.
 
 ## Getting Started
-To create a Straw Golem, stand near the crops or farm where you want it to do its thing. Then place a carved pumpkin on top of a hay bale. (Or carve a pumpkin that is already on a hay bale). After a moment of reflection about the life, the universe, and everything, your little guy will start look for & harvest a full-grown crop.
+To create a Straw Golem, stand near the crops or farm where you want it to do its thing. Then place a carved pumpkin on top of a hay bale. (Or carve a pumpkin that is already on a hay bale). After a moment of reflection about the life, the universe, and everything, your little guy will start look for & harvest a full-grown crop. 
 
 ![strawGolem_creating](https://user-images.githubusercontent.com/26723535/166479651-7c970834-3a87-40c7-aca3-27ca87e9bc2b.gif)
 
 ## Chest Usage
-Once a Straw Golem gathers a crop item, it will seek out a chest to store the item. Thus, a chest should be placed near the crops where the golem does its work, and you should make sure the chest have available space inside to hold the soon-to-be harvested crops.
-- Your golem is usually clever enough to locate an available chest on its own.
+Once a Straw Golem gathers a crop item, it will seek out a chest to store the item. Thus, a chest should be placed near the crops where the golem does its work, and you should make sure the chest have available space inside to hold the soon-to-be harvested crops. 
+- Your golem is usually clever enough to locate an available chest on its own. 
 - If you have more than one chest in the vicinity, the golem will choose a chest on its own
-- A golem will prioritize the first chest it used, unless you direct it otherwise
 
-You can also "order" a golem to use a particular chest:
-Shift-right-click on the golem with an *empty hand,* then immediately shift-right-click on the desired chest.
 
 ## Lifespan
-The Straw Golem has a limited lifespan of 7 in-game days.
-- This lifespan goes down faster when the golem is exposed to the rain or cold, when it stands in water, or when it carries a heavy object, such as a pumpkin
+The Straw Golem has a limited lifespan.
+- Every 10 minutes, theres a 1/5 chance it decays.
+- There are 4 decay states, from new to dying, with death thereafter
+- This lifespan goes down faster when the golem is exposed to the rain or when it stands in water
+- The golem shivers when in rain water or cold
 - You can protect your golem from rain by building it a Straw Hat
-- Shivering indicates the prior two conditions, a custom animation the latter.
-- Lifespan is restored by feeding the golem wheat, which also heals it.
+- The golem decays if it takes enough damage
+- Lifespan is restored by feeding the golem wheat, which also heals it. 
 
 As your golem approaches old age, it will begin to to decay, and you will see visual changes to its texture. You may also start to see flies hovering about. Moreover, as it ages, its max lifespan is lowered.
 
-## Hunger
-- Farming is hard labour, and the Straw Golems will get hungry over time.
-- As golems get more hungry, they'll be slower
-- If you let them starve, they'll sit down and pout until fed.
-- Golems are fed using apples. If you are holding an apple, it will beg you for it, and follow you around while you hold it.
-
-## Miscellaneous
-- A Straw Golem may change into a large 'Strawng Golem' if struck by lightning. It functions similarly to an iron golem; these mobs will protect their little relatives from hostile creatures.
-- In both editions, you might find it helpful to surround your crops with a fence. This protects the golems from mobs. It also helps to keep them from wandering too far.
+## Behaviour
+- The golem is shy, and tends to avoid players
+- The golem will be attacked by all raiders, and will flee them
+- The golem will sometimes be munched on by farm animals, and will flee them
+- When the golem flees, it drops anything it had in its hand
 
 ## Config
 The mod is made to be highly configurable. Users can toggle optional features (lifespan, hunger, etc.), set crops to include/exclude, tweak lifespan & hunger lengths, etc.
 
-## Compatability
+## Compatibility
 The mod has out-of-the-box compat for most modded crops. It also plays nice with many tooltip GUI mods, such as HWYLA, WTHIT, and Jade, so you can see golem health, hunger, and remaining days.
 
+
 ## Downloads
-Visit these CurseForge pages:
-- [Fabric mod](https://www.curseforge.com/minecraft/mc-mods/straw-golem-reborn)
-- [Forge mod](https://www.curseforge.com/minecraft/mc-mods/strawgolem-reborn)
+Visit here:
+https://modrinth.com/mod/straw-golem
