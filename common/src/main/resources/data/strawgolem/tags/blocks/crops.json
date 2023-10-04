@@ -1,9 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:sweet_berry_bush",
-    "farmersdelight:cabbages",
-    "farmersdelight:onions",
-    "farmersdelight:tomatoes"
+    "minecraft:sweet_berry_bush"
   ]
 }
