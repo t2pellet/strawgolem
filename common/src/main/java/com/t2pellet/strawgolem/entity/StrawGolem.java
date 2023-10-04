@@ -76,7 +76,7 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MOVEMENT_SPEED, 0.25)
+                .add(Attributes.MOVEMENT_SPEED, 0.23)
                 .add(Attributes.MAX_HEALTH, StrawgolemConfig.Lifespan.baseHealth.get());
     }
 
@@ -108,8 +108,8 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Vex.class, 8.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Pillager.class, 15.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Illusioner.class, 12.0F, 0.5D, 0.7D));
-        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Sheep.class, 8.0F, 0.5D, 0.7D));
-        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Cow.class, 8.0F, 0.5D, 0.7D));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Sheep.class, 8.0F, 0.4D, 0.6D));
+        this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Cow.class, 8.0F, 0.4D, 0.6D));
         this.goalSelector.addGoal(1, new GolemFleeEntityGoal<>(this, Player.class, 8.0F, 0.5D, 0.7D));
         this.goalSelector.addGoal(1, new GolemPanicGoal(this));
         this.goalSelector.addGoal(2, new GolemTemptGoal(this));
