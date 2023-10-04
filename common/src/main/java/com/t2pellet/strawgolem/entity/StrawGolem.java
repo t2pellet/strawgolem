@@ -52,7 +52,6 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-// TODO : Straw hat texture
 // TODO : Wood armor (for straw golem to protect from cow / sheep and other things)
 // TODO : Fix bug - Animation transition on world load
 // TODO : Fix bug - not always walking fully to destination
@@ -287,15 +286,16 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
-        tag.putBoolean("hasHat", this.hasHat());
         super.readAdditionalSaveData(tag);
+        // Hat!
+        this.entityData.set(HAS_HAT, tag.getBoolean("hasHat"));
         // We don't actually want harvest capability to persist
         harvester.clear();
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
-        this.entityData.set(HAS_HAT, tag.getBoolean("hasHat"));
+        tag.putBoolean("hasHat", this.hasHat());
         super.addAdditionalSaveData(tag);
     }
 
