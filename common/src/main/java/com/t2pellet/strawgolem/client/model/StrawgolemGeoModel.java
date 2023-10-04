@@ -38,14 +38,14 @@ public class StrawgolemGeoModel extends AnimatedGeoModel<StrawGolem> {
 
         DecayState state = golem.getDecay().getState();
         switch (state) {
+            case NEW -> {
+                return newTextureResource;
+            }
             case OLD -> {
                 return oldTextureResource;
             }
-            case WITHERED -> {
-                return dyingTextureResource;
-            }
             default -> {
-                return newTextureResource;
+                return dyingTextureResource;
             }
         }
     }
