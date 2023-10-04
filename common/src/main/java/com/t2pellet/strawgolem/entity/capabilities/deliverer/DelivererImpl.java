@@ -76,26 +76,33 @@ public class DelivererImpl<E extends LivingEntity & ICapabilityHaver> extends Ab
     @Override
     public void deliver(BlockPos pos) {
         ItemStack stack = entity.getItemInHand(InteractionHand.MAIN_HAND).copy();
-        if (ContainerUtil.isContainer(entity.level, pos)) {
-            Container container = (Container) entity.level.getBlockEntity(pos);
-            for (int i = 0; i < container.getContainerSize(); ++i) {
-                ItemStack containerStack = container.getItem(i);
-                if (containerStack.isEmpty()) {
-                    container.setItem(i, stack);
-                    stack = ItemStack.EMPTY;
-                } else if (containerStack.is(stack.getItem())) {
-                    int placeableCount = containerStack.getMaxStackSize() - containerStack.getCount();
-                    int placingCount = Math.min(stack.getCount(), placeableCount);
-                    containerStack.grow(placingCount);
-                    stack.shrink(placingCount);
+        // Need an item to deliver
+        if (!stack.isEmpty()) {
+            // Deliver what we can to the container if it exists
+            if (ContainerUtil.isContainer(entity.level, pos)) {
+                Container container = (Container) entity.level.getBlockEntity(pos);
+                for (int i = 0; i < container.getContainerSize(); ++i) {
+                    ItemStack containerStack = container.getItem(i);
+                    if (containerStack.isEmpty()) {
+                        container.setItem(i, stack);
+                        stack = ItemStack.EMPTY;
+                    } else if (containerStack.is(stack.getItem())) {
+                        int placeableCount = containerStack.getMaxStackSize() - containerStack.getCount();
+                        int placingCount = Math.min(stack.getCount(), placeableCount);
+                        containerStack.grow(placingCount);
+                        stack.shrink(placingCount);
+                    }
+                    if (stack.isEmpty()) break;
                 }
-                if (stack.isEmpty()) break;
+                // Interactions
+                entity.level.gameEvent(entity, GameEvent.CONTAINER_OPEN, pos);
+                entity.level.playSound(null, pos, SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                entity.level.gameEvent(entity, GameEvent.CONTAINER_CLOSE, pos);
             }
-            entity.level.gameEvent(entity, GameEvent.CONTAINER_OPEN, pos);
-            entity.level.playSound(null, pos, SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 1.0F, 1.0F);
+            // Drop remaining stack as ItemEntity
+            entity.level.addFreshEntity(new ItemEntity(entity.level, pos.getX(), pos.getY() + 1, pos.getZ(), stack));
+            entity.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
-        entity.level.addFreshEntity(new ItemEntity(entity.level, pos.getX(), pos.getY() + 1, pos.getZ(), stack));
-        entity.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
     }
 
     @Override
