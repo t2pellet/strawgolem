@@ -4,10 +4,9 @@ import com.t2pellet.strawgolem.StrawgolemConfig;
 import com.t2pellet.strawgolem.entity.StrawGolem;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 
-public class StrawgolemHarvestController extends AnimationController<StrawGolem> {
+public class StrawgolemHarvestController extends StrawgolemAnimationController {
 
     private static PlayState predicate(AnimationEvent<StrawGolem> event) {
         boolean isHarvesting = event.getAnimatable().getHarvester().isHarvesting();
@@ -27,7 +26,7 @@ public class StrawgolemHarvestController extends AnimationController<StrawGolem>
     }
 
     public StrawgolemHarvestController(StrawGolem animatable) {
-        super(animatable, "harvest", 0, StrawgolemHarvestController::predicate);
+        super(animatable, "harvest", StrawgolemHarvestController::predicate);
         registerCustomInstructionListener(event -> {
             if (event.instructions.equals("completeHarvest")) {
                 animatable.getHarvester().completeHarvest();
