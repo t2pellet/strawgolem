@@ -35,19 +35,22 @@ public class DeliverCropGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canContinueToUse() {
-        return golem.getHeldItem().has() && isValidTarget(golem.level, blockPos);
+        return golem.getHeldItem().has() && isValidTarget(level, blockPos);
     }
 
     @Override
     public void tick() {
-        super.tick();
-        if (!level.isClientSide) {
-            if (isReachedTarget() && isValidTarget(level, blockPos)) {
-                golem.getDeliverer().deliver(blockPos);
+        BlockPos blockpos = this.getMoveToTarget();
+        if (blockPos.closerToCenterThan(this.mob.position(), this.acceptedDistance())) {
+            golem.getNavigation().stop();
+            golem.getDeliverer().deliver(blockPos);
+        } else {
+            if (this.shouldRecalculatePath()) {
+                this.mob.getNavigation().moveTo((double)((float)blockpos.getX()) + 0.5D, (double)blockpos.getY() + 0.5D, (double)((float)blockpos.getZ()) + 0.5D, this.speedModifier);
             }
-        }
-        if (!golem.getLookControl().isLookingAtTarget()) {
-            golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
+            if (!golem.getLookControl().isLookingAtTarget()) {
+                golem.getLookControl().setLookAt(Vec3.atCenterOf(blockPos));
+            }
         }
     }
 
