@@ -154,6 +154,8 @@ public class Octree implements IOctree {
     }
 
     private static BlockPos findNearestFromList(List<BlockPos> points, BlockPos query) {
+        if (points.isEmpty()) return null;
+
         BlockPos nearest = points.get(0);
         int nearestDistance = nearest.distManhattan(query);
         for (int i = 1; i < points.size(); ++i) {
