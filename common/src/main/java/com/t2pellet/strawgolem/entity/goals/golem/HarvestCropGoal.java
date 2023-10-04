@@ -81,7 +81,7 @@ public class HarvestCropGoal extends MoveToBlockGoal {
 
     @Override
     public double acceptedDistance() {
-        return 1.6D;
+        return 1.2D;
     }
 
     @Override

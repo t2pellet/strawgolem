@@ -35,7 +35,7 @@ class DecayImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractCapab
                 entity.kill();
             }
             else {
-                updateHealthFromState();
+                updateHealthFromState(false);
                 synchronize();
             }
         } else ++ticksSinceLastDecay;
@@ -45,7 +45,7 @@ class DecayImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractCapab
     @Override
     public void setFromHealth() {
         state = DecayState.fromHealth(entity.getHealth());
-        updateHealthFromState();
+        updateHealthFromState(false);
         synchronize();
     }
 
@@ -55,17 +55,17 @@ class DecayImpl<E extends LivingEntity & ICapabilityHaver> extends AbstractCapab
 
         if (rand.nextInt(StrawgolemConfig.Lifespan.repairChance.get()) == 0) {
             state = DecayState.fromValue(state.getValue() - 1);
+            updateHealthFromState(true);
         }
 
         synchronize();
-        updateHealthFromState();
         return true;
     }
 
-    private void updateHealthFromState() {
+    private void updateHealthFromState(boolean shouldHeal) {
         float health = state.getHealth();
         entity.getAttribute(Attributes.MAX_HEALTH).setBaseValue(health);
-        if (entity.getHealth() > health) entity.setHealth(health);
+        if (shouldHeal || entity.getHealth() > health) entity.setHealth(health);
     }
 
     @Override

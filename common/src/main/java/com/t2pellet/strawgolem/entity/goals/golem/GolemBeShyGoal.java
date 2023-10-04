@@ -29,4 +29,9 @@ public class GolemBeShyGoal extends AvoidEntityGoal<Player> {
             }
         }
     }
+
+    @Override
+    public boolean canContinueToUse() {
+        return this.toAvoid != null && !this.toAvoid.isHolding(StrawGolem.REPAIR_ITEM) && super.canContinueToUse();
+    }
 }

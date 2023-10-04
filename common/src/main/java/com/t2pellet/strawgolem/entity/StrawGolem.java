@@ -18,6 +18,7 @@ import com.t2pellet.tlib.Services;
 import com.t2pellet.tlib.entity.capability.api.CapabilityManager;
 import com.t2pellet.tlib.entity.capability.api.ICapabilityHaver;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -58,8 +59,8 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilityHaver {
 
     public static final Item REPAIR_ITEM = Registry.ITEM.get(new ResourceLocation(StrawgolemConfig.Lifespan.repairItem.get()));
-    private static final double WALK_DISTANCE = 0.00000002D;
-    private static final double RUN_DISTANCE = 0.004D;
+    private static final double WALK_DISTANCE = 0.00000001D;
+    private static final double RUN_DISTANCE = 0.003D;
 
     // Synched Data
     private static final EntityDataAccessor<Boolean> IS_SCARED = SynchedEntityData.defineId(StrawGolem.class, EntityDataSerializers.BOOLEAN);
@@ -175,7 +176,10 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         ItemStack item = player.getItemInHand(hand);
         if (item.getItem() == REPAIR_ITEM && decay.getState() != DecayState.NEW) {
             boolean success = decay.repair();
-            if (success) item.shrink(1);
+            if (success) {
+                spawnHappyParticle();
+                item.shrink(1);
+            }
             return InteractionResult.CONSUME;
         } else if (item.getItem() == StrawgolemItems.strawHat.get() && !hasHat()) {
             this.entityData.set(HAS_HAT, true);
@@ -339,6 +343,14 @@ public class StrawGolem extends AbstractGolem implements IAnimatable, ICapabilit
         Vec3 pos = position();
         Vec3 movement = getDeltaMovement();
         level.addParticle(StrawgolemParticles.FLY_PARTICLE.get(), pos.x, pos.y + 0.15F, pos.z, movement.x, movement.y + 0.15F, movement.z);
+    }
+
+    private void spawnHappyParticle() {
+        Vec3 pos = position();
+        Vec3 movement = getDeltaMovement();
+        double x = random.nextFloat() + pos.x - 0.5F;
+        double z = random.nextFloat() + pos.z - 0.5F;
+        level.addParticle(ParticleTypes.HAPPY_VILLAGER, x, pos.y + 0.85F, z, movement.x, movement.y, movement.z);
     }
 
 }
