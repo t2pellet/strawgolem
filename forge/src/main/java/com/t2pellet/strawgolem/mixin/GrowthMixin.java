@@ -1,7 +1,6 @@
 package com.t2pellet.strawgolem.mixin;
 
 import com.t2pellet.strawgolem.Constants;
-import com.t2pellet.strawgolem.StrawgolemCommon;
 import com.t2pellet.strawgolem.events.CropGrowthEvent;
 import com.t2pellet.strawgolem.util.crop.CropUtil;
 import net.minecraft.core.BlockPos;
@@ -18,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Level.class)
 public class GrowthMixin {
 
-    @Inject(method = "setBlock", at = @At("TAIL"))
+    @Inject(method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", at = @At("TAIL"))
     public void grow(BlockPos pos, BlockState newState, int i, CallbackInfoReturnable<Boolean> info) {
         if ((Object) this instanceof ServerLevel level) {
             BlockPos cropPos = pos;

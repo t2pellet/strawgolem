@@ -39,7 +39,7 @@ public class CarvedPumpkinMixin {
         return p_51396_ != null && (p_51396_.is(Blocks.CARVED_PUMPKIN) || p_51396_.is(Blocks.JACK_O_LANTERN));
     };
 
-    @Inject(method = "canSpawnGolem", at = @At("RETURN"))
+    @Inject(method = "canSpawnGolem", at = @At("RETURN"), cancellable = true)
     public void canSpawnGolem(LevelReader levelReader, BlockPos pos, CallbackInfoReturnable<Boolean> ci) {
         boolean canSpawn = ci.getReturnValue() || getOrCreateStrawGolemBase().find(levelReader, pos) != null;
         ci.setReturnValue(canSpawn);

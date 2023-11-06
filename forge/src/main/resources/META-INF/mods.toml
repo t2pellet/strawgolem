@@ -38,3 +38,19 @@ mandatory = true
 versionRange = "*"
 ordering = "BEFORE"
 side = "BOTH"
+[[dependencies.strawgolem]]
+modId = "cloth-config"
+mandatory = false
+versionRange = "*"
+ordering = "BEFORE"
+side = "CLIENT"
+[[dependencies.strawgolem]]
+modId = "modmenu"
+mandatory = false
+versionRange = "*"
+side = "CLIENT"
+[[dependencies.strawgolem]]
+modId = "jade"
+mandatory = false
+versionRange = "*"
+side = "CLIENT"

@@ -32,12 +32,15 @@
     "depends": {
         "fabricloader": ">=0.14",
         "fabric": "*",
-        "minecraft": ">=1.19",
+        "minecraft": "1.19.2",
         "java": ">=17",
         "geckolib3": "*"
     },
     "suggests": {
-        "another-mod": "*"
+        "modmenu": "*",
+        "cloth-config": "*",
+        "jade": "*",
+        "animal_feeding_trough": "*"
     }
 }
   
