@@ -11,6 +11,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 public class StrawgolemEntityRenderers implements RegistryClass {
 
     @IRegistryEntry
-    public static final EntityRendererEntryType<StrawGolem> STRAW_GOLEM_RENDERER = new EntityRendererEntryType<>(StrawgolemEntities.STRAW_GOLEM.get(), StrawGolemRenderer::new);
+    public static final EntityRendererEntryType<StrawGolem> STRAW_GOLEM_RENDERER = new EntityRendererEntryType<>(StrawgolemEntities.STRAW_GOLEM::get, StrawGolemRenderer::new);
 
 }

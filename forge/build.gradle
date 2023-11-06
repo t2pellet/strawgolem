@@ -72,13 +72,19 @@ minecraft {
 
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
+repositories {
+    flatDir {
+        dirs '../../tlib/Forge/build/libs'
+    }
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly project(":common")
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
     implementation fg.deobf("software.bernie.geckolib:geckolib-forge-1.19:${project.geckolib_version_forge}")
-    implementation fg.deobf(files("../../tlib/Forge/build/libs/tlib-forge-${project.minecraft_version}-${project.tlib_version}.jar"))
-    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${project.cloth_version}")
+    implementation fg.deobf("com.t2pellet:tlib-forge-${project.minecraft_version}:${project.tlib_version}")
+    implementation ("me.shedaniel.cloth:cloth-config-forge:${project.cloth_version}")
     implementation fg.deobf("curse.maven:jade-324717:${project.jade_forge_id}")
     implementation fg.deobf("curse.maven:farmers-delight-398521:${project.farmers_delight_forge_version}")
     implementation fg.deobf("curse.maven:animal-feeding-trough-445838:${project.feeding_trough_forge_version}")
